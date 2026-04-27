@@ -1,0 +1,47 @@
+# Lokale Entwicklungsumgebung — startet nur die Infrastruktur (Postgres,
+# Ollama, Maildev). Backend und Frontend laufen direkt auf der Host-Maschine
+# im Hot-Reload-Modus (Quarkus dev / Vite dev).
+#
+# Hochfahren:    docker compose -f docker-compose.dev.yml up -d
+# Herunterfahren: docker compose -f docker-compose.dev.yml down
+# Volumes loeschen (Reset): docker compose -f docker-compose.dev.yml down -v
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: eateasy-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-eateasy}
+      POSTGRES_USER: ${DB_USER:-eateasy}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-eateasy}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-eateasy} -d ${DB_NAME:-eateasy}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: eateasy-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  maildev:
+    image: maildev/maildev:latest
+    container_name: eateasy-maildev
+    restart: unless-stopped
+    ports:
+      - "1080:1080"  # Webview
+      - "1025:1025"  # SMTP
+
+volumes:
+  postgres_data:
+  ollama_data:
