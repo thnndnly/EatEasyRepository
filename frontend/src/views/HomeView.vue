@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { fetchHealth } from '@/services/healthService'
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
 
 const status = ref<'loading' | 'ok' | 'error'>('loading')
 const detail = ref<string>('Pruefe Backend ...')
@@ -26,7 +29,9 @@ onMounted(() => {
 <template>
   <section class="space-y-6">
     <div>
-      <h1 class="text-2xl font-semibold">Willkommen bei EatEasy EE</h1>
+      <h1 class="text-2xl font-semibold">
+        Hallo, {{ authStore.user?.displayName ?? 'Gast' }}
+      </h1>
       <p class="mt-1 text-slate-600">
         Mahlzeitenplanung, Rezepte und Einkaufslisten fuer den ganzen Haushalt.
       </p>
@@ -42,9 +47,7 @@ onMounted(() => {
     >
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium uppercase tracking-wide text-slate-500">
-            Backend-Status
-          </p>
+          <p class="text-sm font-medium uppercase tracking-wide text-slate-500">Backend-Status</p>
           <p
             class="mt-1 text-lg font-semibold"
             :class="{

@@ -151,7 +151,7 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | Phase | Slice                          | Status |
 | ----- | ------------------------------ | ------ |
 | 0     | Projekt-Setup                  | done   |
-| 1     | Auth                           | open   |
+| 1     | Auth                           | done   |
 | 2     | Haushalt                       | open   |
 | 3     | Zutaten + Rezepte              | open   |
 | 4     | Wochenplan                     | open   |
