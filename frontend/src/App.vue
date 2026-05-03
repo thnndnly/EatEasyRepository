@@ -5,12 +5,14 @@ import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { useRecipeStore } from '@/stores/recipeStore'
 import { useMealPlanStore } from '@/stores/mealPlanStore'
+import { usePantryStore } from '@/stores/pantryStore'
 import HouseholdSwitcher from '@/components/household/HouseholdSwitcher.vue'
 
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
 const recipeStore = useRecipeStore()
 const mealPlanStore = useMealPlanStore()
+const pantryStore = usePantryStore()
 const router = useRouter()
 
 onBeforeMount(async () => {
@@ -32,6 +34,7 @@ watch(
       householdStore.reset()
       recipeStore.reset()
       mealPlanStore.reset()
+      pantryStore.reset()
     }
   },
 )
@@ -41,6 +44,7 @@ async function onLogout(): Promise<void> {
   householdStore.reset()
   recipeStore.reset()
   mealPlanStore.reset()
+  pantryStore.reset()
   await router.replace('/login')
 }
 </script>
@@ -81,6 +85,13 @@ async function onLogout(): Promise<void> {
               active-class="text-emerald-700"
             >
               Wochenplan
+            </RouterLink>
+            <RouterLink
+              :to="{ name: 'pantry' }"
+              class="text-slate-600 hover:text-emerald-700"
+              active-class="text-emerald-700"
+            >
+              Vorrat
             </RouterLink>
           </nav>
         </div>
