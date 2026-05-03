@@ -14,6 +14,13 @@ import java.util.UUID;
 @ApplicationScoped
 public class RecipeRepository implements PanacheRepositoryBase<Recipe, UUID> {
 
+    public List<Recipe> findByIds(Collection<UUID> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return list("id in ?1", ids);
+    }
+
     /**
      * Liefert Rezepte, die fuer einen User sichtbar sind:
      * <ul>

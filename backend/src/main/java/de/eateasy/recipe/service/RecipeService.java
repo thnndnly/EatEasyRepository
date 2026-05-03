@@ -3,9 +3,12 @@ package de.eateasy.recipe.service;
 import de.eateasy.recipe.dto.RecipeCreateRequest;
 import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
+import de.eateasy.recipe.dto.RecipeMiniDto;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface RecipeService {
@@ -24,4 +27,12 @@ public interface RecipeService {
 
     /** Loeschen; nur Owner. */
     void delete(UUID userId, UUID recipeId);
+
+    /**
+     * Batch-Lookup nur per ID — ohne Auth-Check. Wird von Komponenten genutzt,
+     * die bereits einen authorisierten Container (z. B. einen MealPlan-Eintrag)
+     * in der Hand haben und nur die Mini-Daten der referenzierten Rezepte
+     * brauchen. Fehlende IDs tauchen schlicht nicht in der Map auf.
+     */
+    Map<UUID, RecipeMiniDto> getMinis(Collection<UUID> recipeIds);
 }

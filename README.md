@@ -154,7 +154,7 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | 1     | Auth                           | done   |
 | 2     | Haushalt                       | done   |
 | 3     | Zutaten + Rezepte              | done   |
-| 4     | Wochenplan                     | open   |
+| 4     | Wochenplan                     | done   |
 | 5     | Vorrat                         | open   |
 | 6     | Einkaufsliste                  | open   |
 | 7     | Externe Rezept-API             | open   |

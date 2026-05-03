@@ -12,6 +12,7 @@ import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
 import de.eateasy.recipe.dto.RecipeIngredientDto;
 import de.eateasy.recipe.dto.RecipeIngredientRequest;
+import de.eateasy.recipe.dto.RecipeMiniDto;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
 import de.eateasy.recipe.entity.Recipe;
 import de.eateasy.recipe.entity.RecipeIngredient;
@@ -20,11 +21,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class RecipeServiceImpl implements RecipeService {
@@ -126,6 +130,16 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = loadRecipe(recipeId);
         assertOwner(userId, recipe);
         recipeRepository.delete(recipe);
+    }
+
+    @Override
+    public Map<UUID, RecipeMiniDto> getMinis(Collection<UUID> recipeIds) {
+        if (recipeIds == null || recipeIds.isEmpty()) {
+            return Map.of();
+        }
+        return recipeRepository.findByIds(recipeIds).stream()
+            .map(RecipeMiniDto::from)
+            .collect(Collectors.toMap(RecipeMiniDto::id, Function.identity()));
     }
 
     // --- Helpers ---------------------------------------------------------
