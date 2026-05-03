@@ -35,4 +35,17 @@ public interface HouseholdService {
 
     /** Entfernt ein Mitglied; nur OWNER, nicht sich selbst. */
     void removeMember(UUID userId, UUID householdId, UUID memberId);
+
+    /**
+     * Pruefe stillschweigend, ob der User Mitglied des Haushalts ist. Wirft
+     * keine Exception — fuer Auth-Checks in anderen Komponenten, die selbst
+     * entscheiden, was bei {@code false} passiert.
+     */
+    boolean isMember(UUID userId, UUID householdId);
+
+    /**
+     * Liefert die IDs aller Haushalte, in denen der User Mitglied ist.
+     * Wird z. B. von {@code RecipeService} fuer Sichtbarkeits-Queries genutzt.
+     */
+    List<UUID> listHouseholdIdsForUser(UUID userId);
 }

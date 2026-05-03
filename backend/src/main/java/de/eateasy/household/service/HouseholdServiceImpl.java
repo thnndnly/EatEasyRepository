@@ -60,7 +60,7 @@ public class HouseholdServiceImpl implements HouseholdService {
         // User zeigt.
         authService.getUser(userId);
 
-        String[] tags = validateDietTags(request.defaultDietTags());
+        String[] tags = DietTag.validate(request.defaultDietTags());
         Household household = new Household(request.name().trim(), tags);
         householdRepository.persist(household);
 
@@ -98,7 +98,7 @@ public class HouseholdServiceImpl implements HouseholdService {
             household.setName(request.name().trim());
         }
         if (request.defaultDietTags() != null) {
-            household.setDefaultDietTags(validateDietTags(request.defaultDietTags()));
+            household.setDefaultDietTags(DietTag.validate(request.defaultDietTags()));
         }
 
         return HouseholdDto.from(household, MembershipRole.OWNER);
@@ -193,6 +193,18 @@ public class HouseholdServiceImpl implements HouseholdService {
         membershipRepository.delete(membership);
     }
 
+    @Override
+    public boolean isMember(UUID userId, UUID householdId) {
+        return membershipRepository.existsByUserAndHousehold(userId, householdId);
+    }
+
+    @Override
+    public List<UUID> listHouseholdIdsForUser(UUID userId) {
+        return membershipRepository.findByUser(userId).stream()
+            .map(HouseholdMembership::getHouseholdId)
+            .toList();
+    }
+
     // --- Helpers ---------------------------------------------------------
 
     private HouseholdMembership assertMembership(UUID userId, UUID householdId) {
@@ -210,21 +222,6 @@ public class HouseholdServiceImpl implements HouseholdService {
     private Household loadHousehold(UUID householdId) {
         return householdRepository.findByIdOptional(householdId)
             .orElseThrow(() -> new NotFoundException("Haushalt nicht gefunden: " + householdId));
-    }
-
-    private static String[] validateDietTags(List<String> tags) {
-        if (tags == null || tags.isEmpty()) {
-            return new String[0];
-        }
-        return tags.stream()
-            .map(t -> {
-                if (!DietTag.isValid(t)) {
-                    throw new BadRequestException("Unbekannter Diaet-Tag: " + t);
-                }
-                return t;
-            })
-            .distinct()
-            .toArray(String[]::new);
     }
 
     private String generateToken() {

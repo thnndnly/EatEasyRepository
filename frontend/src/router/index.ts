@@ -30,6 +30,30 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/recipes',
+      name: 'recipes',
+      component: () => import('../views/RecipeListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/recipes/new',
+      name: 'recipe-new',
+      component: () => import('../views/RecipeFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/recipes/:id',
+      name: 'recipe-detail',
+      component: () => import('../views/RecipeDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/recipes/:id/edit',
+      name: 'recipe-edit',
+      component: () => import('../views/RecipeFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/invitations/accept',
       name: 'invitation-accept',
       component: () => import('../views/InvitationAcceptView.vue'),

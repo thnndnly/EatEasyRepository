@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
-import DietTagSelector from '@/components/household/DietTagSelector.vue'
+import DietTagSelector from '@/components/common/DietTagSelector.vue'
 import type { DietTag } from '@/types/dietTags'
 
 const router = useRouter()

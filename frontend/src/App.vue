@@ -3,10 +3,12 @@ import { onBeforeMount, watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
+import { useRecipeStore } from '@/stores/recipeStore'
 import HouseholdSwitcher from '@/components/household/HouseholdSwitcher.vue'
 
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
+const recipeStore = useRecipeStore()
 const router = useRouter()
 
 onBeforeMount(async () => {
@@ -26,6 +28,7 @@ watch(
       void householdStore.load(true)
     } else {
       householdStore.reset()
+      recipeStore.reset()
     }
   },
 )
@@ -33,6 +36,7 @@ watch(
 async function onLogout(): Promise<void> {
   authStore.logout()
   householdStore.reset()
+  recipeStore.reset()
   await router.replace('/login')
 }
 </script>
@@ -59,6 +63,13 @@ async function onLogout(): Promise<void> {
               active-class="text-emerald-700"
             >
               Haushalte
+            </RouterLink>
+            <RouterLink
+              :to="{ name: 'recipes' }"
+              class="text-slate-600 hover:text-emerald-700"
+              active-class="text-emerald-700"
+            >
+              Rezepte
             </RouterLink>
           </nav>
         </div>
