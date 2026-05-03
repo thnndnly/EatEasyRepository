@@ -21,7 +21,8 @@ async function onSubmit(): Promise<void> {
       password: password.value,
       displayName: displayName.value.trim(),
     })
-    await router.replace('/')
+    const redirect = router.currentRoute.value.query.redirect
+    await router.replace(typeof redirect === 'string' ? redirect : '/')
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Registrierung fehlgeschlagen'
   } finally {
@@ -90,7 +91,12 @@ async function onSubmit(): Promise<void> {
 
     <p class="text-center text-sm text-slate-600">
       Bereits ein Konto?
-      <router-link to="/login" class="font-medium text-emerald-700 hover:underline">Login</router-link>
+      <router-link
+        :to="{ name: 'login', query: $route.query }"
+        class="font-medium text-emerald-700 hover:underline"
+      >
+        Login
+      </router-link>
     </p>
   </section>
 </template>

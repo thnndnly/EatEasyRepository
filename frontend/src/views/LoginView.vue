@@ -71,7 +71,12 @@ async function onSubmit(): Promise<void> {
 
     <p class="text-center text-sm text-slate-600">
       Noch kein Konto?
-      <router-link to="/register" class="font-medium text-emerald-700 hover:underline">Registrieren</router-link>
+      <router-link
+        :to="{ name: 'register', query: $route.query }"
+        class="font-medium text-emerald-700 hover:underline"
+      >
+        Registrieren
+      </router-link>
     </p>
   </section>
 </template>

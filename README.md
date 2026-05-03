@@ -152,7 +152,7 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | ----- | ------------------------------ | ------ |
 | 0     | Projekt-Setup                  | done   |
 | 1     | Auth                           | done   |
-| 2     | Haushalt                       | open   |
+| 2     | Haushalt                       | done   |
 | 3     | Zutaten + Rezepte              | open   |
 | 4     | Wochenplan                     | open   |
 | 5     | Vorrat                         | open   |

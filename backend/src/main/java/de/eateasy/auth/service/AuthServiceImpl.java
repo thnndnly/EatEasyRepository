@@ -62,9 +62,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto getCurrentUser(UUID userId) {
+        return getUser(userId);
+    }
+
+    @Override
+    public UserDto getUser(UUID userId) {
         return userRepository.findByIdOptional(userId)
             .map(UserDto::from)
             .orElseThrow(() -> new NotFoundException("User nicht gefunden: " + userId));
+    }
+
+    @Override
+    public UserDto findByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        return userRepository.findByEmail(normalizeEmail(email))
+            .map(UserDto::from)
+            .orElse(null);
     }
 
     private String issueToken(User user) {

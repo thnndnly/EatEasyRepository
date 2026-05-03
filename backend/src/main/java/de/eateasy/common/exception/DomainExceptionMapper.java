@@ -14,8 +14,11 @@ public class DomainExceptionMapper implements ExceptionMapper<DomainException> {
     public Response toResponse(DomainException exception) {
         Response.Status status = switch (exception) {
             case EmailAlreadyExistsException ignored -> Response.Status.CONFLICT;
+            case ConflictException ignored -> Response.Status.CONFLICT;
             case InvalidCredentialsException ignored -> Response.Status.UNAUTHORIZED;
             case NotFoundException ignored -> Response.Status.NOT_FOUND;
+            case ForbiddenException ignored -> Response.Status.FORBIDDEN;
+            case BadRequestException ignored -> Response.Status.BAD_REQUEST;
             default -> Response.Status.BAD_REQUEST;
         };
         return Response.status(status)

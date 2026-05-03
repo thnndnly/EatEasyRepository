@@ -18,6 +18,24 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/households',
+      name: 'households',
+      component: () => import('../views/HouseholdListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/households/:id',
+      name: 'household-detail',
+      component: () => import('../views/HouseholdDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/invitations/accept',
+      name: 'invitation-accept',
+      component: () => import('../views/InvitationAcceptView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

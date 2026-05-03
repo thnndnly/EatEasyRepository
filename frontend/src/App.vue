@@ -1,17 +1,38 @@
 <script setup lang="ts">
-import { onBeforeMount } from 'vue'
+import { onBeforeMount, watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useHouseholdStore } from '@/stores/householdStore'
+import HouseholdSwitcher from '@/components/household/HouseholdSwitcher.vue'
 
 const authStore = useAuthStore()
+const householdStore = useHouseholdStore()
 const router = useRouter()
 
-onBeforeMount(() => {
-  void authStore.restoreSession()
+onBeforeMount(async () => {
+  await authStore.restoreSession()
+  if (authStore.isAuthenticated) {
+    void householdStore.load()
+  }
 })
+
+// Synchronisiert den Haushalts-Store mit dem Auth-Status: Login → laden,
+// Logout → Cache leeren, damit der naechste User keinen veralteten Switcher
+// sieht.
+watch(
+  () => authStore.isAuthenticated,
+  (next) => {
+    if (next) {
+      void householdStore.load(true)
+    } else {
+      householdStore.reset()
+    }
+  },
+)
 
 async function onLogout(): Promise<void> {
   authStore.logout()
+  householdStore.reset()
   await router.replace('/login')
 }
 </script>
@@ -20,12 +41,31 @@ async function onLogout(): Promise<void> {
   <div class="min-h-screen bg-slate-50 text-slate-900">
     <header class="border-b border-slate-200 bg-white">
       <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <RouterLink to="/" class="text-lg font-semibold text-emerald-700">
-          EatEasy EE
-        </RouterLink>
+        <div class="flex items-center gap-6">
+          <RouterLink to="/" class="text-lg font-semibold text-emerald-700">
+            EatEasy EE
+          </RouterLink>
+          <nav v-if="authStore.isAuthenticated" class="flex items-center gap-4 text-sm">
+            <RouterLink
+              :to="{ name: 'home' }"
+              class="text-slate-600 hover:text-emerald-700"
+              active-class="text-emerald-700"
+            >
+              Dashboard
+            </RouterLink>
+            <RouterLink
+              :to="{ name: 'households' }"
+              class="text-slate-600 hover:text-emerald-700"
+              active-class="text-emerald-700"
+            >
+              Haushalte
+            </RouterLink>
+          </nav>
+        </div>
 
         <nav class="flex items-center gap-4 text-sm">
           <template v-if="authStore.isAuthenticated">
+            <HouseholdSwitcher />
             <span class="text-slate-600">
               {{ authStore.user?.displayName }}
             </span>

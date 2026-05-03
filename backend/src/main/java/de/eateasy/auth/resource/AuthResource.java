@@ -5,7 +5,7 @@ import de.eateasy.auth.dto.LoginRequest;
 import de.eateasy.auth.dto.RegisterRequest;
 import de.eateasy.auth.dto.UserDto;
 import de.eateasy.auth.service.AuthService;
-import de.eateasy.common.exception.InvalidCredentialsException;
+import de.eateasy.common.security.CurrentUser;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -16,9 +16,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
-import java.util.UUID;
 
 @Path("/api/v1/auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,11 +23,11 @@ import java.util.UUID;
 public class AuthResource {
 
     private final AuthService authService;
-    private final JsonWebToken jwt;
+    private final CurrentUser currentUser;
 
-    public AuthResource(AuthService authService, JsonWebToken jwt) {
+    public AuthResource(AuthService authService, CurrentUser currentUser) {
         this.authService = authService;
-        this.jwt = jwt;
+        this.currentUser = currentUser;
     }
 
     @POST
@@ -52,15 +49,6 @@ public class AuthResource {
     @Path("/me")
     @RolesAllowed("user")
     public UserDto me() {
-        UUID userId = currentUserId();
-        return authService.getCurrentUser(userId);
-    }
-
-    private UUID currentUserId() {
-        String uid = jwt.getClaim("uid");
-        if (uid == null || uid.isBlank()) {
-            throw new InvalidCredentialsException();
-        }
-        return UUID.fromString(uid);
+        return authService.getCurrentUser(currentUser.id());
     }
 }
