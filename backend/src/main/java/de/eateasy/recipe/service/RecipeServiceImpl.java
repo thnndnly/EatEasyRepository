@@ -12,6 +12,7 @@ import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
 import de.eateasy.recipe.dto.RecipeIngredientDto;
 import de.eateasy.recipe.dto.RecipeIngredientRequest;
+import de.eateasy.recipe.dto.RecipeIngredientView;
 import de.eateasy.recipe.dto.RecipeMiniDto;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
 import de.eateasy.recipe.entity.Recipe;
@@ -140,6 +141,22 @@ public class RecipeServiceImpl implements RecipeService {
         return recipeRepository.findByIds(recipeIds).stream()
             .map(RecipeMiniDto::from)
             .collect(Collectors.toMap(RecipeMiniDto::id, Function.identity()));
+    }
+
+    @Override
+    public Map<UUID, List<RecipeIngredientView>> getIngredientsByRecipeIds(Collection<UUID> recipeIds) {
+        if (recipeIds == null || recipeIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<UUID, List<RecipeIngredientView>> result = new java.util.HashMap<>();
+        for (Recipe recipe : recipeRepository.findByIds(recipeIds)) {
+            List<RecipeIngredientView> rows = new ArrayList<>(recipe.getIngredients().size());
+            for (RecipeIngredient ri : recipe.getIngredients()) {
+                rows.add(new RecipeIngredientView(ri.getIngredientId(), ri.getAmount(), ri.getUnit()));
+            }
+            result.put(recipe.getId(), rows);
+        }
+        return result;
     }
 
     // --- Helpers ---------------------------------------------------------

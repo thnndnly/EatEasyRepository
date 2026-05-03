@@ -1,10 +1,13 @@
 package de.eateasy.pantry.service;
 
+import de.eateasy.common.units.Unit;
 import de.eateasy.pantry.dto.AddPantryItemRequest;
 import de.eateasy.pantry.dto.PantryItemDto;
 import de.eateasy.pantry.dto.UpdatePantryItemRequest;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface PantryService {
@@ -24,4 +27,11 @@ public interface PantryService {
 
     /** Loescht einen Eintrag. */
     void delete(UUID userId, UUID itemId);
+
+    /**
+     * Aggregiertes Inventar: pro Zutat × Unit-Kombination die summierte Menge
+     * im Vorrat. Ohne Auth-Check — wird von der ShoppingList-Pipeline genutzt,
+     * die den Aufruf-Kontext selbst absichert.
+     */
+    Map<UUID, Map<Unit, BigDecimal>> getInventory(UUID householdId);
 }

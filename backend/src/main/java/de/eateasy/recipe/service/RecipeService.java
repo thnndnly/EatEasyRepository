@@ -3,6 +3,7 @@ package de.eateasy.recipe.service;
 import de.eateasy.recipe.dto.RecipeCreateRequest;
 import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
+import de.eateasy.recipe.dto.RecipeIngredientView;
 import de.eateasy.recipe.dto.RecipeMiniDto;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
 
@@ -35,4 +36,11 @@ public interface RecipeService {
      * brauchen. Fehlende IDs tauchen schlicht nicht in der Map auf.
      */
     Map<UUID, RecipeMiniDto> getMinis(Collection<UUID> recipeIds);
+
+    /**
+     * Aggregations-Sicht: liefert pro {@code recipeId} die rohen Zutatenrows
+     * (ingredientId, amount, unit) — ohne Auth-Check, ohne Names. Wird von
+     * Einkaufslisten- und Smart-Suggestion-Pipelines genutzt.
+     */
+    Map<UUID, List<RecipeIngredientView>> getIngredientsByRecipeIds(Collection<UUID> recipeIds);
 }

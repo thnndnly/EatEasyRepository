@@ -68,6 +68,15 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
+    public MealPlanDto getById(UUID userId, UUID mealPlanId) {
+        MealPlan plan = loadPlan(mealPlanId);
+        if (!householdService.isMember(userId, plan.getHouseholdId())) {
+            throw new ForbiddenException("Kein Zugriff auf diesen Wochenplan");
+        }
+        return toDto(plan);
+    }
+
+    @Override
     @Transactional
     public MealPlanEntryDto setEntry(UUID userId, UUID mealPlanId, SetEntryRequest request) {
         MealPlan plan = loadPlan(mealPlanId);

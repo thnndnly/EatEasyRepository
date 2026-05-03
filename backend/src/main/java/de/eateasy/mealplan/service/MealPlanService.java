@@ -21,6 +21,13 @@ public interface MealPlanService {
     /** Liefert den Plan der aktuellen Kalenderwoche; legt ihn lazy an. */
     MealPlanDto getCurrent(UUID userId, UUID householdId);
 
+    /**
+     * Lookup eines Plans per ID inklusive Auth-Check (Mitgliedschaft im
+     * Haushalt des Plans). Wird von Komponenten genutzt, die einen Plan ueber
+     * seine ID kennen — z. B. ShoppingListService.
+     */
+    MealPlanDto getById(UUID userId, UUID mealPlanId);
+
     /** Setzt einen Slot — vorhandener Eintrag wird ersetzt. */
     MealPlanEntryDto setEntry(UUID userId, UUID mealPlanId, SetEntryRequest request);
 

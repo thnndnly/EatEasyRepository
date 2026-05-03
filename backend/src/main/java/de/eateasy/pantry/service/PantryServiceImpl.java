@@ -3,6 +3,7 @@ package de.eateasy.pantry.service;
 import de.eateasy.common.exception.BadRequestException;
 import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.common.exception.NotFoundException;
+import de.eateasy.common.units.Unit;
 import de.eateasy.household.service.HouseholdService;
 import de.eateasy.ingredient.dto.IngredientDto;
 import de.eateasy.ingredient.service.IngredientService;
@@ -14,7 +15,10 @@ import de.eateasy.pantry.repository.PantryItemRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +120,16 @@ public class PantryServiceImpl implements PantryService {
             throw new ForbiddenException("Kein Zugriff auf diesen Vorrats-Eintrag");
         }
         pantryRepository.delete(item);
+    }
+
+    @Override
+    public Map<UUID, Map<Unit, BigDecimal>> getInventory(UUID householdId) {
+        Map<UUID, Map<Unit, BigDecimal>> result = new HashMap<>();
+        for (PantryItem item : pantryRepository.listByHousehold(householdId)) {
+            result.computeIfAbsent(item.getIngredientId(), k -> new EnumMap<>(Unit.class))
+                .merge(item.getUnit(), item.getAmount(), BigDecimal::add);
+        }
+        return result;
     }
 
     // --- Helpers ---------------------------------------------------------

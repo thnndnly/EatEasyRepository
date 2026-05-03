@@ -156,7 +156,7 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | 3     | Zutaten + Rezepte              | done   |
 | 4     | Wochenplan                     | done   |
 | 5     | Vorrat                         | done   |
-| 6     | Einkaufsliste                  | open   |
+| 6     | Einkaufsliste                  | done   |
 | 7     | Externe Rezept-API             | open   |
 | 8     | Barcode-Scan                   | open   |
 | 9     | Smart-Suggestion (Ollama)      | open   |
