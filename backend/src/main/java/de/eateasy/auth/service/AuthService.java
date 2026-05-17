@@ -15,9 +15,6 @@ public interface AuthService {
     /** Prueft Credentials und gibt ein frisches JWT zurueck. */
     AuthResponse login(LoginRequest request);
 
-    /** Liefert den aktuell eingeloggten User anhand seiner ID. */
-    UserDto getCurrentUser(UUID userId);
-
     /**
      * Lookup eines Users per ID. Wird von anderen Komponenten genutzt, die den
      * User nur als Foreign-Key kennen (z. B. Household-Mitglieder). Wirft

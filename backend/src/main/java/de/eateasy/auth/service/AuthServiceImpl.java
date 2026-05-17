@@ -61,11 +61,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto getCurrentUser(UUID userId) {
-        return getUser(userId);
-    }
-
-    @Override
     public UserDto getUser(UUID userId) {
         return userRepository.findByIdOptional(userId)
             .map(UserDto::from)

@@ -49,6 +49,6 @@ public class AuthResource {
     @Path("/me")
     @RolesAllowed("user")
     public UserDto me() {
-        return authService.getCurrentUser(currentUser.id());
+        return authService.getUser(currentUser.id());
     }
 }
