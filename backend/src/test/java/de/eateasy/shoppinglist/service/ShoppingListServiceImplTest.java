@@ -190,6 +190,56 @@ class ShoppingListServiceImplTest {
 
     @Test
     @TestTransaction
+    @DisplayName("Aggregation: TBSP und ML fuer gleiche Zutat fallen auf eine ML-Zeile")
+    void aggregatesTbspWithMl() {
+        // Olivenoel — Rezept A: 2 TBSP (=30 ml), Rezept B: 30 ml → erwartet 60 ml.
+        UUID userId = registerUser("alice@example.com");
+        UUID householdId = householdService.create(userId,
+            new HouseholdCreateRequest("Test", null)).id();
+        RecipeDto a = recipeService.create(userId, new RecipeCreateRequest(
+            "Pasta", null, "Steps", 2, null, null, householdId,
+            List.of(new RecipeIngredientRequest(null, "Olivenoel", new BigDecimal("2"), Unit.TBSP, null))));
+        RecipeDto b = recipeService.create(userId, new RecipeCreateRequest(
+            "Salat", null, "Steps", 2, null, null, householdId,
+            List.of(new RecipeIngredientRequest(null, "Olivenoel", new BigDecimal("30"), Unit.ML, null))));
+        MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
+        mealPlanService.setEntry(userId, plan.id(),
+            new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, a.id(), 2));
+        mealPlanService.setEntry(userId, plan.id(),
+            new SetEntryRequest(DayOfWeek.TUESDAY, MealType.LUNCH, b.id(), 2));
+
+        ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
+
+        assertThat(list.items()).hasSize(1);
+        ShoppingListItemDto item = byName(list, "Olivenoel");
+        assertThat(item.unit()).isEqualTo(Unit.ML);
+        assertThat(item.amount()).isEqualByComparingTo("60.00");
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("Pantry-Diff in TBSP deckt Recipe-Bedarf in ML ab")
+    void pantryTbspCoversMl() {
+        // Recipe braucht 30 ml, Pantry hat 2 TBSP (=30 ml) → keine Liste-Zeile.
+        UUID userId = registerUser("alice@example.com");
+        UUID householdId = householdService.create(userId,
+            new HouseholdCreateRequest("Test", null)).id();
+        RecipeDto recipe = recipeService.create(userId, new RecipeCreateRequest(
+            "Pasta", null, "Steps", 2, null, null, householdId,
+            List.of(new RecipeIngredientRequest(null, "Olivenoel", new BigDecimal("30"), Unit.ML, null))));
+        MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
+        mealPlanService.setEntry(userId, plan.id(),
+            new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 2));
+        pantryService.add(userId, householdId, new AddPantryItemRequest(
+            null, "Olivenoel", new BigDecimal("2"), Unit.TBSP, null));
+
+        ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
+
+        assertThat(list.items()).isEmpty();
+    }
+
+    @Test
+    @TestTransaction
     @DisplayName("Pantry-Diff: was im Vorrat ist, kommt nicht in die Liste (volle Deckung)")
     void pantryFullyCovers() {
         UUID userId = registerUser("alice@example.com");

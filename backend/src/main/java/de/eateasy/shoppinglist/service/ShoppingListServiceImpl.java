@@ -3,6 +3,7 @@ package de.eateasy.shoppinglist.service;
 import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.common.units.Unit;
+import de.eateasy.common.units.UnitConverter;
 import de.eateasy.household.service.HouseholdService;
 import de.eateasy.ingredient.dto.IngredientDto;
 import de.eateasy.ingredient.service.IngredientService;
@@ -171,8 +172,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .divide(BigDecimal.valueOf(mini.servings()), SCALING_PRECISION, RoundingMode.HALF_UP);
             for (RecipeIngredientView ingredient : ingredients) {
                 BigDecimal scaled = ingredient.amount().multiply(scaling);
-                needed.merge(new Key(ingredient.ingredientId(), ingredient.unit()),
-                    scaled, BigDecimal::add);
+                // Normalisieren auf kanonische Einheit, damit gleiche Zutat in
+                // unterschiedlichen Einheiten (z. B. TBSP vs ML) zusammenfaellt.
+                Unit canonicalUnit = UnitConverter.canonical(ingredient.unit());
+                BigDecimal canonicalAmount = UnitConverter.toCanonical(scaled, ingredient.unit());
+                needed.merge(new Key(ingredient.ingredientId(), canonicalUnit),
+                    canonicalAmount, BigDecimal::add);
             }
         }
         return needed;
@@ -188,7 +193,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private Map<Key, BigDecimal> subtractPantry(Map<Key, BigDecimal> needed, UUID householdId) {
-        Map<UUID, Map<Unit, BigDecimal>> inventory = pantryService.getInventory(householdId);
+        Map<UUID, Map<Unit, BigDecimal>> rawInventory = pantryService.getInventory(householdId);
+        // Auch das Inventar in kanonische Einheiten normalisieren — sonst zieht
+        // ein Pantry-Eintrag in TBSP nichts von einer ML-needs-Zeile ab.
+        Map<UUID, Map<Unit, BigDecimal>> inventory = canonicalizeInventory(rawInventory);
 
         Map<Key, BigDecimal> diff = new HashMap<>();
         for (Map.Entry<Key, BigDecimal> entry : needed.entrySet()) {
@@ -200,6 +208,23 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
         }
         return diff;
+    }
+
+    private static Map<UUID, Map<Unit, BigDecimal>> canonicalizeInventory(
+        Map<UUID, Map<Unit, BigDecimal>> raw
+    ) {
+        Map<UUID, Map<Unit, BigDecimal>> result = new HashMap<>(raw.size());
+        for (Map.Entry<UUID, Map<Unit, BigDecimal>> ingredientEntry : raw.entrySet()) {
+            Map<Unit, BigDecimal> normalized = new HashMap<>();
+            for (Map.Entry<Unit, BigDecimal> unitEntry : ingredientEntry.getValue().entrySet()) {
+                Unit canonical = UnitConverter.canonical(unitEntry.getKey());
+                BigDecimal canonicalAmount = UnitConverter.toCanonical(
+                    unitEntry.getValue(), unitEntry.getKey());
+                normalized.merge(canonical, canonicalAmount, BigDecimal::add);
+            }
+            result.put(ingredientEntry.getKey(), normalized);
+        }
+        return result;
     }
 
     // --- Mapping --------------------------------------------------------
