@@ -7,32 +7,52 @@ import { useShoppingListStore } from '@/stores/shoppingListStore'
 import { useToastStore } from '@/stores/toastStore'
 import ShoppingListItem from '@/components/shoppinglist/ShoppingListItem.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
 const mealPlanStore = useMealPlanStore()
 const shoppingListStore = useShoppingListStore()
 const toastStore = useToastStore()
-
-const selected = computed(() => householdStore.selected)
+const confirmDialog = useConfirmDialog()
 
 async function ensureLoaded(): Promise<void> {
   await householdStore.load()
-  if (!selected.value) {
+  if (!householdStore.selected) {
     shoppingListStore.reset()
     return
   }
   // Wir brauchen den aktuellen MealPlan, um darauf die ShoppingList zu generieren.
   const week = mealPlanStore.weekStart || mondayOf(new Date())
-  await mealPlanStore.load(selected.value.id, week)
+  await mealPlanStore.load(householdStore.selected.id, week)
   if (mealPlanStore.plan) {
     await shoppingListStore.load(mealPlanStore.plan.id)
   }
 }
 
 onMounted(ensureLoaded)
-watch(() => selected.value?.id, ensureLoaded)
+watch(() => householdStore.selected?.id, ensureLoaded)
 watch(() => mealPlanStore.weekStart, ensureLoaded)
+
+async function changeWeek(delta: number): Promise<void> {
+  try {
+    await mealPlanStore.gotoWeek(delta)
+    await ensureLoaded()
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Woche wechseln fehlgeschlagen'
+    toastStore.error(message)
+  }
+}
+
+async function gotoToday(): Promise<void> {
+  try {
+    await mealPlanStore.gotoToday()
+    await ensureLoaded()
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Heute laden fehlgeschlagen'
+    toastStore.error(message)
+  }
+}
 
 const totals = computed(() => {
   const items = shoppingListStore.list?.items ?? []
@@ -41,7 +61,10 @@ const totals = computed(() => {
 })
 
 async function onRegenerate(): Promise<void> {
-  if (!confirm('Liste komplett neu berechnen? Abgehakte Eintraege landen im Vorrat und fallen aus der Liste.')) {
+  const ok = await confirmDialog(
+    'Liste komplett neu berechnen? Abgehakte Eintraege landen im Vorrat und fallen aus der Liste.',
+  )
+  if (!ok) {
     return
   }
   await shoppingListStore.regenerate()
@@ -63,25 +86,25 @@ async function onToggle(id: string, checked: boolean): Promise<void> {
       <div>
         <h1 class="text-2xl font-extrabold tracking-tight">🛒 Einkaufsliste</h1>
         <p class="mt-1 text-sm text-ink-500">
-          {{ selected ? selected.name : 'Keinen Haushalt ausgewaehlt' }}
+          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
           <span v-if="mealPlanStore.plan"> · Woche {{ mealPlanStore.weekRangeLabel }}</span>
         </p>
       </div>
 
       <div class="flex items-center gap-2">
-        <button type="button" class="ee-btn-secondary" @click="mealPlanStore.gotoWeek(-7).then(ensureLoaded)">
+        <button type="button" class="ee-btn-secondary" @click="changeWeek(-7)">
           ‹ Vorherige
         </button>
-        <button type="button" class="ee-btn-secondary" @click="mealPlanStore.gotoToday().then(ensureLoaded)">
+        <button type="button" class="ee-btn-secondary" @click="gotoToday">
           Heute
         </button>
-        <button type="button" class="ee-btn-secondary" @click="mealPlanStore.gotoWeek(7).then(ensureLoaded)">
+        <button type="button" class="ee-btn-secondary" @click="changeWeek(7)">
           Naechste ›
         </button>
       </div>
     </div>
 
-    <EmptyState v-if="!selected">
+    <EmptyState v-if="!householdStore.selected">
       Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
         Haushalte oeffnen

@@ -35,8 +35,17 @@ const ingredients = ref<RecipeIngredientFormRow[]>([emptyRow()])
 const submitting = ref(false)
 const error = ref<string | null>(null)
 
+function newRowId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // Fallback fuer aeltere Umgebungen (Vitest-jsdom hat randomUUID seit Node 19).
+  return `row-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
 function emptyRow(): RecipeIngredientFormRow {
   return {
+    id: newRowId(),
     ingredientId: null,
     ingredientName: '',
     amount: 0,
@@ -142,6 +151,7 @@ async function loadForEdit(): Promise<void> {
     dietTags.value = [...recipe.dietTags]
     householdId.value = recipe.householdId ?? ''
     ingredients.value = recipe.ingredients.map((ing) => ({
+      id: newRowId(),
       ingredientId: ing.ingredientId,
       ingredientName: ing.ingredientName,
       amount: Number(ing.amount),
@@ -270,7 +280,7 @@ watch(editId, loadForEdit)
         <div class="space-y-2">
           <RecipeIngredientRow
             v-for="(row, index) in ingredients"
-            :key="index"
+            :key="row.id"
             :model-value="row"
             :removable="ingredients.length > 1"
             @update:model-value="patchRow(index, $event)"

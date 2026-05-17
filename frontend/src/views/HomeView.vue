@@ -79,8 +79,9 @@ function coveragePercent(value: number): string {
 }
 
 onMounted(async () => {
-  await refresh()
-  await householdStore.load()
+  // Health-Check und Haushaltsliste sind unabhaengig — parallel laden
+  // spart eine Round-Trip-Wartezeit beim Dashboard-Mount.
+  await Promise.all([refresh(), householdStore.load()])
 })
 </script>
 

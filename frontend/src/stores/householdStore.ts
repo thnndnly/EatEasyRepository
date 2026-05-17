@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as householdService from '@/services/householdService'
 import { useAuthStore } from '@/stores/authStore'
+import { useRequireToken } from '@/composables/useRequireToken'
 import type {
   HouseholdCreateRequest,
   HouseholdDto,
@@ -25,14 +26,7 @@ export const useHouseholdStore = defineStore('household', () => {
     households.value.find((h) => h.id === selectedId.value) ?? null,
   )
 
-  function requireToken(): string {
-    const authStore = useAuthStore()
-    const token = authStore.token
-    if (!token) {
-      throw new Error('Nicht eingeloggt')
-    }
-    return token
-  }
+  const requireToken = useRequireToken()
 
   function selectHousehold(id: string | null): void {
     selectedId.value = id

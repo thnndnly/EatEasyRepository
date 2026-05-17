@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import type { MemberDto } from '@/types/household'
 
 interface Props {
@@ -10,8 +11,11 @@ interface Props {
 defineProps<Props>()
 const emit = defineEmits<{ remove: [memberId: string] }>()
 
-function onRemove(memberId: string): void {
-  if (confirm('Mitglied wirklich entfernen?')) {
+const confirmDialog = useConfirmDialog()
+
+async function onRemove(memberId: string): Promise<void> {
+  const ok = await confirmDialog('Mitglied wirklich entfernen?')
+  if (ok) {
     emit('remove', memberId)
   }
 }

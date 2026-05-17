@@ -6,11 +6,13 @@ import { useRecipeStore } from '@/stores/recipeStore'
 import { DIET_TAG_LABELS, type DietTag } from '@/types/dietTags'
 import { UNIT_ABBREV } from '@/types/units'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const recipeStore = useRecipeStore()
+const confirmDialog = useConfirmDialog()
 
 const recipeId = computed<string>(() => String(route.params.id))
 const error = ref<string | null>(null)
@@ -30,7 +32,11 @@ async function load(): Promise<void> {
 }
 
 async function onDelete(): Promise<void> {
-  if (!recipe.value || !confirm('Rezept wirklich loeschen?')) {
+  if (!recipe.value) {
+    return
+  }
+  const ok = await confirmDialog('Rezept wirklich loeschen?')
+  if (!ok) {
     return
   }
   try {

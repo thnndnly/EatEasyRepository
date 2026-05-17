@@ -56,12 +56,10 @@ watch(
 )
 
 async function onLogout(): Promise<void> {
+  // Stores werden zentral vom Watcher (oben) zurueckgesetzt, sobald
+  // authStore.isAuthenticated auf false wechselt — eine doppelte
+  // Cleanup-Kette hier wuerde dieselben Aktionen redundant ausloesen.
   authStore.logout()
-  householdStore.reset()
-  recipeStore.reset()
-  mealPlanStore.reset()
-  pantryStore.reset()
-  shoppingListStore.reset()
   await router.replace('/login')
 }
 </script>

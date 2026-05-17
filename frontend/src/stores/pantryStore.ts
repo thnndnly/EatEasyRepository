@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import * as pantryService from '@/services/pantryService'
-import { useAuthStore } from '@/stores/authStore'
+import { useRequireToken } from '@/composables/useRequireToken'
 import type {
   AddPantryItemRequest,
   PantryItemDto,
@@ -14,13 +14,7 @@ export const usePantryStore = defineStore('pantry', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  function requireToken(): string {
-    const authStore = useAuthStore()
-    if (!authStore.token) {
-      throw new Error('Nicht eingeloggt')
-    }
-    return authStore.token
-  }
+  const requireToken = useRequireToken()
 
   async function load(targetHouseholdId: string): Promise<void> {
     householdId.value = targetHouseholdId
@@ -40,31 +34,49 @@ export const usePantryStore = defineStore('pantry', () => {
     if (!householdId.value) {
       throw new Error('Kein Haushalt ausgewaehlt')
     }
-    const created = await pantryService.addPantryItem(
-      requireToken(),
-      householdId.value,
-      request,
-    )
-    // Server kann aggregieren → bei vorhandenem Item ersetzen, sonst anhaengen.
-    const exists = items.value.some((i) => i.id === created.id)
-    items.value = exists
-      ? items.value.map((i) => (i.id === created.id ? created : i))
-      : [...items.value, created]
-    return created
+    error.value = null
+    try {
+      const created = await pantryService.addPantryItem(
+        requireToken(),
+        householdId.value,
+        request,
+      )
+      // Server kann aggregieren → bei vorhandenem Item ersetzen, sonst anhaengen.
+      const exists = items.value.some((i) => i.id === created.id)
+      items.value = exists
+        ? items.value.map((i) => (i.id === created.id ? created : i))
+        : [...items.value, created]
+      return created
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Hinzufuegen fehlgeschlagen'
+      throw err
+    }
   }
 
   async function updateItem(
     id: string,
     request: UpdatePantryItemRequest,
   ): Promise<PantryItemDto> {
-    const updated = await pantryService.updatePantryItem(requireToken(), id, request)
-    items.value = items.value.map((i) => (i.id === id ? updated : i))
-    return updated
+    error.value = null
+    try {
+      const updated = await pantryService.updatePantryItem(requireToken(), id, request)
+      items.value = items.value.map((i) => (i.id === id ? updated : i))
+      return updated
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+      throw err
+    }
   }
 
   async function removeItem(id: string): Promise<void> {
-    await pantryService.deletePantryItem(requireToken(), id)
-    items.value = items.value.filter((i) => i.id !== id)
+    error.value = null
+    try {
+      await pantryService.deletePantryItem(requireToken(), id)
+      items.value = items.value.filter((i) => i.id !== id)
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+      throw err
+    }
   }
 
   function reset(): void {

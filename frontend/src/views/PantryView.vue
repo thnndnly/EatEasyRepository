@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
+import { defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { usePantryStore } from '@/stores/pantryStore'
@@ -20,20 +20,19 @@ const householdStore = useHouseholdStore()
 const pantryStore = usePantryStore()
 const toastStore = useToastStore()
 
-const selected = computed(() => householdStore.selected)
 const scannerOpen = ref(false)
 
 async function ensureLoaded(): Promise<void> {
   await householdStore.load()
-  if (selected.value) {
-    await pantryStore.load(selected.value.id)
+  if (householdStore.selected) {
+    await pantryStore.load(householdStore.selected.id)
   } else {
     pantryStore.reset()
   }
 }
 
 onMounted(ensureLoaded)
-watch(() => selected.value?.id, ensureLoaded)
+watch(() => householdStore.selected?.id, ensureLoaded)
 
 async function onAdd(payload: {
   ingredientId: string | null
@@ -42,6 +41,9 @@ async function onAdd(payload: {
   unit: 'GRAM' | 'ML' | 'PIECE' | 'TBSP' | 'TSP'
   bestBefore: string | null
 }): Promise<void> {
+  // Fehler werden im Store ge-cached und via pantryStore.error im Template
+  // angezeigt — wir muessen sie hier nur abfangen, damit die Promise nicht
+  // floated.
   try {
     await pantryStore.addItem({
       ingredientId: payload.ingredientId,
@@ -50,8 +52,8 @@ async function onAdd(payload: {
       unit: payload.unit,
       bestBefore: payload.bestBefore,
     })
-  } catch (err: unknown) {
-    pantryStore.error = err instanceof Error ? err.message : 'Hinzufuegen fehlgeschlagen'
+  } catch {
+    // bewusst geschluckt — pantryStore.error ist gesetzt.
   }
 }
 
@@ -65,16 +67,16 @@ async function onSave(update: {
       amount: update.amount,
       bestBefore: update.bestBefore,
     })
-  } catch (err: unknown) {
-    pantryStore.error = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+  } catch {
+    // bewusst geschluckt — pantryStore.error ist gesetzt.
   }
 }
 
 async function onRemove(id: string): Promise<void> {
   try {
     await pantryStore.removeItem(id)
-  } catch (err: unknown) {
-    pantryStore.error = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+  } catch {
+    // bewusst geschluckt — pantryStore.error ist gesetzt.
   }
 }
 
@@ -90,23 +92,23 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
       <div>
         <h1 class="text-2xl font-extrabold tracking-tight">🧺 Vorrat</h1>
         <p class="mt-1 text-sm text-ink-500">
-          {{ selected ? selected.name : 'Keinen Haushalt ausgewaehlt' }}
+          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
         </p>
       </div>
-      <button v-if="selected" type="button" class="ee-btn-secondary" @click="scannerOpen = true">
+      <button v-if="householdStore.selected" type="button" class="ee-btn-secondary" @click="scannerOpen = true">
         📷 Barcode scannen
       </button>
     </div>
 
     <BarcodeScanner
-      v-if="selected"
+      v-if="householdStore.selected"
       :open="scannerOpen"
-      :household-id="selected.id"
+      :household-id="householdStore.selected.id"
       @close="scannerOpen = false"
       @added="onBarcodeAdded"
     />
 
-    <EmptyState v-if="!selected">
+    <EmptyState v-if="!householdStore.selected">
       Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
         Haushalte oeffnen

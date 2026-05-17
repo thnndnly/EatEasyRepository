@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { UNIT_ABBREV } from '@/types/units'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import type { PantryItemDto } from '@/types/pantry'
 
 interface Props {
@@ -14,6 +15,8 @@ const emit = defineEmits<{
   ]
   remove: [id: string]
 }>()
+
+const confirmDialog = useConfirmDialog()
 
 const editing = ref(false)
 const draftAmount = ref<number>(props.item.amount)
@@ -104,8 +107,9 @@ function save(): void {
   editing.value = false
 }
 
-function onRemove(): void {
-  if (confirm('Eintrag wirklich loeschen?')) {
+async function onRemove(): Promise<void> {
+  const ok = await confirmDialog('Eintrag wirklich loeschen?')
+  if (ok) {
     emit('remove', props.item.id)
   }
 }
