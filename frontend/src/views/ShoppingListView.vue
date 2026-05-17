@@ -4,12 +4,14 @@ import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { useMealPlanStore, mondayOf } from '@/stores/mealPlanStore'
 import { useShoppingListStore } from '@/stores/shoppingListStore'
+import { useToastStore } from '@/stores/toastStore'
 import ShoppingListItem from '@/components/shoppinglist/ShoppingListItem.vue'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
 const mealPlanStore = useMealPlanStore()
 const shoppingListStore = useShoppingListStore()
+const toastStore = useToastStore()
 
 const selected = computed(() => householdStore.selected)
 
@@ -38,14 +40,19 @@ const totals = computed(() => {
 })
 
 async function onRegenerate(): Promise<void> {
-  if (!confirm('Liste komplett neu berechnen? Abgehakte Eintraege bleiben erhalten.')) {
+  if (!confirm('Liste komplett neu berechnen? Abgehakte Eintraege landen im Vorrat und fallen aus der Liste.')) {
     return
   }
   await shoppingListStore.regenerate()
+  toastStore.info('Einkaufsliste neu berechnet')
 }
 
 async function onToggle(id: string, checked: boolean): Promise<void> {
+  const item = shoppingListStore.list?.items.find((i) => i.id === id)
   await shoppingListStore.toggle(id, checked)
+  if (checked && item) {
+    toastStore.success(`"${item.ingredientName}" in den Vorrat uebernommen`)
+  }
 }
 </script>
 

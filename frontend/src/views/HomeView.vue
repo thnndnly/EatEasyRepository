@@ -5,6 +5,7 @@ import { fetchHealth } from '@/services/healthService'
 import { fetchSuggestions } from '@/services/suggestionService'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
+import { useToastStore } from '@/stores/toastStore'
 import { DIET_TAG_LABELS, type DietTag } from '@/types/dietTags'
 import type { SuggestionDto } from '@/types/suggestion'
 import AddToMealPlanDialog from '@/components/suggestion/AddToMealPlanDialog.vue'
@@ -12,6 +13,7 @@ import AddToMealPlanDialog from '@/components/suggestion/AddToMealPlanDialog.vue
 const router = useRouter()
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
+const toastStore = useToastStore()
 
 const status = ref<'loading' | 'ok' | 'error'>('loading')
 const detail = ref<string>('Pruefe Backend ...')
@@ -21,7 +23,6 @@ const suggestLoading = ref(false)
 const suggestError = ref<string | null>(null)
 const suggestRequested = ref(false)
 const planTarget = ref<SuggestionDto | null>(null)
-const planFeedback = ref<string | null>(null)
 
 const selected = computed(() => householdStore.selected)
 
@@ -64,12 +65,11 @@ function openRecipe(id: string): void {
 
 function startPlanAdd(suggestion: SuggestionDto): void {
   planTarget.value = suggestion
-  planFeedback.value = null
 }
 
 function onPlanSaved(): void {
   if (planTarget.value) {
-    planFeedback.value = `"${planTarget.value.recipe.title}" wurde in den Wochenplan uebernommen.`
+    toastStore.success(`"${planTarget.value.recipe.title}" in den Wochenplan uebernommen`)
   }
   planTarget.value = null
 }
@@ -126,13 +126,6 @@ onMounted(async () => {
         class="mt-3 rounded border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500"
       >
         Keine passenden Rezepte gefunden. Mehr Vorrat anlegen oder Rezepte hinzufuegen.
-      </p>
-
-      <p
-        v-if="planFeedback"
-        class="mt-3 rounded border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
-      >
-        {{ planFeedback }}
       </p>
 
       <ul v-if="suggestions.length > 0" class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

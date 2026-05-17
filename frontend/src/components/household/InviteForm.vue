@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { inviteMember } from '@/services/householdService'
 import { useAuthStore } from '@/stores/authStore'
+import { useToastStore } from '@/stores/toastStore'
 import type { InvitationDto } from '@/types/household'
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const authStore = useAuthStore()
+const toastStore = useToastStore()
 
 const email = ref('')
 const submitting = ref(false)
@@ -28,6 +30,7 @@ async function onSubmit(): Promise<void> {
     lastInvitation.value = await inviteMember(authStore.token, props.householdId, {
       email: email.value.trim(),
     })
+    toastStore.success(`Einladung an ${lastInvitation.value.email} verschickt`)
     email.value = ''
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Einladung fehlgeschlagen'

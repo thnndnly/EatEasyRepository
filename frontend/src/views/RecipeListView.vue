@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecipeStore } from '@/stores/recipeStore'
 import { useHouseholdStore } from '@/stores/householdStore'
+import { useToastStore } from '@/stores/toastStore'
 import RecipeCard from '@/components/recipe/RecipeCard.vue'
 import DietTagSelector from '@/components/common/DietTagSelector.vue'
 import ExternalRecipeSearch from '@/components/recipe/ExternalRecipeSearch.vue'
@@ -12,6 +13,7 @@ import type { RecipeDto } from '@/types/recipe'
 const router = useRouter()
 const recipeStore = useRecipeStore()
 const householdStore = useHouseholdStore()
+const toastStore = useToastStore()
 
 const query = ref('')
 const tags = ref<DietTag[]>([])
@@ -20,6 +22,7 @@ const importOpen = ref(false)
 
 async function onImported(recipe: RecipeDto): Promise<void> {
   importOpen.value = false
+  toastStore.success(`"${recipe.title}" importiert`)
   await router.push({ name: 'recipe-detail', params: { id: recipe.id } })
 }
 

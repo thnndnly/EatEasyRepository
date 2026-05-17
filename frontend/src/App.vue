@@ -8,6 +8,7 @@ import { useMealPlanStore } from '@/stores/mealPlanStore'
 import { usePantryStore } from '@/stores/pantryStore'
 import { useShoppingListStore } from '@/stores/shoppingListStore'
 import HouseholdSwitcher from '@/components/household/HouseholdSwitcher.vue'
+import ToastContainer from '@/components/common/ToastContainer.vue'
 
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
@@ -134,6 +135,8 @@ async function onLogout(): Promise<void> {
     <main class="mx-auto max-w-5xl px-6 py-10">
       <RouterView />
     </main>
+
+    <ToastContainer />
 
     <footer
       v-if="isDev"

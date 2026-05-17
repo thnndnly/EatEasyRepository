@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { usePantryStore } from '@/stores/pantryStore'
+import { useToastStore } from '@/stores/toastStore'
 import AddPantryItemForm from '@/components/pantry/AddPantryItemForm.vue'
 import PantryRow from '@/components/pantry/PantryRow.vue'
 
@@ -16,6 +17,7 @@ const BarcodeScanner = defineAsyncComponent(
 const router = useRouter()
 const householdStore = useHouseholdStore()
 const pantryStore = usePantryStore()
+const toastStore = useToastStore()
 
 const selected = computed(() => householdStore.selected)
 const scannerOpen = ref(false)
@@ -74,6 +76,11 @@ async function onRemove(id: string): Promise<void> {
     pantryStore.error = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
   }
 }
+
+function onBarcodeAdded(item: { ingredientName: string }): void {
+  scannerOpen.value = false
+  toastStore.success(`"${item.ingredientName}" in den Vorrat uebernommen`)
+}
 </script>
 
 <template>
@@ -99,7 +106,7 @@ async function onRemove(id: string): Promise<void> {
       v-if="scannerOpen && selected"
       :household-id="selected.id"
       @close="scannerOpen = false"
-      @added="scannerOpen = false"
+      @added="onBarcodeAdded"
     />
 
     <p
