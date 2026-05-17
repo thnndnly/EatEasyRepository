@@ -109,7 +109,7 @@ onMounted(async () => {
         </div>
         <button
           type="button"
-          class="ee-btn-primary"
+          class="ee-btn-primary ee-btn-lg"
           :disabled="!selected || suggestLoading"
           @click="onSuggest"
         >
