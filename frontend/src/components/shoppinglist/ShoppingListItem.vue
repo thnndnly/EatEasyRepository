@@ -12,22 +12,22 @@ const emit = defineEmits<{ toggle: [id: string, checked: boolean] }>()
 
 <template>
   <li
-    class="flex items-center gap-3 px-4 py-3"
-    :class="item.checked ? 'bg-slate-50 text-slate-400' : 'text-slate-800'"
+    class="flex items-center gap-3 px-5 py-3 transition-colors"
+    :class="item.checked ? 'bg-mint-50 text-ink-400' : 'text-ink-900 hover:bg-cream-50'"
   >
     <input
       type="checkbox"
       :checked="item.checked"
-      class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+      class="h-5 w-5 cursor-pointer rounded-md accent-peach-500"
       @change="emit('toggle', item.id, ($event.target as HTMLInputElement).checked)"
     />
     <span
-      class="flex-1 text-sm"
+      class="flex-1 text-sm font-medium"
       :class="{ 'line-through': item.checked }"
     >
       {{ item.ingredientName }}
     </span>
-    <span class="text-sm tabular-nums">
+    <span class="text-sm font-semibold tabular-nums text-ink-700" :class="{ 'text-ink-400': item.checked }">
       {{ item.amount }} {{ UNIT_ABBREV[item.unit] }}
     </span>
   </li>

@@ -41,42 +41,42 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <div class="space-y-4 rounded-lg border border-slate-200 bg-white p-5">
+  <div class="space-y-4 rounded-lg border border-cream-200 bg-white p-5">
     <div>
-      <h3 class="text-base font-semibold text-slate-800">Mitglied einladen</h3>
-      <p class="text-sm text-slate-500">
+      <h3 class="text-base font-semibold text-ink-900">Mitglied einladen</h3>
+      <p class="text-sm text-ink-500">
         Token-Link wird per E-Mail an die angegebene Adresse verschickt.
       </p>
     </div>
 
     <form class="flex flex-col gap-3 sm:flex-row sm:items-end" @submit.prevent="onSubmit">
       <div class="flex-1 space-y-1">
-        <label for="invite-email" class="block text-sm font-medium text-slate-700">Email</label>
+        <label for="invite-email" class="block text-sm font-medium text-ink-700">Email</label>
         <input
           id="invite-email"
           v-model="email"
           type="email"
           autocomplete="off"
           required
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
         />
       </div>
       <button
         type="submit"
         :disabled="submitting"
-        class="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+        class="rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {{ submitting ? 'Sende ...' : 'Einladen' }}
       </button>
     </form>
 
-    <p v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
       {{ error }}
     </p>
 
     <p
       v-if="lastInvitation"
-      class="rounded border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
+      class="rounded border border-peach-200 bg-peach-50 px-4 py-3 text-sm text-peach-700"
     >
       Einladungsmail an <strong>{{ lastInvitation.email }}</strong> verschickt.
       Sie ist 7 Tage gueltig.

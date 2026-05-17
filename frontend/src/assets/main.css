@@ -1,7 +1,66 @@
 @import 'tailwindcss';
 
+/* Plus Jakarta Sans — warm, modern, freundlich. Subset auf Latin. */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/*
+ * EatEasy-Theme — Pastel-Palette mit Food-Touch. Tailwind v4 nimmt diesen
+ * @theme-Block beim Build und generiert daraus die `bg-peach-*`, `text-mint-*`
+ * usw. Klassen. Hex-Werte: hier ist die einzige Stelle, um die Marke
+ * anzupassen.
+ */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Brand: warmes Korallen-Pfirsich als Primary. Drei Stufen reichen praktisch. */
+  --color-peach-50: #fff4f0;
+  --color-peach-100: #ffe0d6;
+  --color-peach-200: #ffc9b8;
+  --color-peach-300: #ffb5a7;
+  --color-peach-400: #ff9a85;
+  --color-peach-500: #f57e63;
+  --color-peach-600: #d96041;
+  --color-peach-700: #b04931;
+
+  /* Secondary: mint — "frisch, gesund". */
+  --color-mint-50: #f0fbf6;
+  --color-mint-100: #d5f4e6;
+  --color-mint-200: #b5ead7;
+  --color-mint-300: #88dab8;
+  --color-mint-500: #4cb38a;
+  --color-mint-700: #2e7a5c;
+
+  /* Accent: butter — fuer Hervorhebungen, Badges. */
+  --color-butter-100: #fff4d6;
+  --color-butter-200: #ffe5b4;
+  --color-butter-300: #ffd47a;
+  --color-butter-700: #8a6d1f;
+
+  /* Info: lavender — neutrale Hinweise. */
+  --color-lavender-100: #ecedf9;
+  --color-lavender-200: #c7ceea;
+  --color-lavender-700: #4a5298;
+
+  /* Error: warmes Rose statt knalliges Rot. */
+  --color-rose-100: #ffe2e2;
+  --color-rose-200: #ffadad;
+  --color-rose-700: #b04141;
+
+  /* Neutrals: warmer Cream-Background + warmes Anthrazit-Text. */
+  --color-cream-50: #fffaf5;
+  --color-cream-100: #fff8f3;
+  --color-cream-200: #f6ece1;
+  --color-cream-300: #ede0d0;
+
+  --color-ink-900: #2d2a32;
+  --color-ink-700: #524b56;
+  --color-ink-500: #7a7681;
+  --color-ink-400: #9c98a3;
+  --color-ink-300: #c6c2cb;
+  --color-ink-100: #ebe8ed;
+}
+
 :root {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light;
 }
 
@@ -10,4 +69,162 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--color-ink-900);
+  background: linear-gradient(180deg, #fff8f3 0%, #fff4ec 40%, #fdebe2 100%);
+  background-attachment: fixed;
+}
+
+/*
+ * Globale Form-Elemente — damit wir nicht ueberall Klassen wiederholen.
+ * Konkrete Components koennen mit eigenen Klassen ueberschreiben.
+ */
+@layer base {
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='date'],
+  textarea,
+  select {
+    border-radius: 0.75rem; /* rounded-xl */
+    border: 1px solid var(--color-cream-300);
+    background: white;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-900);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-peach-400);
+    box-shadow: 0 0 0 3px var(--color-peach-100);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-ink-400);
+  }
+  label {
+    color: var(--color-ink-700);
+  }
+}
+
+/*
+ * Reusable Komponenten-Klassen. Verwendung statt langer Tailwind-Strings
+ * in Vue-Templates — zentral aenderbar.
+ */
+/*
+ * Reusable Komponenten-Klassen. In Tailwind v4 koennen Custom-Utilities nicht
+ * via @apply auf andere Custom-Utilities verweisen — daher schreiben wir die
+ * gemeinsamen Buttons-Properties als CSS und mappen Tailwind-Tokens via var().
+ */
+@layer components {
+  .ee-card {
+    background: white;
+    border: 1px solid var(--color-cream-200);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 2px 14px rgba(45, 42, 50, 0.05);
+  }
+  .ee-card-flat {
+    background: white;
+    border: 1px solid var(--color-cream-200);
+    border-radius: 1rem;
+  }
+
+  .ee-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: 1px solid transparent;
+  }
+  .ee-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .ee-btn-primary {
+    color: white;
+    background: linear-gradient(135deg, var(--color-peach-400) 0%, var(--color-peach-500) 100%);
+    box-shadow: 0 1px 4px rgba(245, 126, 99, 0.25);
+  }
+  .ee-btn-primary:hover:not(:disabled) {
+    box-shadow: 0 6px 16px -4px rgba(245, 126, 99, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .ee-btn-secondary {
+    background: white;
+    color: var(--color-ink-700);
+    border-color: var(--color-cream-300);
+  }
+  .ee-btn-secondary:hover:not(:disabled) {
+    background: var(--color-cream-50);
+    border-color: var(--color-cream-300);
+  }
+
+  .ee-btn-ghost {
+    background: transparent;
+    color: var(--color-ink-700);
+  }
+  .ee-btn-ghost:hover:not(:disabled) {
+    background: var(--color-cream-200);
+  }
+
+  .ee-btn-danger {
+    background: white;
+    color: var(--color-rose-700);
+    border-color: var(--color-rose-200);
+  }
+  .ee-btn-danger:hover:not(:disabled) {
+    background: var(--color-rose-100);
+  }
+
+  .ee-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .ee-chip-mint {
+    background: var(--color-mint-100);
+    color: var(--color-mint-700);
+  }
+  .ee-chip-butter {
+    background: var(--color-butter-100);
+    color: var(--color-butter-700);
+  }
+  .ee-chip-lavender {
+    background: var(--color-lavender-100);
+    color: var(--color-lavender-700);
+  }
+  .ee-chip-rose {
+    background: var(--color-rose-100);
+    color: var(--color-rose-700);
+  }
+  .ee-chip-neutral {
+    background: var(--color-cream-200);
+    color: var(--color-ink-700);
+  }
+
+  .ee-link {
+    color: var(--color-peach-600);
+    font-weight: 500;
+    transition: color 150ms ease;
+  }
+  .ee-link:hover {
+    color: var(--color-peach-700);
+  }
 }

@@ -4,15 +4,21 @@ import { useToastStore } from '@/stores/toastStore'
 const toastStore = useToastStore()
 
 const STYLES = {
-  success: 'border-emerald-300 bg-emerald-50 text-emerald-900',
-  error: 'border-red-300 bg-red-50 text-red-900',
-  info: 'border-slate-300 bg-white text-slate-800',
+  success: 'border-mint-200 bg-mint-50 text-mint-700',
+  error: 'border-rose-200 bg-rose-100 text-rose-700',
+  info: 'border-lavender-200 bg-lavender-100 text-lavender-700',
 } as const
 
 const ICONS = {
   success: '✓',
   error: '✕',
   info: 'i',
+} as const
+
+const ICON_BG = {
+  success: 'bg-mint-200 text-mint-700',
+  error: 'bg-rose-200 text-rose-700',
+  info: 'bg-lavender-200 text-lavender-700',
 } as const
 </script>
 
@@ -26,24 +32,20 @@ const ICONS = {
       <div
         v-for="toast in toastStore.toasts"
         :key="toast.id"
-        class="pointer-events-auto flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-md"
+        class="pointer-events-auto flex max-w-sm items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-[0_8px_24px_-8px_rgba(45,42,50,0.18)] backdrop-blur"
         :class="STYLES[toast.level]"
         role="status"
       >
         <span
-          class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
-          :class="{
-            'bg-emerald-200 text-emerald-800': toast.level === 'success',
-            'bg-red-200 text-red-800': toast.level === 'error',
-            'bg-slate-200 text-slate-700': toast.level === 'info',
-          }"
+          class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
+          :class="ICON_BG[toast.level]"
         >
           {{ ICONS[toast.level] }}
         </span>
-        <span class="flex-1 leading-snug">{{ toast.message }}</span>
+        <span class="flex-1 font-medium leading-snug">{{ toast.message }}</span>
         <button
           type="button"
-          class="text-slate-400 hover:text-slate-700"
+          class="text-ink-400 transition-colors hover:text-ink-700"
           aria-label="Schliessen"
           @click="toastStore.dismiss(toast.id)"
         >
@@ -58,10 +60,10 @@ const ICONS = {
 .toast-enter-from,
 .toast-leave-to {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translateY(8px);
 }
 .toast-enter-active,
 .toast-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 </style>

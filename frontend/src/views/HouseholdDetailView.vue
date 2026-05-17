@@ -105,63 +105,63 @@ function back(): void {
   <section class="space-y-6">
     <button
       type="button"
-      class="text-sm font-medium text-emerald-700 hover:underline"
+      class="text-sm font-medium text-peach-600 hover:underline"
       @click="back"
     >
       &larr; Zurueck zur Liste
     </button>
 
-    <p v-if="loadError" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <p v-if="loadError" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
       {{ loadError }}
     </p>
 
     <template v-if="household">
       <header>
         <h1 class="text-2xl font-semibold">{{ household.name }}</h1>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-ink-500">
           Rolle: {{ household.role === 'OWNER' ? 'Owner' : 'Mitglied' }}
         </p>
       </header>
 
       <form
         v-if="isOwner"
-        class="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+        class="space-y-4 rounded-lg border border-cream-200 bg-white p-5 shadow-sm"
         @submit.prevent="onSave"
       >
-        <h2 class="text-base font-semibold text-slate-800">Stammdaten</h2>
+        <h2 class="text-base font-semibold text-ink-900">Stammdaten</h2>
 
         <div class="space-y-1">
-          <label for="hh-edit-name" class="block text-sm font-medium text-slate-700">Name</label>
+          <label for="hh-edit-name" class="block text-sm font-medium text-ink-700">Name</label>
           <input
             id="hh-edit-name"
             v-model="editName"
             type="text"
             required
             maxlength="100"
-            class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
           />
         </div>
 
         <div class="space-y-2">
-          <span class="block text-sm font-medium text-slate-700">Standard-Diaeten</span>
+          <span class="block text-sm font-medium text-ink-700">Standard-Diaeten</span>
           <DietTagSelector v-model="editTags" />
         </div>
 
-        <p v-if="saveError" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p v-if="saveError" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
           {{ saveError }}
         </p>
 
         <button
           type="submit"
           :disabled="saving"
-          class="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+          class="rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {{ saving ? 'Speichere ...' : 'Speichern' }}
         </button>
       </form>
 
       <section class="space-y-3">
-        <h2 class="text-base font-semibold text-slate-800">Mitglieder</h2>
+        <h2 class="text-base font-semibold text-ink-900">Mitglieder</h2>
         <MemberList
           :members="members"
           :can-manage="isOwner"
@@ -175,6 +175,6 @@ function back(): void {
       </section>
     </template>
 
-    <p v-else-if="!loadError" class="text-slate-500">Lade ...</p>
+    <p v-else-if="!loadError" class="text-ink-500">Lade ...</p>
   </section>
 </template>

@@ -59,25 +59,17 @@ const recipes = computed(() => recipeStore.recipes)
 
 <template>
   <section class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-semibold">Rezepte</h1>
-        <p class="mt-1 text-slate-600">Eigene und Haushalts-Rezepte mit Filter.</p>
+        <h1 class="text-2xl font-extrabold tracking-tight">Rezepte</h1>
+        <p class="mt-1 text-sm text-ink-500">Eigene und Haushalts-Rezepte mit Filter.</p>
       </div>
       <div class="flex gap-2">
-        <button
-          type="button"
-          class="rounded border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          @click="importOpen = true"
-        >
-          Aus Quelle importieren
+        <button type="button" class="ee-btn-secondary" @click="importOpen = true">
+          📥 Aus Quelle importieren
         </button>
-        <button
-          type="button"
-          class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-          @click="router.push({ name: 'recipe-new' })"
-        >
-          Neues Rezept
+        <button type="button" class="ee-btn-primary" @click="router.push({ name: 'recipe-new' })">
+          + Neues Rezept
         </button>
       </div>
     </div>
@@ -88,32 +80,28 @@ const recipes = computed(() => recipeStore.recipes)
       @imported="onImported"
     />
 
-    <div class="grid gap-4 lg:grid-cols-[220px_1fr]">
-      <aside class="space-y-5 rounded-lg border border-slate-200 bg-white p-4">
+    <div class="grid gap-5 lg:grid-cols-[240px_1fr]">
+      <aside class="ee-card space-y-5">
         <div class="space-y-1">
-          <label for="recipe-q" class="block text-sm font-medium text-slate-700">Suche</label>
+          <label for="recipe-q" class="block text-sm font-medium">Suche</label>
           <input
             id="recipe-q"
             v-model="query"
             type="text"
             placeholder="Titel ..."
-            class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+            class="w-full"
             @input="onQueryInput"
           />
         </div>
 
         <div class="space-y-2">
-          <span class="block text-sm font-medium text-slate-700">Diaet-Tags</span>
+          <span class="block text-sm font-medium">Diaet-Tags</span>
           <DietTagSelector v-model="tags" />
         </div>
 
         <div v-if="householdStore.households.length > 0" class="space-y-1">
-          <label for="recipe-hh" class="block text-sm font-medium text-slate-700">Haushalt</label>
-          <select
-            id="recipe-hh"
-            v-model="householdFilter"
-            class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
-          >
+          <label for="recipe-hh" class="block text-sm font-medium">Haushalt</label>
+          <select id="recipe-hh" v-model="householdFilter" class="w-full">
             <option value="">Alle</option>
             <option
               v-for="household in householdStore.households"
@@ -127,11 +115,11 @@ const recipes = computed(() => recipeStore.recipes)
       </aside>
 
       <div class="space-y-4">
-        <p v-if="recipeStore.error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p v-if="recipeStore.error" class="rounded-2xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700">
           {{ recipeStore.error }}
         </p>
 
-        <p v-if="recipeStore.loading" class="text-slate-500">Lade Rezepte ...</p>
+        <p v-if="recipeStore.loading" class="text-ink-500">Lade Rezepte ...</p>
 
         <ul v-else-if="recipes.length > 0" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <li
@@ -143,8 +131,11 @@ const recipes = computed(() => recipeStore.recipes)
           </li>
         </ul>
 
-        <p v-else class="rounded border border-dashed border-slate-300 bg-white p-6 text-center text-slate-500">
-          Keine Rezepte gefunden. Lege ein neues an.
+        <p
+          v-else
+          class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
+        >
+          Noch keine Rezepte. Lege eins an oder importiere aus TheMealDB.
         </p>
       </div>
     </div>

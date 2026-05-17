@@ -34,8 +34,8 @@ function toggle(tag: DietTag): void {
       class="inline-flex cursor-pointer items-center gap-2 rounded border px-3 py-1.5 text-sm"
       :class="
         selected.has(tag)
-          ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
-          : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400'
+          ? 'border-peach-400 bg-peach-50 text-peach-700'
+          : 'border-cream-300 bg-white text-ink-500 hover:border-slate-400'
       "
     >
       <input

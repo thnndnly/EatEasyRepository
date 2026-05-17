@@ -47,10 +47,10 @@ function onSubmit(): void {
 
 <template>
   <form
-    class="space-y-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+    class="space-y-3 rounded-lg border border-cream-200 bg-white p-5 shadow-sm"
     @submit.prevent="onSubmit"
   >
-    <h2 class="text-base font-semibold text-slate-800">Eintrag hinzufuegen</h2>
+    <h2 class="text-base font-semibold text-ink-900">Eintrag hinzufuegen</h2>
 
     <div class="grid grid-cols-12 gap-2">
       <div class="col-span-5">
@@ -64,13 +64,13 @@ function onSubmit(): void {
           min="0.01"
           placeholder="Menge"
           required
-          class="w-full rounded border border-slate-300 px-2 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-2 py-2 focus:border-peach-400 focus:outline-none"
         />
       </div>
       <div class="col-span-2">
         <select
           v-model="unit"
-          class="w-full rounded border border-slate-300 px-2 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-2 py-2 focus:border-peach-400 focus:outline-none"
         >
           <option v-for="u in UNITS" :key="u" :value="u">{{ UNIT_ABBREV[u] }}</option>
         </select>
@@ -80,18 +80,18 @@ function onSubmit(): void {
           v-model="bestBefore"
           type="date"
           placeholder="MHD"
-          class="w-full rounded border border-slate-300 px-2 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-2 py-2 focus:border-peach-400 focus:outline-none"
         />
       </div>
     </div>
 
-    <p v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
       {{ error }}
     </p>
 
     <button
       type="submit"
-      class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+      class="rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500"
     >
       Hinzufuegen
     </button>

@@ -13,11 +13,11 @@ function onChange(event: Event): void {
   <select
     v-if="store.households.length > 0"
     :value="store.selectedId ?? ''"
-    class="rounded border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none"
+    class="!rounded-full !border-cream-300 !bg-white !px-3 !py-1.5 text-sm font-medium"
     @change="onChange"
   >
     <option v-for="household in store.households" :key="household.id" :value="household.id">
-      {{ household.name }}
+      🏠 {{ household.name }}
     </option>
   </select>
 </template>

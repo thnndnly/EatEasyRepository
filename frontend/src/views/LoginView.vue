@@ -27,24 +27,31 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <section class="mx-auto max-w-md space-y-6">
-    <h1 class="text-2xl font-semibold">Login</h1>
+  <section class="mx-auto max-w-md space-y-6 py-6">
+    <div class="text-center">
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl text-3xl shadow-md"
+        style="background: linear-gradient(135deg, #ffb5a7 0%, #ffd47a 100%)">
+        🍅
+      </div>
+      <h1 class="mt-4 text-2xl font-extrabold tracking-tight">Willkommen zurueck</h1>
+      <p class="mt-1 text-sm text-ink-500">Logge dich in dein EatEasy-Konto ein.</p>
+    </div>
 
-    <form class="space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm" @submit.prevent="onSubmit">
+    <form class="ee-card space-y-4" @submit.prevent="onSubmit">
       <div class="space-y-1">
-        <label for="login-email" class="block text-sm font-medium text-slate-700">Email</label>
+        <label for="login-email" class="block text-sm font-medium">Email</label>
         <input
           id="login-email"
           v-model="email"
           type="email"
           autocomplete="email"
           required
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full"
         />
       </div>
 
       <div class="space-y-1">
-        <label for="login-password" class="block text-sm font-medium text-slate-700">Passwort</label>
+        <label for="login-password" class="block text-sm font-medium">Passwort</label>
         <input
           id="login-password"
           v-model="password"
@@ -52,28 +59,24 @@ async function onSubmit(): Promise<void> {
           autocomplete="current-password"
           required
           minlength="8"
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full"
         />
       </div>
 
-      <p v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
         {{ error }}
       </p>
 
-      <button
-        type="submit"
-        :disabled="submitting"
-        class="w-full rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <button type="submit" :disabled="submitting" class="ee-btn-primary w-full">
         {{ submitting ? 'Logge ein ...' : 'Einloggen' }}
       </button>
     </form>
 
-    <p class="text-center text-sm text-slate-600">
+    <p class="text-center text-sm text-ink-500">
       Noch kein Konto?
       <router-link
         :to="{ name: 'register', query: $route.query }"
-        class="font-medium text-emerald-700 hover:underline"
+        class="ee-link"
       >
         Registrieren
       </router-link>

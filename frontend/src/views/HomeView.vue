@@ -85,29 +85,32 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-semibold">
-        Hallo, {{ authStore.user?.displayName ?? 'Gast' }}
+  <section class="space-y-8">
+    <div class="rounded-3xl border border-cream-200 bg-gradient-to-br from-peach-100 via-cream-50 to-butter-100 px-7 py-8 shadow-[0_2px_18px_rgba(255,181,167,0.18)]">
+      <p class="text-xs font-semibold uppercase tracking-widest text-peach-700">Willkommen zurueck</p>
+      <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink-900">
+        Hallo, {{ authStore.user?.displayName ?? 'Gast' }} 👋
       </h1>
-      <p class="mt-1 text-slate-600">
-        Mahlzeitenplanung, Rezepte und Einkaufslisten fuer den ganzen Haushalt.
+      <p class="mt-2 max-w-xl text-ink-700">
+        Plane Mahlzeiten, behalte Vorrat und Rezepte im Blick — und lass dir den naechsten Wocheneinkauf zusammenstellen.
       </p>
     </div>
 
     <!-- Smart-Suggestion -->
-    <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="ee-card">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <h2 class="text-base font-semibold text-slate-800">Was kann ich kochen?</h2>
-          <p class="mt-1 text-sm text-slate-600">
+          <h2 class="flex items-center gap-2 text-lg font-bold text-ink-900">
+            <span>🥘</span> Was kann ich kochen?
+          </h2>
+          <p class="mt-1 text-sm text-ink-500">
             {{ selected ? `Vorschlaege aus dem Vorrat von ${selected.name}.` : 'Waehle zuerst einen Haushalt.' }}
           </p>
         </div>
         <button
           type="button"
+          class="ee-btn-primary"
           :disabled="!selected || suggestLoading"
-          class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
           @click="onSuggest"
         >
           {{ suggestLoading ? 'Denke nach ...' : 'Vorschlaege holen' }}
@@ -116,63 +119,57 @@ onMounted(async () => {
 
       <p
         v-if="suggestError"
-        class="mt-3 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+        class="mt-4 rounded-2xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700"
       >
         {{ suggestError }}
       </p>
 
       <p
         v-else-if="suggestRequested && !suggestLoading && suggestions.length === 0"
-        class="mt-3 rounded border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500"
+        class="mt-4 rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-4 py-3 text-sm text-ink-500"
       >
         Keine passenden Rezepte gefunden. Mehr Vorrat anlegen oder Rezepte hinzufuegen.
       </p>
 
-      <ul v-if="suggestions.length > 0" class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ul v-if="suggestions.length > 0" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <li
           v-for="s in suggestions"
           :key="s.recipe.id"
-          class="rounded border border-slate-200 px-3 py-3 hover:border-emerald-400"
+          class="group rounded-2xl border border-cream-200 bg-cream-50 p-4 transition-all hover:-translate-y-0.5 hover:border-peach-200 hover:bg-white hover:shadow-[0_8px_24px_-12px_rgba(255,154,133,0.4)]"
         >
-          <div class="flex items-center justify-between gap-2">
+          <div class="flex items-start justify-between gap-2">
             <button
               type="button"
-              class="text-left text-sm font-medium text-slate-800 hover:text-emerald-700"
+              class="text-left text-sm font-semibold text-ink-900 hover:text-peach-600"
               @click="openRecipe(s.recipe.id)"
             >
               {{ s.recipe.title }}
             </button>
-            <span class="shrink-0 rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800">
-              {{ coveragePercent(s.coverage) }} Vorrat
+            <span class="ee-chip-mint shrink-0">
+              {{ coveragePercent(s.coverage) }}
             </span>
           </div>
-          <p
-            v-if="s.reason"
-            class="mt-2 text-xs italic text-slate-600"
-          >
+          <p v-if="s.reason" class="mt-2 text-xs italic leading-snug text-ink-700">
             „{{ s.reason }}"
           </p>
-          <p
-            v-else
-            class="mt-2 text-xs text-slate-400"
-          >
-            Aus Vorratsabdeckung berechnet (KI-Begruendung nicht verfuegbar).
+          <p v-else class="mt-2 text-xs text-ink-400">
+            Aus Vorratsabdeckung berechnet.
           </p>
           <ul
             v-if="s.recipe.dietTags.length > 0"
-            class="mt-2 flex flex-wrap gap-1"
+            class="mt-3 flex flex-wrap gap-1"
           >
             <li
               v-for="tag in s.recipe.dietTags"
               :key="tag"
-              class="rounded bg-slate-100 px-2 py-0.5 text-[0.65rem] font-medium text-slate-600"
+              class="ee-chip-neutral"
             >
               {{ DIET_TAG_LABELS[tag as DietTag] }}
             </li>
           </ul>
           <button
             type="button"
-            class="mt-3 w-full rounded border border-emerald-300 bg-white px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50"
+            class="ee-btn-secondary mt-3 w-full text-xs"
             @click="startPlanAdd(s)"
           >
             Zum Wochenplan
@@ -192,33 +189,25 @@ onMounted(async () => {
     />
 
     <!-- Backend-Status (Health-Check) -->
-    <div
-      class="rounded-lg border bg-white p-5 shadow-sm"
-      :class="{
-        'border-slate-200': status === 'loading',
-        'border-emerald-300': status === 'ok',
-        'border-red-300': status === 'error',
-      }"
-    >
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-sm font-medium uppercase tracking-wide text-slate-500">Backend-Status</p>
-          <p
-            class="mt-1 text-lg font-semibold"
+    <div class="ee-card">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span
+            class="flex h-10 w-10 items-center justify-center rounded-2xl text-base font-bold"
             :class="{
-              'text-slate-700': status === 'loading',
-              'text-emerald-700': status === 'ok',
-              'text-red-700': status === 'error',
+              'bg-cream-200 text-ink-500': status === 'loading',
+              'bg-mint-100 text-mint-700': status === 'ok',
+              'bg-rose-100 text-rose-700': status === 'error',
             }"
           >
-            {{ detail }}
-          </p>
+            {{ status === 'ok' ? '✓' : status === 'error' ? '✕' : '…' }}
+          </span>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-ink-500">Backend-Status</p>
+            <p class="text-sm font-semibold text-ink-900">{{ detail }}</p>
+          </div>
         </div>
-        <button
-          type="button"
-          class="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          @click="refresh"
-        >
+        <button type="button" class="ee-btn-secondary" @click="refresh">
           Erneut pruefen
         </button>
       </div>

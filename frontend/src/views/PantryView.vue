@@ -85,20 +85,15 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
 
 <template>
   <section class="space-y-6">
-    <div class="flex items-start justify-between gap-4">
+    <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-semibold">Vorrat</h1>
-        <p class="mt-1 text-sm text-slate-600">
+        <h1 class="text-2xl font-extrabold tracking-tight">🧺 Vorrat</h1>
+        <p class="mt-1 text-sm text-ink-500">
           {{ selected ? selected.name : 'Keinen Haushalt ausgewaehlt' }}
         </p>
       </div>
-      <button
-        v-if="selected"
-        type="button"
-        class="rounded border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        @click="scannerOpen = true"
-      >
-        Barcode scannen
+      <button v-if="selected" type="button" class="ee-btn-secondary" @click="scannerOpen = true">
+        📷 Barcode scannen
       </button>
     </div>
 
@@ -111,14 +106,10 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
 
     <p
       v-if="!selected"
-      class="rounded border border-dashed border-slate-300 bg-white p-6 text-center text-slate-500"
+      class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
     >
       Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
-      <button
-        type="button"
-        class="ml-2 font-medium text-emerald-700 hover:underline"
-        @click="router.push({ name: 'households' })"
-      >
+      <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
         Haushalte oeffnen
       </button>
     </p>
@@ -126,31 +117,31 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
     <template v-else>
       <p
         v-if="pantryStore.error"
-        class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+        class="rounded-2xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700"
       >
         {{ pantryStore.error }}
       </p>
 
       <AddPantryItemForm @submit="onAdd" />
 
-      <div v-if="pantryStore.loading" class="text-slate-500">Lade Vorrat ...</div>
+      <div v-if="pantryStore.loading" class="text-ink-500">Lade Vorrat ...</div>
 
       <div
         v-else-if="pantryStore.items.length === 0"
-        class="rounded border border-dashed border-slate-300 bg-white p-6 text-center text-slate-500"
+        class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
       >
-        Vorrat ist leer. Fuege oben einen Eintrag hinzu.
+        Vorrat ist leer. Fuege oben einen Eintrag hinzu oder scanne einen Barcode.
       </div>
 
-      <div v-else class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div v-else class="overflow-hidden rounded-2xl border border-cream-200 bg-white">
         <table class="w-full">
           <thead>
-            <tr class="border-b border-slate-200 bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-              <th class="px-3 py-2">Zutat</th>
-              <th class="px-3 py-2">Menge</th>
-              <th class="px-3 py-2">Einheit</th>
-              <th class="px-3 py-2">MHD</th>
-              <th class="px-3 py-2 text-right">Aktion</th>
+            <tr class="border-b border-cream-200 bg-cream-50 text-left text-xs font-bold uppercase tracking-widest text-ink-500">
+              <th class="px-4 py-3">Zutat</th>
+              <th class="px-4 py-3">Menge</th>
+              <th class="px-4 py-3">Einheit</th>
+              <th class="px-4 py-3">MHD</th>
+              <th class="px-4 py-3 text-right">Aktion</th>
             </tr>
           </thead>
           <tbody>

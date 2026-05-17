@@ -143,15 +143,15 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/40 px-4"
+    class="fixed inset-0 z-30 flex items-center justify-center bg-ink-900/40 px-4"
     @click.self="emit('close')"
   >
-    <div class="w-full max-w-md rounded-lg bg-white shadow-xl">
-      <header class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-        <h2 class="text-base font-semibold text-slate-800">Barcode scannen</h2>
+    <div class="w-full max-w-md rounded-2xl bg-white shadow-[0_20px_60px_-15px_rgba(45,42,50,0.3)]">
+      <header class="flex items-center justify-between border-b border-cream-200 px-5 py-4">
+        <h2 class="text-base font-semibold text-ink-900">Barcode scannen</h2>
         <button
           type="button"
-          class="rounded text-slate-400 hover:text-slate-700"
+          class="rounded text-ink-400 hover:text-ink-700"
           @click="emit('close')"
         >
           ✕
@@ -161,22 +161,22 @@ onBeforeUnmount(() => {
       <div class="space-y-4 px-5 py-4">
         <p
           v-if="error"
-          class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+          class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700"
         >
           {{ error }}
         </p>
 
         <!-- SCAN -->
         <template v-if="stage === 'scan'">
-          <div class="relative overflow-hidden rounded border border-slate-300 bg-black">
+          <div class="relative overflow-hidden rounded border border-cream-300 bg-black">
             <video ref="video" class="aspect-video w-full" autoplay muted playsinline />
           </div>
-          <p class="text-xs text-slate-500">
+          <p class="text-xs text-ink-500">
             Halte den Strichcode in die Kamera. Beleuchtung hilft.
           </p>
           <button
             type="button"
-            class="w-full rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            class="w-full rounded border border-cream-300 px-3 py-2 text-sm font-medium text-ink-700 hover:bg-cream-50"
             @click="switchToManual"
           >
             Stattdessen manuell eingeben
@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
         <!-- MANUAL -->
         <template v-else-if="stage === 'manual'">
           <form class="space-y-2" @submit.prevent="onManualSubmit">
-            <label for="manual-code" class="block text-sm font-medium text-slate-700">
+            <label for="manual-code" class="block text-sm font-medium text-ink-700">
               Barcode (EAN/UPC)
             </label>
             <input
@@ -195,12 +195,12 @@ onBeforeUnmount(() => {
               type="text"
               placeholder="z. B. 3017620422003"
               autocomplete="off"
-              class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+              class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
             />
             <button
               type="submit"
               :disabled="loading"
-              class="w-full rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+              class="w-full rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {{ loading ? 'Lade ...' : 'Produkt suchen' }}
             </button>
@@ -209,16 +209,16 @@ onBeforeUnmount(() => {
 
         <!-- CONFIRM -->
         <template v-else-if="stage === 'confirm' && product">
-          <div class="rounded border border-slate-200 bg-slate-50 px-3 py-2">
-            <p class="text-xs uppercase tracking-wide text-slate-500">Gefunden</p>
-            <p class="text-sm font-medium text-slate-800">{{ product.name }}</p>
-            <p class="text-xs text-slate-500">Barcode: {{ product.barcode }}</p>
+          <div class="rounded border border-cream-200 bg-cream-50 px-3 py-2">
+            <p class="text-xs uppercase tracking-wide text-ink-500">Gefunden</p>
+            <p class="text-sm font-medium text-ink-900">{{ product.name }}</p>
+            <p class="text-xs text-ink-500">Barcode: {{ product.barcode }}</p>
           </div>
 
           <form class="space-y-3" @submit.prevent="onConfirm">
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label for="bc-amount" class="block text-xs font-medium text-slate-600">
+                <label for="bc-amount" class="block text-xs font-medium text-ink-500">
                   Menge
                 </label>
                 <input
@@ -228,17 +228,17 @@ onBeforeUnmount(() => {
                   step="0.01"
                   min="0.01"
                   required
-                  class="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                  class="mt-1 w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
                 />
               </div>
               <div>
-                <label for="bc-unit" class="block text-xs font-medium text-slate-600">
+                <label for="bc-unit" class="block text-xs font-medium text-ink-500">
                   Einheit
                 </label>
                 <select
                   id="bc-unit"
                   v-model="unit"
-                  class="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                  class="mt-1 w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
                 >
                   <option value="GRAM">g</option>
                   <option value="ML">ml</option>
@@ -250,21 +250,21 @@ onBeforeUnmount(() => {
             </div>
 
             <div>
-              <label for="bc-bb" class="block text-xs font-medium text-slate-600">
+              <label for="bc-bb" class="block text-xs font-medium text-ink-500">
                 Mindesthaltbarkeit (optional)
               </label>
               <input
                 id="bc-bb"
                 v-model="bestBefore"
                 type="date"
-                class="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                class="mt-1 w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
               :disabled="loading"
-              class="w-full rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+              class="w-full rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {{ loading ? 'Speichere ...' : 'In Vorrat uebernehmen' }}
             </button>

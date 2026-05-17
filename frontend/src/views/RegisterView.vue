@@ -32,69 +32,47 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <section class="mx-auto max-w-md space-y-6">
-    <h1 class="text-2xl font-semibold">Konto anlegen</h1>
+  <section class="mx-auto max-w-md space-y-6 py-6">
+    <div class="text-center">
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl text-3xl shadow-md"
+        style="background: linear-gradient(135deg, #ffb5a7 0%, #ffd47a 100%)">
+        🍅
+      </div>
+      <h1 class="mt-4 text-2xl font-extrabold tracking-tight">Konto anlegen</h1>
+      <p class="mt-1 text-sm text-ink-500">Starte mit EatEasy in nur 3 Feldern.</p>
+    </div>
 
-    <form class="space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm" @submit.prevent="onSubmit">
+    <form class="ee-card space-y-4" @submit.prevent="onSubmit">
       <div class="space-y-1">
-        <label for="reg-displayName" class="block text-sm font-medium text-slate-700">Anzeigename</label>
-        <input
-          id="reg-displayName"
-          v-model="displayName"
-          type="text"
-          autocomplete="name"
-          required
-          maxlength="100"
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
-        />
+        <label for="reg-displayName" class="block text-sm font-medium">Anzeigename</label>
+        <input id="reg-displayName" v-model="displayName" type="text" autocomplete="name"
+          required maxlength="100" class="w-full" />
       </div>
 
       <div class="space-y-1">
-        <label for="reg-email" class="block text-sm font-medium text-slate-700">Email</label>
-        <input
-          id="reg-email"
-          v-model="email"
-          type="email"
-          autocomplete="email"
-          required
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
-        />
+        <label for="reg-email" class="block text-sm font-medium">Email</label>
+        <input id="reg-email" v-model="email" type="email" autocomplete="email" required class="w-full" />
       </div>
 
       <div class="space-y-1">
-        <label for="reg-password" class="block text-sm font-medium text-slate-700">Passwort</label>
-        <input
-          id="reg-password"
-          v-model="password"
-          type="password"
-          autocomplete="new-password"
-          required
-          minlength="8"
-          maxlength="100"
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
-        />
-        <p class="text-xs text-slate-500">Mindestens 8 Zeichen.</p>
+        <label for="reg-password" class="block text-sm font-medium">Passwort</label>
+        <input id="reg-password" v-model="password" type="password" autocomplete="new-password"
+          required minlength="8" maxlength="100" class="w-full" />
+        <p class="text-xs text-ink-500">Mindestens 8 Zeichen.</p>
       </div>
 
-      <p v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
         {{ error }}
       </p>
 
-      <button
-        type="submit"
-        :disabled="submitting"
-        class="w-full rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <button type="submit" :disabled="submitting" class="ee-btn-primary w-full">
         {{ submitting ? 'Lege Konto an ...' : 'Registrieren' }}
       </button>
     </form>
 
-    <p class="text-center text-sm text-slate-600">
+    <p class="text-center text-sm text-ink-500">
       Bereits ein Konto?
-      <router-link
-        :to="{ name: 'login', query: $route.query }"
-        class="font-medium text-emerald-700 hover:underline"
-      >
+      <router-link :to="{ name: 'login', query: $route.query }" class="ee-link">
         Login
       </router-link>
     </p>

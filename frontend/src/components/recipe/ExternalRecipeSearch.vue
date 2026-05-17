@@ -65,52 +65,52 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
 
 <template>
   <div
-    class="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/40 px-4"
+    class="fixed inset-0 z-30 flex items-center justify-center bg-ink-900/40 px-4"
     @click.self="emit('close')"
   >
-    <div class="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-lg bg-white shadow-xl">
-      <header class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+    <div class="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-2xl bg-white shadow-[0_20px_60px_-15px_rgba(45,42,50,0.3)]">
+      <header class="flex items-center justify-between border-b border-cream-200 px-5 py-4">
         <div>
-          <h2 class="text-base font-semibold text-slate-800">Rezept aus Quelle importieren</h2>
-          <p class="text-xs text-slate-500">
+          <h2 class="text-base font-semibold text-ink-900">Rezept aus Quelle importieren</h2>
+          <p class="text-xs text-ink-500">
             TheMealDB ist kostenlos und braucht keinen API-Key.
           </p>
         </div>
         <button
           type="button"
-          class="rounded text-slate-400 hover:text-slate-700"
+          class="rounded text-ink-400 hover:text-ink-700"
           @click="emit('close')"
         >
           ✕
         </button>
       </header>
 
-      <div class="space-y-3 border-b border-slate-200 px-5 py-4">
+      <div class="space-y-3 border-b border-cream-200 px-5 py-4">
         <div class="grid grid-cols-12 gap-3">
           <div class="col-span-3">
-            <label for="ext-source" class="block text-xs font-medium text-slate-600">Quelle</label>
+            <label for="ext-source" class="block text-xs font-medium text-ink-500">Quelle</label>
             <select
               id="ext-source"
               v-model="source"
-              class="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+              class="mt-1 w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
             >
               <option value="themealdb">TheMealDB</option>
             </select>
           </div>
           <div class="col-span-9">
-            <label for="ext-query" class="block text-xs font-medium text-slate-600">Suche</label>
+            <label for="ext-query" class="block text-xs font-medium text-ink-500">Suche</label>
             <form class="mt-1 flex gap-2" @submit.prevent="onSearch">
               <input
                 id="ext-query"
                 v-model="query"
                 type="text"
                 placeholder="z. B. pasta, chicken ..."
-                class="flex-1 rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                class="flex-1 rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
               />
               <button
                 type="submit"
                 :disabled="searching"
-                class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                class="rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {{ searching ? 'Suche ...' : 'Suchen' }}
               </button>
@@ -119,13 +119,13 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
         </div>
 
         <div v-if="householdStore.households.length > 0">
-          <label for="ext-hh" class="block text-xs font-medium text-slate-600">
+          <label for="ext-hh" class="block text-xs font-medium text-ink-500">
             Sichtbarkeit
           </label>
           <select
             id="ext-hh"
             v-model="householdId"
-            class="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+            class="mt-1 w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
           >
             <option value="">Privat (nur ich)</option>
             <option
@@ -140,7 +140,7 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
       </div>
 
       <div class="flex-1 overflow-auto px-5 py-4">
-        <p v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
           {{ error }}
         </p>
 
@@ -148,7 +148,7 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
           <li
             v-for="preview in results"
             :key="preview.externalId"
-            class="flex items-center gap-3 rounded border border-slate-200 px-3 py-2 hover:border-emerald-400"
+            class="flex items-center gap-3 rounded border border-cream-200 px-3 py-2 hover:border-peach-300"
           >
             <img
               v-if="preview.thumbnailUrl"
@@ -157,8 +157,8 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
               class="h-12 w-12 flex-shrink-0 rounded object-cover"
             />
             <div class="min-w-0 flex-1">
-              <p class="truncate text-sm font-medium text-slate-800">{{ preview.title }}</p>
-              <p class="truncate text-xs text-slate-500">
+              <p class="truncate text-sm font-medium text-ink-900">{{ preview.title }}</p>
+              <p class="truncate text-xs text-ink-500">
                 <span v-if="preview.category">{{ preview.category }}</span>
                 <span v-if="preview.category && preview.area"> · </span>
                 <span v-if="preview.area">{{ preview.area }}</span>
@@ -167,7 +167,7 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
             <button
               type="button"
               :disabled="importingId !== null"
-              class="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+              class="rounded bg-peach-400 px-3 py-1.5 text-xs font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
               @click="onImport(preview)"
             >
               {{ importingId === preview.externalId ? 'Importiere ...' : 'Importieren' }}
@@ -177,7 +177,7 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
 
         <p
           v-else-if="!searching && !error"
-          class="text-sm text-slate-500"
+          class="text-sm text-ink-500"
         >
           Suche eintippen und auf "Suchen" klicken — oder bei TheMealDB einfach mal "pasta" probieren.
         </p>

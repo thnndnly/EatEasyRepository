@@ -56,32 +56,32 @@ onMounted(() => {
   <section class="mx-auto max-w-md space-y-6">
     <h1 class="text-2xl font-semibold">Einladung annehmen</h1>
 
-    <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="rounded-lg border border-cream-200 bg-white p-6 shadow-sm">
       <template v-if="status === 'idle'">
-        <p class="text-sm text-slate-600">
+        <p class="text-sm text-ink-500">
           Du wurdest zu einem Haushalt eingeladen. Klicke auf
           <strong>Annehmen</strong>, um beizutreten.
         </p>
         <button
           type="button"
-          class="mt-4 w-full rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700"
+          class="mt-4 w-full rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500"
           @click="accept"
         >
           Annehmen
         </button>
       </template>
 
-      <p v-else-if="status === 'submitting'" class="text-sm text-slate-600">
+      <p v-else-if="status === 'submitting'" class="text-sm text-ink-500">
         Loese Einladung ein ...
       </p>
 
       <template v-else-if="status === 'done' && joined">
-        <p class="text-sm text-emerald-800">
+        <p class="text-sm text-peach-700">
           Willkommen bei <strong>{{ joined.name }}</strong>.
         </p>
         <button
           type="button"
-          class="mt-4 w-full rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700"
+          class="mt-4 w-full rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500"
           @click="goToHousehold"
         >
           Zum Haushalt
@@ -89,12 +89,12 @@ onMounted(() => {
       </template>
 
       <template v-else-if="status === 'error'">
-        <p class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
           {{ error }}
         </p>
         <button
           type="button"
-          class="mt-4 w-full rounded border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
+          class="mt-4 w-full rounded border border-cream-300 bg-white px-4 py-2 font-medium text-ink-700 hover:bg-cream-50"
           @click="accept"
         >
           Erneut versuchen

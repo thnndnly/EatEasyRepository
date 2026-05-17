@@ -20,6 +20,15 @@ const router = useRouter()
 
 const isDev = import.meta.env.DEV
 
+const navLinks = [
+  { name: 'home', label: 'Dashboard' },
+  { name: 'households', label: 'Haushalte' },
+  { name: 'recipes', label: 'Rezepte' },
+  { name: 'mealplan', label: 'Wochenplan' },
+  { name: 'pantry', label: 'Vorrat' },
+  { name: 'shoppinglist', label: 'Einkaufsliste' },
+] as const
+
 onBeforeMount(async () => {
   await authStore.restoreSession()
   if (authStore.isAuthenticated) {
@@ -57,76 +66,48 @@ async function onLogout(): Promise<void> {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-900">
-    <header class="border-b border-slate-200 bg-white">
-      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+  <div class="min-h-screen text-ink-900">
+    <header class="sticky top-0 z-10 border-b border-cream-200 bg-cream-50/85 backdrop-blur-md">
+      <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-3">
         <div class="flex items-center gap-6">
-          <RouterLink to="/" class="text-lg font-semibold text-emerald-700">
-            EatEasy EE
+          <RouterLink
+            to="/"
+            class="flex items-center gap-2 text-lg font-bold tracking-tight text-ink-900"
+          >
+            <span
+              class="flex h-9 w-9 items-center justify-center rounded-2xl text-lg shadow-sm"
+              style="background: linear-gradient(135deg, #ffb5a7 0%, #ffd47a 100%)"
+            >
+              🍅
+            </span>
+            EatEasy
           </RouterLink>
-          <nav v-if="authStore.isAuthenticated" class="flex items-center gap-4 text-sm">
+          <nav v-if="authStore.isAuthenticated" class="hidden items-center gap-1 text-sm md:flex">
             <RouterLink
-              :to="{ name: 'home' }"
-              class="text-slate-600 hover:text-emerald-700"
-              active-class="text-emerald-700"
+              v-for="link in navLinks"
+              :key="link.name"
+              :to="{ name: link.name }"
+              class="rounded-full px-3 py-1.5 font-medium text-ink-700 transition-colors hover:bg-cream-200"
+              active-class="!bg-peach-100 !text-peach-700"
             >
-              Dashboard
-            </RouterLink>
-            <RouterLink
-              :to="{ name: 'households' }"
-              class="text-slate-600 hover:text-emerald-700"
-              active-class="text-emerald-700"
-            >
-              Haushalte
-            </RouterLink>
-            <RouterLink
-              :to="{ name: 'recipes' }"
-              class="text-slate-600 hover:text-emerald-700"
-              active-class="text-emerald-700"
-            >
-              Rezepte
-            </RouterLink>
-            <RouterLink
-              :to="{ name: 'mealplan' }"
-              class="text-slate-600 hover:text-emerald-700"
-              active-class="text-emerald-700"
-            >
-              Wochenplan
-            </RouterLink>
-            <RouterLink
-              :to="{ name: 'pantry' }"
-              class="text-slate-600 hover:text-emerald-700"
-              active-class="text-emerald-700"
-            >
-              Vorrat
-            </RouterLink>
-            <RouterLink
-              :to="{ name: 'shoppinglist' }"
-              class="text-slate-600 hover:text-emerald-700"
-              active-class="text-emerald-700"
-            >
-              Einkaufsliste
+              {{ link.label }}
             </RouterLink>
           </nav>
         </div>
 
-        <nav class="flex items-center gap-4 text-sm">
+        <nav class="flex items-center gap-3 text-sm">
           <template v-if="authStore.isAuthenticated">
             <HouseholdSwitcher />
-            <span class="text-slate-600">
+            <span class="hidden text-ink-500 lg:inline">
               {{ authStore.user?.displayName }}
             </span>
-            <button
-              type="button"
-              class="rounded border border-slate-300 bg-white px-3 py-1 font-medium text-slate-700 hover:bg-slate-50"
-              @click="onLogout"
-            >
+            <button type="button" class="ee-btn-secondary" @click="onLogout">
               Logout
             </button>
           </template>
           <template v-else>
-            <RouterLink to="/login" class="text-slate-600 hover:text-emerald-700">Login</RouterLink>
-            <RouterLink to="/register" class="text-slate-600 hover:text-emerald-700">Registrieren</RouterLink>
+            <RouterLink to="/login" class="ee-link">Login</RouterLink>
+            <RouterLink to="/register" class="ee-btn-primary">Registrieren</RouterLink>
           </template>
         </nav>
       </div>
@@ -140,14 +121,14 @@ async function onLogout(): Promise<void> {
 
     <footer
       v-if="isDev"
-      class="border-t border-dashed border-amber-300 bg-amber-50 px-6 py-2 text-center text-xs text-amber-800"
+      class="border-t border-dashed border-butter-300 bg-butter-100/80 px-6 py-2 text-center text-xs text-butter-700"
     >
       Dev-Modus &mdash;
       <a
         href="http://localhost:1080"
         target="_blank"
         rel="noopener noreferrer"
-        class="font-medium underline hover:text-amber-900"
+        class="font-semibold underline hover:text-ink-900"
       >
         Maildev-Postfach oeffnen (localhost:1080)
       </a>

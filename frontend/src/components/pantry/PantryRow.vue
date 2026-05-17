@@ -33,7 +33,7 @@ interface MhdStatus {
   level: 'expired' | 'urgent' | 'soon' | 'ok'
   label: string
   rowClass: string
-  badgeClass: string
+  chipClass: string
 }
 
 const mhdStatus = computed<MhdStatus | null>(() => {
@@ -45,31 +45,31 @@ const mhdStatus = computed<MhdStatus | null>(() => {
     return {
       level: 'expired',
       label: days === -1 ? 'gestern abgelaufen' : `vor ${-days} Tagen abgelaufen`,
-      rowClass: 'bg-red-50',
-      badgeClass: 'bg-red-100 text-red-800',
+      rowClass: 'bg-rose-50',
+      chipClass: 'ee-chip-rose',
     }
   }
   if (days <= 3) {
     return {
       level: 'urgent',
       label: days === 0 ? 'heute' : days === 1 ? 'morgen' : `in ${days} Tagen`,
-      rowClass: 'bg-red-50',
-      badgeClass: 'bg-red-100 text-red-800',
+      rowClass: 'bg-rose-50',
+      chipClass: 'ee-chip-rose',
     }
   }
   if (days <= 7) {
     return {
       level: 'soon',
       label: `in ${days} Tagen`,
-      rowClass: 'bg-amber-50',
-      badgeClass: 'bg-amber-100 text-amber-800',
+      rowClass: 'bg-butter-100/60',
+      chipClass: 'ee-chip-butter',
     }
   }
   return {
     level: 'ok',
     label: `in ${days} Tagen`,
     rowClass: '',
-    badgeClass: 'bg-slate-100 text-slate-600',
+    chipClass: 'ee-chip-neutral',
   }
 })
 
@@ -112,75 +112,43 @@ function onRemove(): void {
 </script>
 
 <template>
-  <tr class="border-b border-slate-100 last:border-b-0" :class="mhdStatus?.rowClass">
-    <td class="px-3 py-2 text-sm font-medium text-slate-800">{{ item.ingredientName }}</td>
+  <tr class="border-b border-cream-100 last:border-b-0 transition-colors" :class="mhdStatus?.rowClass">
+    <td class="px-4 py-3 text-sm font-semibold text-ink-900">{{ item.ingredientName }}</td>
 
-    <td class="px-3 py-2 text-sm text-slate-700">
-      <input
-        v-if="editing"
-        v-model.number="draftAmount"
-        type="number"
-        step="0.01"
-        min="0.01"
-        class="w-24 rounded border border-slate-300 px-2 py-1 focus:border-emerald-500 focus:outline-none"
-      />
+    <td class="px-4 py-3 text-sm text-ink-700">
+      <input v-if="editing" v-model.number="draftAmount" type="number" step="0.01" min="0.01" class="w-24" />
       <span v-else>{{ item.amount }}</span>
     </td>
 
-    <td class="px-3 py-2 text-sm text-slate-700">{{ UNIT_ABBREV[item.unit] }}</td>
+    <td class="px-4 py-3 text-sm text-ink-700">{{ UNIT_ABBREV[item.unit] }}</td>
 
-    <td class="px-3 py-2 text-sm text-slate-700">
-      <input
-        v-if="editing"
-        v-model="draftBestBefore"
-        type="date"
-        class="rounded border border-slate-300 px-2 py-1 focus:border-emerald-500 focus:outline-none"
-      />
+    <td class="px-4 py-3 text-sm text-ink-700">
+      <input v-if="editing" v-model="draftBestBefore" type="date" />
       <template v-else-if="item.bestBefore">
         <div class="flex items-center gap-2">
           <span>{{ item.bestBefore }}</span>
-          <span
-            v-if="mhdStatus"
-            class="rounded px-1.5 py-0.5 text-xs font-medium"
-            :class="mhdStatus.badgeClass"
-          >
+          <span v-if="mhdStatus" :class="mhdStatus.chipClass">
             {{ mhdStatus.label }}
           </span>
         </div>
       </template>
-      <span v-else class="text-slate-400">–</span>
+      <span v-else class="text-ink-400">–</span>
     </td>
 
-    <td class="px-3 py-2 text-right text-sm">
+    <td class="px-4 py-3 text-right text-sm">
       <template v-if="editing">
-        <button
-          type="button"
-          class="rounded bg-emerald-600 px-2 py-1 text-xs font-medium text-white hover:bg-emerald-700"
-          @click="save"
-        >
+        <button type="button" class="ee-btn-primary text-xs" @click="save">
           Speichern
         </button>
-        <button
-          type="button"
-          class="ml-2 rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
-          @click="cancel"
-        >
+        <button type="button" class="ee-btn-ghost ml-2 text-xs" @click="cancel">
           Abbrechen
         </button>
       </template>
       <template v-else>
-        <button
-          type="button"
-          class="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
-          @click="startEdit"
-        >
+        <button type="button" class="ee-btn-secondary text-xs" @click="startEdit">
           Bearbeiten
         </button>
-        <button
-          type="button"
-          class="ml-2 rounded border border-red-300 bg-white px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
-          @click="onRemove"
-        >
+        <button type="button" class="ee-btn-danger ml-2 text-xs" @click="onRemove">
           Loeschen
         </button>
       </template>

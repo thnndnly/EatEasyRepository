@@ -22,15 +22,15 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="overflow-auto rounded-lg border border-slate-200 bg-white">
+  <div class="overflow-auto rounded-2xl border border-cream-200 bg-white">
     <table class="w-full table-fixed border-collapse text-sm">
       <thead>
-        <tr class="bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500">
-          <th class="border-b border-slate-200 px-2 py-3 text-left">Mahlzeit</th>
+        <tr class="bg-cream-50 text-xs font-bold uppercase tracking-widest text-ink-500">
+          <th class="border-b border-cream-200 px-3 py-3 text-left">Mahlzeit</th>
           <th
             v-for="day in DAYS_OF_WEEK"
             :key="day"
-            class="border-b border-slate-200 px-2 py-3 text-center"
+            class="border-b border-cream-200 px-2 py-3 text-center"
           >
             {{ DAY_LABELS[day] }}
           </th>
@@ -38,13 +38,13 @@ const emit = defineEmits<{
       </thead>
       <tbody>
         <tr v-for="mealType in MEAL_TYPES" :key="mealType">
-          <th class="w-24 border-b border-slate-100 px-2 py-2 text-left text-xs font-medium text-slate-600">
+          <th class="w-24 border-b border-cream-100 px-3 py-2 text-left text-xs font-semibold text-ink-700">
             {{ MEAL_TYPE_LABELS[mealType] }}
           </th>
           <td
             v-for="day in DAYS_OF_WEEK"
             :key="day"
-            class="border-b border-slate-100 p-2 align-top"
+            class="border-b border-cream-100 p-2 align-top"
           >
             <MealSlot
               :entry="entryAt(day, mealType)"

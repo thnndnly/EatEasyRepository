@@ -95,7 +95,7 @@ const showCreateHint = computed(() => {
       :value="inputValue"
       :placeholder="placeholder"
       autocomplete="off"
-      class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+      class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
       @input="onInput"
       @focus="onFocus"
       @blur="onBlur"
@@ -103,23 +103,23 @@ const showCreateHint = computed(() => {
 
     <ul
       v-if="open && (results.length > 0 || showCreateHint || loading)"
-      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded border border-slate-200 bg-white shadow-lg"
+      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded border border-cream-200 bg-white shadow-lg"
     >
-      <li v-if="loading" class="px-3 py-2 text-sm text-slate-500">Suche ...</li>
+      <li v-if="loading" class="px-3 py-2 text-sm text-ink-500">Suche ...</li>
 
       <li
         v-for="ingredient in results"
         :key="ingredient.id"
-        class="cursor-pointer px-3 py-2 text-sm hover:bg-slate-100"
+        class="cursor-pointer px-3 py-2 text-sm hover:bg-cream-200"
         @mousedown.prevent="selectIngredient(ingredient)"
       >
         <span class="font-medium">{{ ingredient.name }}</span>
-        <span class="ml-2 text-xs text-slate-500">{{ ingredient.defaultUnit }}</span>
+        <span class="ml-2 text-xs text-ink-500">{{ ingredient.defaultUnit }}</span>
       </li>
 
       <li
         v-if="showCreateHint && !loading"
-        class="cursor-pointer border-t border-slate-100 px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50"
+        class="cursor-pointer border-t border-cream-100 px-3 py-2 text-sm text-peach-600 hover:bg-peach-50"
         @mousedown.prevent="
           emit('update:modelValue', { id: null, name: inputValue.trim() }); open = false
         "

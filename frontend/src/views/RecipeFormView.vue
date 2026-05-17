@@ -164,7 +164,7 @@ watch(editId, loadForEdit)
   <section class="space-y-6">
     <button
       type="button"
-      class="text-sm font-medium text-emerald-700 hover:underline"
+      class="text-sm font-medium text-peach-600 hover:underline"
       @click="router.back()"
     >
       &larr; Zurueck
@@ -175,36 +175,36 @@ watch(editId, loadForEdit)
     </h1>
 
     <form
-      class="space-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+      class="space-y-6 rounded-lg border border-cream-200 bg-white p-6 shadow-sm"
       @submit.prevent="onSubmit"
     >
       <div class="space-y-1">
-        <label for="recipe-title" class="block text-sm font-medium text-slate-700">Titel</label>
+        <label for="recipe-title" class="block text-sm font-medium text-ink-700">Titel</label>
         <input
           id="recipe-title"
           v-model="title"
           type="text"
           required
           maxlength="200"
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
         />
       </div>
 
       <div class="space-y-1">
-        <label for="recipe-desc" class="block text-sm font-medium text-slate-700">
+        <label for="recipe-desc" class="block text-sm font-medium text-ink-700">
           Beschreibung
         </label>
         <textarea
           id="recipe-desc"
           v-model="description"
           rows="2"
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
         />
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <div class="space-y-1">
-          <label for="recipe-servings" class="block text-sm font-medium text-slate-700">
+          <label for="recipe-servings" class="block text-sm font-medium text-ink-700">
             Portionen
           </label>
           <input
@@ -213,11 +213,11 @@ watch(editId, loadForEdit)
             type="number"
             min="1"
             required
-            class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
           />
         </div>
         <div class="space-y-1">
-          <label for="recipe-prep" class="block text-sm font-medium text-slate-700">
+          <label for="recipe-prep" class="block text-sm font-medium text-ink-700">
             Zubereitungszeit (min)
           </label>
           <input
@@ -225,24 +225,24 @@ watch(editId, loadForEdit)
             v-model.number="prepMinutes"
             type="number"
             min="0"
-            class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
           />
         </div>
       </div>
 
       <div class="space-y-2">
-        <span class="block text-sm font-medium text-slate-700">Diaet-Tags</span>
+        <span class="block text-sm font-medium text-ink-700">Diaet-Tags</span>
         <DietTagSelector v-model="dietTags" />
       </div>
 
       <div v-if="householdStore.households.length > 0" class="space-y-1">
-        <label for="recipe-hh" class="block text-sm font-medium text-slate-700">
+        <label for="recipe-hh" class="block text-sm font-medium text-ink-700">
           Haushalt (optional, sonst privat)
         </label>
         <select
           id="recipe-hh"
           v-model="householdId"
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
         >
           <option value="">Privat (nur ich)</option>
           <option
@@ -257,10 +257,10 @@ watch(editId, loadForEdit)
 
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <h2 class="text-base font-semibold text-slate-800">Zutaten</h2>
+          <h2 class="text-base font-semibold text-ink-900">Zutaten</h2>
           <button
             type="button"
-            class="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            class="rounded border border-cream-300 bg-white px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-cream-50"
             @click="addRow"
           >
             + Zutat
@@ -279,7 +279,7 @@ watch(editId, loadForEdit)
       </div>
 
       <div class="space-y-1">
-        <label for="recipe-instructions" class="block text-sm font-medium text-slate-700">
+        <label for="recipe-instructions" class="block text-sm font-medium text-ink-700">
           Zubereitung
         </label>
         <textarea
@@ -287,18 +287,18 @@ watch(editId, loadForEdit)
           v-model="instructions"
           rows="6"
           required
-          class="w-full rounded border border-slate-300 px-3 py-2 focus:border-emerald-500 focus:outline-none"
+          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
         />
       </div>
 
-      <p v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
         {{ error }}
       </p>
 
       <button
         type="submit"
         :disabled="submitting"
-        class="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+        class="rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {{ submitting ? 'Speichere ...' : isEdit ? 'Aenderungen speichern' : 'Rezept anlegen' }}
       </button>

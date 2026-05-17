@@ -53,14 +53,14 @@ function patch<K extends keyof RecipeIngredientFormRow>(
         min="0.01"
         :value="modelValue.amount"
         placeholder="Menge"
-        class="w-full rounded border border-slate-300 px-2 py-2 focus:border-emerald-500 focus:outline-none"
+        class="w-full rounded border border-cream-300 px-2 py-2 focus:border-peach-400 focus:outline-none"
         @input="patch('amount', Number(($event.target as HTMLInputElement).value))"
       />
     </div>
     <div class="col-span-2">
       <select
         :value="modelValue.unit"
-        class="w-full rounded border border-slate-300 px-2 py-2 focus:border-emerald-500 focus:outline-none"
+        class="w-full rounded border border-cream-300 px-2 py-2 focus:border-peach-400 focus:outline-none"
         @change="patch('unit', ($event.target as HTMLSelectElement).value as Unit)"
       >
         <option v-for="unit in UNITS" :key="unit" :value="unit">
@@ -74,7 +74,7 @@ function patch<K extends keyof RecipeIngredientFormRow>(
         :value="modelValue.note"
         placeholder="Hinweis (optional)"
         maxlength="200"
-        class="w-full rounded border border-slate-300 px-2 py-2 focus:border-emerald-500 focus:outline-none"
+        class="w-full rounded border border-cream-300 px-2 py-2 focus:border-peach-400 focus:outline-none"
         @input="patch('note', ($event.target as HTMLInputElement).value)"
       />
     </div>
@@ -82,7 +82,7 @@ function patch<K extends keyof RecipeIngredientFormRow>(
       <button
         v-if="removable"
         type="button"
-        class="rounded border border-red-300 bg-white px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50"
+        class="rounded border border-rose-200 bg-white px-2 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-100"
         @click="emit('remove')"
       >
         ✕
