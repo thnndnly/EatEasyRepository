@@ -159,7 +159,7 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | 6     | Einkaufsliste                  | done   |
 | 7     | Externe Rezept-API             | done   |
 | 8     | Barcode-Scan                   | done   |
-| 9     | Smart-Suggestion (Ollama)      | open   |
+| 9     | Smart-Suggestion (Ollama)      | done   |
 | 10    | E-Mail-Notifications           | open   |
 
 Definitions of Done je Phase und Stretch-Goals stehen in `IMPLEMENTATION.md`.
