@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import IngredientPicker from '@/components/recipe/IngredientPicker.vue'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import { UNITS, UNIT_ABBREV, type Unit } from '@/types/units'
 
 const emit = defineEmits<{
@@ -85,9 +86,7 @@ function onSubmit(): void {
       </div>
     </div>
 
-    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-      {{ error }}
-    </p>
+    <ErrorMessage :message="error ?? ''" />
 
     <button
       type="submit"

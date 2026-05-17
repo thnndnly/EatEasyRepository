@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import AppLogo from '@/components/common/AppLogo.vue'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -34,10 +36,7 @@ async function onSubmit(): Promise<void> {
 <template>
   <section class="mx-auto max-w-md space-y-6 py-6">
     <div class="text-center">
-      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl text-3xl shadow-md"
-        style="background: linear-gradient(135deg, #ffb5a7 0%, #ffd47a 100%)">
-        🍅
-      </div>
+      <AppLogo :size="56" class="mx-auto" />
       <h1 class="mt-4 text-2xl font-extrabold tracking-tight">Konto anlegen</h1>
       <p class="mt-1 text-sm text-ink-500">Starte mit EatEasy in nur 3 Feldern.</p>
     </div>
@@ -61,9 +60,7 @@ async function onSubmit(): Promise<void> {
         <p class="text-xs text-ink-500">Mindestens 8 Zeichen.</p>
       </div>
 
-      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-        {{ error }}
-      </p>
+      <ErrorMessage :message="error ?? ''" />
 
       <button type="submit" :disabled="submitting" class="ee-btn-primary ee-btn-lg w-full">
         {{ submitting ? 'Lege Konto an ...' : 'Registrieren' }}

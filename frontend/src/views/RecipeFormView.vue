@@ -10,6 +10,7 @@ import RecipeIngredientRow, {
 import type { DietTag } from '@/types/dietTags'
 import type { RecipeCreateRequest, RecipeIngredientRequest } from '@/types/recipe'
 import type { Unit } from '@/types/units'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -186,7 +187,7 @@ watch(editId, loadForEdit)
           type="text"
           required
           maxlength="200"
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
 
@@ -198,7 +199,7 @@ watch(editId, loadForEdit)
           id="recipe-desc"
           v-model="description"
           rows="2"
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
 
@@ -213,7 +214,7 @@ watch(editId, loadForEdit)
             type="number"
             min="1"
             required
-            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+            class="ee-input w-full"
           />
         </div>
         <div class="space-y-1">
@@ -225,7 +226,7 @@ watch(editId, loadForEdit)
             v-model.number="prepMinutes"
             type="number"
             min="0"
-            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+            class="ee-input w-full"
           />
         </div>
       </div>
@@ -242,7 +243,7 @@ watch(editId, loadForEdit)
         <select
           id="recipe-hh"
           v-model="householdId"
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         >
           <option value="">Privat (nur ich)</option>
           <option
@@ -287,13 +288,11 @@ watch(editId, loadForEdit)
           v-model="instructions"
           rows="6"
           required
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
 
-      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-        {{ error }}
-      </p>
+      <ErrorMessage :message="error ?? ''" />
 
       <button
         type="submit"

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
 import type { HouseholdDto } from '@/types/household'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -89,9 +90,7 @@ onMounted(() => {
       </template>
 
       <template v-else-if="status === 'error'">
-        <p class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-          {{ error }}
-        </p>
+        <ErrorMessage :message="error ?? ''" />
         <button
           type="button"
           class="ee-btn-secondary mt-4 w-full"

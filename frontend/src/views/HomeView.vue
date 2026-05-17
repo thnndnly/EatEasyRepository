@@ -180,6 +180,7 @@ onMounted(async () => {
 
     <AddToMealPlanDialog
       v-if="planTarget && selected"
+      :open="planTarget !== null && selected !== null"
       :household-id="selected.id"
       :recipe-id="planTarget.recipe.id"
       :recipe-title="planTarget.recipe.title"

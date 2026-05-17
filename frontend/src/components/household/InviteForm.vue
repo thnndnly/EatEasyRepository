@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { inviteMember } from '@/services/householdService'
 import { useAuthStore } from '@/stores/authStore'
 import { useToastStore } from '@/stores/toastStore'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import type { InvitationDto } from '@/types/household'
 
 interface Props {
@@ -58,7 +59,7 @@ async function onSubmit(): Promise<void> {
           type="email"
           autocomplete="off"
           required
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
       <button
@@ -70,9 +71,7 @@ async function onSubmit(): Promise<void> {
       </button>
     </form>
 
-    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-      {{ error }}
-    </p>
+    <ErrorMessage :message="error ?? ''" />
 
     <p
       v-if="lastInvitation"

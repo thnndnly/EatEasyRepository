@@ -6,6 +6,7 @@ import { usePantryStore } from '@/stores/pantryStore'
 import { useToastStore } from '@/stores/toastStore'
 import AddPantryItemForm from '@/components/pantry/AddPantryItemForm.vue'
 import PantryRow from '@/components/pantry/PantryRow.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 // Lazy-loaded — der Scanner zieht @zxing/browser (~430 kB) nach. Wird erst
 // beim Klick auf "Barcode scannen" geladen, damit das initiale Pantry-Bundle
@@ -98,21 +99,19 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
     </div>
 
     <BarcodeScanner
-      v-if="scannerOpen && selected"
+      v-if="selected"
+      :open="scannerOpen"
       :household-id="selected.id"
       @close="scannerOpen = false"
       @added="onBarcodeAdded"
     />
 
-    <p
-      v-if="!selected"
-      class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
-    >
+    <EmptyState v-if="!selected">
       Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
         Haushalte oeffnen
       </button>
-    </p>
+    </EmptyState>
 
     <template v-else>
       <p
@@ -126,12 +125,9 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
 
       <div v-if="pantryStore.loading" class="text-ink-500">Lade Vorrat ...</div>
 
-      <div
-        v-else-if="pantryStore.items.length === 0"
-        class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
-      >
+      <EmptyState v-else-if="pantryStore.items.length === 0">
         Vorrat ist leer. Fuege oben einen Eintrag hinzu oder scanne einen Barcode.
-      </div>
+      </EmptyState>
 
       <div v-else class="overflow-hidden rounded-2xl border border-cream-200 bg-white">
         <table class="w-full">

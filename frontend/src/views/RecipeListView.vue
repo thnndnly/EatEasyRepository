@@ -7,6 +7,7 @@ import { useToastStore } from '@/stores/toastStore'
 import RecipeCard from '@/components/recipe/RecipeCard.vue'
 import DietTagSelector from '@/components/common/DietTagSelector.vue'
 import ExternalRecipeSearch from '@/components/recipe/ExternalRecipeSearch.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import type { DietTag } from '@/types/dietTags'
 import type { RecipeDto } from '@/types/recipe'
 
@@ -75,7 +76,7 @@ const recipes = computed(() => recipeStore.recipes)
     </div>
 
     <ExternalRecipeSearch
-      v-if="importOpen"
+      :open="importOpen"
       @close="importOpen = false"
       @imported="onImported"
     />
@@ -131,12 +132,9 @@ const recipes = computed(() => recipeStore.recipes)
           </li>
         </ul>
 
-        <p
-          v-else
-          class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
-        >
+        <EmptyState v-else>
           Noch keine Rezepte. Lege eins an oder importiere aus TheMealDB.
-        </p>
+        </EmptyState>
       </div>
     </div>
   </section>

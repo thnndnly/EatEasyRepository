@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useRecipeStore } from '@/stores/recipeStore'
 import { DIET_TAG_LABELS, type DietTag } from '@/types/dietTags'
 import { UNIT_ABBREV } from '@/types/units'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -54,9 +55,7 @@ watch(recipeId, load)
       &larr; Zurueck zur Liste
     </button>
 
-    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-      {{ error }}
-    </p>
+    <ErrorMessage :message="error ?? ''" />
 
     <template v-if="recipe">
       <header class="flex items-start justify-between gap-4">

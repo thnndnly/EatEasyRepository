@@ -9,6 +9,7 @@ import { usePantryStore } from '@/stores/pantryStore'
 import { useShoppingListStore } from '@/stores/shoppingListStore'
 import HouseholdSwitcher from '@/components/household/HouseholdSwitcher.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
+import AppLogo from '@/components/common/AppLogo.vue'
 
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
@@ -74,12 +75,7 @@ async function onLogout(): Promise<void> {
             to="/"
             class="flex items-center gap-2 text-lg font-bold tracking-tight text-ink-900"
           >
-            <span
-              class="flex h-9 w-9 items-center justify-center rounded-2xl text-lg shadow-sm"
-              style="background: linear-gradient(135deg, #ffb5a7 0%, #ffd47a 100%)"
-            >
-              🍅
-            </span>
+            <AppLogo :size="36" />
             EatEasy
           </RouterLink>
           <nav v-if="authStore.isAuthenticated" class="hidden items-center gap-1 text-sm md:flex">

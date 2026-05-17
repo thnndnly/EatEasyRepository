@@ -5,6 +5,7 @@ import { useHouseholdStore } from '@/stores/householdStore'
 import { useMealPlanStore } from '@/stores/mealPlanStore'
 import MealPlanGrid from '@/components/mealplan/MealPlanGrid.vue'
 import RecipePickerModal from '@/components/mealplan/RecipePickerModal.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import type { DayOfWeek, MealPlanEntryDto, MealType } from '@/types/mealplan'
 import type { RecipeDto } from '@/types/recipe'
 import type { DietTag } from '@/types/dietTags'
@@ -95,15 +96,12 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
       </div>
     </div>
 
-    <p
-      v-if="!selectedHousehold"
-      class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
-    >
+    <EmptyState v-if="!selectedHousehold">
       Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
         Haushalte oeffnen
       </button>
-    </p>
+    </EmptyState>
 
     <p
       v-if="mealPlanStore.error"

@@ -6,6 +6,7 @@ import { useMealPlanStore, mondayOf } from '@/stores/mealPlanStore'
 import { useShoppingListStore } from '@/stores/shoppingListStore'
 import { useToastStore } from '@/stores/toastStore'
 import ShoppingListItem from '@/components/shoppinglist/ShoppingListItem.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
@@ -80,15 +81,12 @@ async function onToggle(id: string, checked: boolean): Promise<void> {
       </div>
     </div>
 
-    <p
-      v-if="!selected"
-      class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
-    >
+    <EmptyState v-if="!selected">
       Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
         Haushalte oeffnen
       </button>
-    </p>
+    </EmptyState>
 
     <template v-else>
       <p
@@ -126,13 +124,10 @@ async function onToggle(id: string, checked: boolean): Promise<void> {
         />
       </ul>
 
-      <p
-        v-else
-        class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
-      >
+      <EmptyState v-else>
         Liste ist leer — entweder gibt es keine Wochenplan-Eintraege oder der Vorrat deckt
         bereits alles ab.
-      </p>
+      </EmptyState>
     </template>
   </section>
 </template>

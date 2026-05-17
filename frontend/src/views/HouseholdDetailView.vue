@@ -5,6 +5,7 @@ import * as householdService from '@/services/householdService'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
 import DietTagSelector from '@/components/common/DietTagSelector.vue'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import MemberList from '@/components/household/MemberList.vue'
 import InviteForm from '@/components/household/InviteForm.vue'
 import type { DietTag } from '@/types/dietTags'
@@ -111,9 +112,7 @@ function back(): void {
       &larr; Zurueck zur Liste
     </button>
 
-    <p v-if="loadError" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-      {{ loadError }}
-    </p>
+    <ErrorMessage :message="loadError ?? ''" />
 
     <template v-if="household">
       <header>
@@ -138,7 +137,7 @@ function back(): void {
             type="text"
             required
             maxlength="100"
-            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+            class="ee-input w-full"
           />
         </div>
 
@@ -147,9 +146,7 @@ function back(): void {
           <DietTagSelector v-model="editTags" />
         </div>
 
-        <p v-if="saveError" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-          {{ saveError }}
-        </p>
+        <ErrorMessage :message="saveError ?? ''" />
 
         <button
           type="submit"
