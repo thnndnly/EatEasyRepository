@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as mealPlanService from '@/services/mealPlanService'
-import { useAuthStore } from '@/stores/authStore'
+import { useRequireToken } from '@/composables/useRequireToken'
 import type {
   DayOfWeek,
   MealPlanDto,
@@ -36,13 +36,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  function requireToken(): string {
-    const authStore = useAuthStore()
-    if (!authStore.token) {
-      throw new Error('Nicht eingeloggt')
-    }
-    return authStore.token
-  }
+  const requireToken = useRequireToken()
 
   async function load(targetHouseholdId: string, targetWeek?: string): Promise<void> {
     householdId.value = targetHouseholdId
@@ -83,26 +77,73 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     if (!plan.value) {
       throw new Error('Kein Wochenplan geladen')
     }
-    const updated = await mealPlanService.setEntry(requireToken(), plan.value.id, request)
+    error.value = null
+    try {
+      const updated = await mealPlanService.setEntry(requireToken(), plan.value.id, request)
 
-    const next = plan.value.entries.filter(
-      (e) => !(e.dayOfWeek === request.dayOfWeek && e.mealType === request.mealType),
-    )
-    next.push(updated)
-    plan.value = { ...plan.value, entries: next }
-    return updated
+      const next = plan.value.entries.filter(
+        (e) => !(e.dayOfWeek === request.dayOfWeek && e.mealType === request.mealType),
+      )
+      next.push(updated)
+      plan.value = { ...plan.value, entries: next }
+      return updated
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+      throw err
+    }
+  }
+
+  /**
+   * Setzt einen Eintrag im aktuellen Wochenplan eines Haushalts —
+   * laedt den Plan automatisch nach, falls noch nicht geladen oder ein
+   * anderer Haushalt aktiv ist. Praktisch fuer das HomeView-Dialog
+   * "in Wochenplan uebernehmen", das nicht zwingend vom Mealplan-View
+   * kommt.
+   */
+  async function setEntryForHousehold(
+    targetHouseholdId: string,
+    request: SetEntryRequest,
+  ): Promise<MealPlanEntryDto> {
+    error.value = null
+    try {
+      const token = requireToken()
+      const currentPlan = await mealPlanService.getMealPlan(
+        token,
+        targetHouseholdId,
+        weekStart.value,
+      )
+      const updated = await mealPlanService.setEntry(token, currentPlan.id, request)
+      // Wenn wir gerade auf diesen Haushalt schauen, lokal mergen.
+      if (householdId.value === targetHouseholdId && plan.value) {
+        const next = plan.value.entries.filter(
+          (e) => !(e.dayOfWeek === request.dayOfWeek && e.mealType === request.mealType),
+        )
+        next.push(updated)
+        plan.value = { ...plan.value, entries: next }
+      }
+      return updated
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+      throw err
+    }
   }
 
   async function removeEntry(day: DayOfWeek, mealType: MealType): Promise<void> {
     if (!plan.value) {
       return
     }
-    await mealPlanService.removeEntry(requireToken(), plan.value.id, day, mealType)
-    plan.value = {
-      ...plan.value,
-      entries: plan.value.entries.filter(
-        (e) => !(e.dayOfWeek === day && e.mealType === mealType),
-      ),
+    error.value = null
+    try {
+      await mealPlanService.removeEntry(requireToken(), plan.value.id, day, mealType)
+      plan.value = {
+        ...plan.value,
+        entries: plan.value.entries.filter(
+          (e) => !(e.dayOfWeek === day && e.mealType === mealType),
+        ),
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+      throw err
     }
   }
 
@@ -141,6 +182,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     gotoWeek,
     gotoToday,
     setEntry,
+    setEntryForHousehold,
     removeEntry,
     reset,
     entryAt,

@@ -1,12 +1,6 @@
-import type { DietTag } from './dietTags'
+import type { RecipeMiniDto } from './recipe'
 
-export interface RecipeMiniDto {
-  id: string
-  title: string
-  servings: number
-  prepMinutes: number | null
-  dietTags: DietTag[]
-}
+export type { RecipeMiniDto } from './recipe'
 
 export interface SuggestionDto {
   recipe: RecipeMiniDto

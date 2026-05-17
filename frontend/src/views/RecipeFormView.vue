@@ -10,6 +10,7 @@ import RecipeIngredientRow, {
 import type { DietTag } from '@/types/dietTags'
 import type { RecipeCreateRequest, RecipeIngredientRequest } from '@/types/recipe'
 import type { Unit } from '@/types/units'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -34,8 +35,17 @@ const ingredients = ref<RecipeIngredientFormRow[]>([emptyRow()])
 const submitting = ref(false)
 const error = ref<string | null>(null)
 
+function newRowId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // Fallback fuer aeltere Umgebungen (Vitest-jsdom hat randomUUID seit Node 19).
+  return `row-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
 function emptyRow(): RecipeIngredientFormRow {
   return {
+    id: newRowId(),
     ingredientId: null,
     ingredientName: '',
     amount: 0,
@@ -141,6 +151,7 @@ async function loadForEdit(): Promise<void> {
     dietTags.value = [...recipe.dietTags]
     householdId.value = recipe.householdId ?? ''
     ingredients.value = recipe.ingredients.map((ing) => ({
+      id: newRowId(),
       ingredientId: ing.ingredientId,
       ingredientName: ing.ingredientName,
       amount: Number(ing.amount),
@@ -186,7 +197,7 @@ watch(editId, loadForEdit)
           type="text"
           required
           maxlength="200"
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
 
@@ -198,7 +209,7 @@ watch(editId, loadForEdit)
           id="recipe-desc"
           v-model="description"
           rows="2"
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
 
@@ -213,7 +224,7 @@ watch(editId, loadForEdit)
             type="number"
             min="1"
             required
-            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+            class="ee-input w-full"
           />
         </div>
         <div class="space-y-1">
@@ -225,7 +236,7 @@ watch(editId, loadForEdit)
             v-model.number="prepMinutes"
             type="number"
             min="0"
-            class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+            class="ee-input w-full"
           />
         </div>
       </div>
@@ -242,7 +253,7 @@ watch(editId, loadForEdit)
         <select
           id="recipe-hh"
           v-model="householdId"
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         >
           <option value="">Privat (nur ich)</option>
           <option
@@ -269,7 +280,7 @@ watch(editId, loadForEdit)
         <div class="space-y-2">
           <RecipeIngredientRow
             v-for="(row, index) in ingredients"
-            :key="index"
+            :key="row.id"
             :model-value="row"
             :removable="ingredients.length > 1"
             @update:model-value="patchRow(index, $event)"
@@ -287,13 +298,11 @@ watch(editId, loadForEdit)
           v-model="instructions"
           rows="6"
           required
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
 
-      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-        {{ error }}
-      </p>
+      <ErrorMessage :message="error ?? ''" />
 
       <button
         type="submit"

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as recipeService from '@/services/recipeService'
-import { useAuthStore } from '@/stores/authStore'
+import { useRequireToken } from '@/composables/useRequireToken'
 import type {
   RecipeCreateRequest,
   RecipeDto,
@@ -22,13 +22,7 @@ export const useRecipeStore = defineStore('recipe', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const requireToken = (): string => {
-    const authStore = useAuthStore()
-    if (!authStore.token) {
-      throw new Error('Nicht eingeloggt')
-    }
-    return authStore.token
-  }
+  const requireToken = useRequireToken()
 
   async function load(nextFilter?: RecipeFilter): Promise<void> {
     if (nextFilter) {
@@ -53,6 +47,9 @@ export const useRecipeStore = defineStore('recipe', () => {
       const recipe = await recipeService.getRecipe(requireToken(), id)
       current.value = recipe
       return recipe
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Laden fehlgeschlagen'
+      throw err
     } finally {
       loading.value = false
     }

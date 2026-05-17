@@ -1,6 +1,19 @@
 import type { DietTag } from './dietTags'
 import type { Unit } from './units'
 
+/**
+ * Schlanker Rezept-DTO fuer Listen- und Vorschau-Kontexte (Wochenplan,
+ * Suggestion-Karten). Hier zentral definiert, damit Mealplan und Suggestion
+ * dieselbe Struktur nutzen.
+ */
+export interface RecipeMiniDto {
+  id: string
+  title: string
+  servings: number
+  prepMinutes: number | null
+  dietTags: DietTag[]
+}
+
 export interface RecipeIngredientDto {
   id: string
   ingredientId: string

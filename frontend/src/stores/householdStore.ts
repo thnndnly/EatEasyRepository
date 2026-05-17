@@ -2,10 +2,13 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as householdService from '@/services/householdService'
 import { useAuthStore } from '@/stores/authStore'
+import { useRequireToken } from '@/composables/useRequireToken'
 import type {
   HouseholdCreateRequest,
   HouseholdDto,
   HouseholdUpdateRequest,
+  InvitationDto,
+  MemberDto,
 } from '@/types/household'
 
 const STORAGE_SELECTED = 'eateasy.household.selected'
@@ -20,19 +23,18 @@ export const useHouseholdStore = defineStore('household', () => {
   const selectedId = ref<string | null>(null)
   const loading = ref(false)
   const lastLoadedFor = ref<string | null>(null)
+  /**
+   * Mitglieder pro Haushalt — wird beim Oeffnen einer Detail-View geladen
+   * (keine globale Initial-Last). HouseholdId → MemberDto[].
+   */
+  const membersById = ref<Record<string, MemberDto[]>>({})
+  const lastInvitation = ref<InvitationDto | null>(null)
 
   const selected = computed<HouseholdDto | null>(() =>
     households.value.find((h) => h.id === selectedId.value) ?? null,
   )
 
-  function requireToken(): string {
-    const authStore = useAuthStore()
-    const token = authStore.token
-    if (!token) {
-      throw new Error('Nicht eingeloggt')
-    }
-    return token
-  }
+  const requireToken = useRequireToken()
 
   function selectHousehold(id: string | null): void {
     selectedId.value = id
@@ -98,10 +100,34 @@ export const useHouseholdStore = defineStore('household', () => {
     return joined
   }
 
+  async function loadMembers(householdId: string): Promise<MemberDto[]> {
+    const fresh = await householdService.listMembers(requireToken(), householdId)
+    membersById.value = { ...membersById.value, [householdId]: fresh }
+    return fresh
+  }
+
+  function membersOf(householdId: string): MemberDto[] {
+    return membersById.value[householdId] ?? []
+  }
+
+  async function invite(householdId: string, email: string): Promise<InvitationDto> {
+    const created = await householdService.inviteMember(requireToken(), householdId, { email })
+    lastInvitation.value = created
+    return created
+  }
+
+  async function removeMember(householdId: string, memberId: string): Promise<void> {
+    await householdService.removeMember(requireToken(), householdId, memberId)
+    const next = (membersById.value[householdId] ?? []).filter((m) => m.userId !== memberId)
+    membersById.value = { ...membersById.value, [householdId]: next }
+  }
+
   function reset(): void {
     households.value = []
     selectedId.value = null
     lastLoadedFor.value = null
+    membersById.value = {}
+    lastInvitation.value = null
     localStorage.removeItem(STORAGE_SELECTED)
   }
 
@@ -110,12 +136,17 @@ export const useHouseholdStore = defineStore('household', () => {
     selectedId,
     selected,
     loading,
+    lastInvitation,
     selectHousehold,
     load,
     create,
     update,
     refreshOne,
     acceptInvitation,
+    loadMembers,
+    membersOf,
+    invite,
+    removeMember,
     reset,
   }
 })

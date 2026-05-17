@@ -349,4 +349,15 @@ body {
   .ee-link:hover {
     color: var(--color-peach-700);
   }
+
+  /*
+   * Input-Utility — abstrahiert die seit Phase 6 oft wiederholte Klassen-
+   * Kombination "rounded border border-cream-300 px-3 py-2
+   * focus:border-peach-400 focus:outline-none". Statt sie in jedem Template
+   * abzuschreiben, einmal hier definieren. Width-Modifier (`w-full`) usw.
+   * bleiben weiterhin am Element.
+   */
+  .ee-input {
+    @apply rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none;
+  }
 }

@@ -1,4 +1,6 @@
-import type { DietTag } from './dietTags'
+import type { RecipeMiniDto } from './recipe'
+
+export type { RecipeMiniDto } from './recipe'
 
 export const DAYS_OF_WEEK = [
   'MONDAY',
@@ -40,14 +42,6 @@ export const MEAL_TYPE_LABELS: Record<MealType, string> = {
   BREAKFAST: 'Fruehstueck',
   LUNCH: 'Mittag',
   DINNER: 'Abend',
-}
-
-export interface RecipeMiniDto {
-  id: string
-  title: string
-  servings: number
-  prepMinutes: number | null
-  dietTags: DietTag[]
 }
 
 export interface MealPlanEntryDto {

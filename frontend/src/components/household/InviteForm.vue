@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { inviteMember } from '@/services/householdService'
-import { useAuthStore } from '@/stores/authStore'
+import { useHouseholdStore } from '@/stores/householdStore'
 import { useToastStore } from '@/stores/toastStore'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import type { InvitationDto } from '@/types/household'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const authStore = useAuthStore()
+const householdStore = useHouseholdStore()
 const toastStore = useToastStore()
 
 const email = ref('')
@@ -20,17 +20,12 @@ const error = ref<string | null>(null)
 const lastInvitation = ref<InvitationDto | null>(null)
 
 async function onSubmit(): Promise<void> {
-  if (!authStore.token) {
-    error.value = 'Nicht eingeloggt'
-    return
-  }
   error.value = null
   submitting.value = true
   try {
-    lastInvitation.value = await inviteMember(authStore.token, props.householdId, {
-      email: email.value.trim(),
-    })
-    toastStore.success(`Einladung an ${lastInvitation.value.email} verschickt`)
+    const created = await householdStore.invite(props.householdId, email.value.trim())
+    lastInvitation.value = created
+    toastStore.success(`Einladung an ${created.email} verschickt`)
     email.value = ''
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Einladung fehlgeschlagen'
@@ -58,7 +53,7 @@ async function onSubmit(): Promise<void> {
           type="email"
           autocomplete="off"
           required
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
       <button
@@ -70,9 +65,7 @@ async function onSubmit(): Promise<void> {
       </button>
     </form>
 
-    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-      {{ error }}
-    </p>
+    <ErrorMessage :message="error ?? ''" />
 
     <p
       v-if="lastInvitation"

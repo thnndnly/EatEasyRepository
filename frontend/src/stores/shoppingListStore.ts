@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as shoppingListService from '@/services/shoppingListService'
-import { useAuthStore } from '@/stores/authStore'
+import { useRequireToken } from '@/composables/useRequireToken'
 import type { ShoppingListDto, ShoppingListItemDto } from '@/types/shoppingList'
 
 export const useShoppingListStore = defineStore('shoppingList', () => {
@@ -10,13 +10,7 @@ export const useShoppingListStore = defineStore('shoppingList', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  function requireToken(): string {
-    const authStore = useAuthStore()
-    if (!authStore.token) {
-      throw new Error('Nicht eingeloggt')
-    }
-    return authStore.token
-  }
+  const requireToken = useRequireToken()
 
   async function load(targetMealPlanId: string): Promise<void> {
     mealPlanId.value = targetMealPlanId

@@ -5,6 +5,8 @@ import { useHouseholdStore } from '@/stores/householdStore'
 import { useMealPlanStore } from '@/stores/mealPlanStore'
 import MealPlanGrid from '@/components/mealplan/MealPlanGrid.vue'
 import RecipePickerModal from '@/components/mealplan/RecipePickerModal.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import type { DayOfWeek, MealPlanEntryDto, MealType } from '@/types/mealplan'
 import type { RecipeDto } from '@/types/recipe'
 import type { DietTag } from '@/types/dietTags'
@@ -12,28 +14,28 @@ import type { DietTag } from '@/types/dietTags'
 const router = useRouter()
 const householdStore = useHouseholdStore()
 const mealPlanStore = useMealPlanStore()
+const confirmDialog = useConfirmDialog()
 
 const pickerOpen = ref(false)
 const pickerDay = ref<DayOfWeek | null>(null)
 const pickerMealType = ref<MealType | null>(null)
 const pickerInitialServings = ref(2)
 
-const selectedHousehold = computed(() => householdStore.selected)
 const householdDietTags = computed<DietTag[]>(
-  () => (selectedHousehold.value?.defaultDietTags ?? []) as DietTag[],
+  () => (householdStore.selected?.defaultDietTags ?? []) as DietTag[],
 )
 
 async function ensureLoaded(): Promise<void> {
   await householdStore.load()
-  if (selectedHousehold.value) {
-    await mealPlanStore.load(selectedHousehold.value.id)
+  if (householdStore.selected) {
+    await mealPlanStore.load(householdStore.selected.id)
   } else {
     mealPlanStore.reset()
   }
 }
 
 onMounted(ensureLoaded)
-watch(() => selectedHousehold.value?.id, ensureLoaded)
+watch(() => householdStore.selected?.id, ensureLoaded)
 
 function entryAt(day: DayOfWeek, mealType: MealType): MealPlanEntryDto | null {
   return mealPlanStore.entryAt(day, mealType)
@@ -58,13 +60,14 @@ async function onPickerSelect(recipe: RecipeDto, servings: number): Promise<void
       servings,
     })
     pickerOpen.value = false
-  } catch (err: unknown) {
-    mealPlanStore.error = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+  } catch {
+    // Fehler ist im Store gesetzt — Modal bleibt offen, damit User es sieht.
   }
 }
 
 async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
-  if (!confirm('Slot wirklich leeren?')) {
+  const ok = await confirmDialog('Slot wirklich leeren?')
+  if (!ok) {
     return
   }
   await mealPlanStore.removeEntry(day, mealType)
@@ -77,7 +80,7 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
       <div>
         <h1 class="text-2xl font-extrabold tracking-tight">📅 Wochenplan</h1>
         <p class="mt-1 text-sm text-ink-500">
-          {{ selectedHousehold ? selectedHousehold.name : 'Keinen Haushalt ausgewaehlt' }}
+          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
           <span v-if="mealPlanStore.plan"> · Woche {{ mealPlanStore.weekRangeLabel }}</span>
         </p>
       </div>
@@ -95,15 +98,12 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
       </div>
     </div>
 
-    <p
-      v-if="!selectedHousehold"
-      class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 p-8 text-center text-ink-500"
-    >
+    <EmptyState v-if="!householdStore.selected">
       Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
         Haushalte oeffnen
       </button>
-    </p>
+    </EmptyState>
 
     <p
       v-if="mealPlanStore.error"

@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
 import DietTagSelector from '@/components/common/DietTagSelector.vue'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import type { DietTag } from '@/types/dietTags'
 
 const router = useRouter()
@@ -67,7 +68,7 @@ async function onCreate(): Promise<void> {
           type="text"
           required
           maxlength="100"
-          class="w-full rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none"
+          class="ee-input w-full"
         />
       </div>
 
@@ -76,9 +77,7 @@ async function onCreate(): Promise<void> {
         <DietTagSelector v-model="newTags" />
       </div>
 
-      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-        {{ error }}
-      </p>
+      <ErrorMessage :message="error ?? ''" />
 
       <button
         type="submit"

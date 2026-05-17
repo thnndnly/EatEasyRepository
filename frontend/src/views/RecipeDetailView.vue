@@ -5,11 +5,14 @@ import { useAuthStore } from '@/stores/authStore'
 import { useRecipeStore } from '@/stores/recipeStore'
 import { DIET_TAG_LABELS, type DietTag } from '@/types/dietTags'
 import { UNIT_ABBREV } from '@/types/units'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const recipeStore = useRecipeStore()
+const confirmDialog = useConfirmDialog()
 
 const recipeId = computed<string>(() => String(route.params.id))
 const error = ref<string | null>(null)
@@ -29,7 +32,11 @@ async function load(): Promise<void> {
 }
 
 async function onDelete(): Promise<void> {
-  if (!recipe.value || !confirm('Rezept wirklich loeschen?')) {
+  if (!recipe.value) {
+    return
+  }
+  const ok = await confirmDialog('Rezept wirklich loeschen?')
+  if (!ok) {
     return
   }
   try {
@@ -54,9 +61,7 @@ watch(recipeId, load)
       &larr; Zurueck zur Liste
     </button>
 
-    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
-      {{ error }}
-    </p>
+    <ErrorMessage :message="error ?? ''" />
 
     <template v-if="recipe">
       <header class="flex items-start justify-between gap-4">

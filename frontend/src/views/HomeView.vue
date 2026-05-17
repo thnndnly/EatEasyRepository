@@ -2,10 +2,10 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchHealth } from '@/services/healthService'
-import { fetchSuggestions } from '@/services/suggestionService'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { useToastStore } from '@/stores/toastStore'
+import { useSuggestionStore } from '@/stores/suggestionStore'
 import { DIET_TAG_LABELS, type DietTag } from '@/types/dietTags'
 import type { SuggestionDto } from '@/types/suggestion'
 import AddToMealPlanDialog from '@/components/suggestion/AddToMealPlanDialog.vue'
@@ -14,14 +14,11 @@ const router = useRouter()
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
 const toastStore = useToastStore()
+const suggestionStore = useSuggestionStore()
 
 const status = ref<'loading' | 'ok' | 'error'>('loading')
 const detail = ref<string>('Pruefe Backend ...')
 
-const suggestions = ref<SuggestionDto[]>([])
-const suggestLoading = ref(false)
-const suggestError = ref<string | null>(null)
-const suggestRequested = ref(false)
 const planTarget = ref<SuggestionDto | null>(null)
 
 const selected = computed(() => householdStore.selected)
@@ -40,22 +37,13 @@ async function refresh(): Promise<void> {
 }
 
 async function onSuggest(): Promise<void> {
-  if (!authStore.token || !selected.value) {
+  if (!selected.value) {
     return
   }
-  suggestLoading.value = true
-  suggestError.value = null
-  suggestRequested.value = true
   try {
-    suggestions.value = await fetchSuggestions(authStore.token, selected.value.id, {
-      numSuggestions: 3,
-    })
-  } catch (err: unknown) {
-    suggestError.value =
-      err instanceof Error ? err.message : 'Vorschlaege konnten nicht geladen werden'
-    suggestions.value = []
-  } finally {
-    suggestLoading.value = false
+    await suggestionStore.fetch(selected.value.id, { numSuggestions: 3 })
+  } catch {
+    // suggestionStore.error ist bereits gesetzt.
   }
 }
 
@@ -79,8 +67,9 @@ function coveragePercent(value: number): string {
 }
 
 onMounted(async () => {
-  await refresh()
-  await householdStore.load()
+  // Health-Check und Haushaltsliste sind unabhaengig — parallel laden
+  // spart eine Round-Trip-Wartezeit beim Dashboard-Mount.
+  await Promise.all([refresh(), householdStore.load()])
 })
 </script>
 
@@ -110,30 +99,30 @@ onMounted(async () => {
         <button
           type="button"
           class="ee-btn-primary ee-btn-lg"
-          :disabled="!selected || suggestLoading"
+          :disabled="!selected || suggestionStore.loading"
           @click="onSuggest"
         >
-          {{ suggestLoading ? 'Denke nach ...' : 'Vorschlaege holen' }}
+          {{ suggestionStore.loading ? 'Denke nach ...' : 'Vorschlaege holen' }}
         </button>
       </div>
 
       <p
-        v-if="suggestError"
+        v-if="suggestionStore.error"
         class="mt-4 rounded-2xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700"
       >
-        {{ suggestError }}
+        {{ suggestionStore.error }}
       </p>
 
       <p
-        v-else-if="suggestRequested && !suggestLoading && suggestions.length === 0"
+        v-else-if="suggestionStore.requested && !suggestionStore.loading && suggestionStore.suggestions.length === 0"
         class="mt-4 rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-4 py-3 text-sm text-ink-500"
       >
         Keine passenden Rezepte gefunden. Mehr Vorrat anlegen oder Rezepte hinzufuegen.
       </p>
 
-      <ul v-if="suggestions.length > 0" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ul v-if="suggestionStore.suggestions.length > 0" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <li
-          v-for="s in suggestions"
+          v-for="s in suggestionStore.suggestions"
           :key="s.recipe.id"
           class="group rounded-2xl border border-cream-200 bg-cream-50 p-4 transition-all hover:-translate-y-0.5 hover:border-peach-200 hover:bg-white hover:shadow-[0_8px_24px_-12px_rgba(255,154,133,0.4)]"
         >
@@ -180,6 +169,7 @@ onMounted(async () => {
 
     <AddToMealPlanDialog
       v-if="planTarget && selected"
+      :open="planTarget !== null && selected !== null"
       :household-id="selected.id"
       :recipe-id="planTarget.recipe.id"
       :recipe-title="planTarget.recipe.title"

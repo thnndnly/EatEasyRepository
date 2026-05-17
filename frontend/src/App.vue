@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, watch } from 'vue'
+import { watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
@@ -9,6 +9,7 @@ import { usePantryStore } from '@/stores/pantryStore'
 import { useShoppingListStore } from '@/stores/shoppingListStore'
 import HouseholdSwitcher from '@/components/household/HouseholdSwitcher.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
+import AppLogo from '@/components/common/AppLogo.vue'
 
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
@@ -29,12 +30,15 @@ const navLinks = [
   { name: 'shoppinglist', label: 'Einkaufsliste' },
 ] as const
 
-onBeforeMount(async () => {
-  await authStore.restoreSession()
-  if (authStore.isAuthenticated) {
-    void householdStore.load()
-  }
-})
+// `authStore.restoreSession()` wird zentral im Router-Guard
+// (router/index.ts:beforeEach) ausgefuehrt — ein zusaetzlicher Aufruf im
+// onBeforeMount der App-Komponente wuerde dieselbe Initialisierung
+// doppelt ansteuern.
+// Bei bereits eingeloggtem User triggert der Watcher unten den Lade-Pfad
+// (siehe `useAuthStore` returns isAuthenticated=true sofort nach Guard).
+if (authStore.isAuthenticated) {
+  void householdStore.load()
+}
 
 // Synchronisiert den Haushalts-Store mit dem Auth-Status: Login → laden,
 // Logout → Cache leeren, damit der naechste User keinen veralteten Switcher
@@ -55,12 +59,10 @@ watch(
 )
 
 async function onLogout(): Promise<void> {
+  // Stores werden zentral vom Watcher (oben) zurueckgesetzt, sobald
+  // authStore.isAuthenticated auf false wechselt — eine doppelte
+  // Cleanup-Kette hier wuerde dieselben Aktionen redundant ausloesen.
   authStore.logout()
-  householdStore.reset()
-  recipeStore.reset()
-  mealPlanStore.reset()
-  pantryStore.reset()
-  shoppingListStore.reset()
   await router.replace('/login')
 }
 </script>
@@ -74,12 +76,7 @@ async function onLogout(): Promise<void> {
             to="/"
             class="flex items-center gap-2 text-lg font-bold tracking-tight text-ink-900"
           >
-            <span
-              class="flex h-9 w-9 items-center justify-center rounded-2xl text-lg shadow-sm"
-              style="background: linear-gradient(135deg, #ffb5a7 0%, #ffd47a 100%)"
-            >
-              🍅
-            </span>
+            <AppLogo :size="36" />
             EatEasy
           </RouterLink>
           <nav v-if="authStore.isAuthenticated" class="hidden items-center gap-1 text-sm md:flex">

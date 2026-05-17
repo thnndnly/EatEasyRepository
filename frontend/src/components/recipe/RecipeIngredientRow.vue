@@ -4,6 +4,12 @@ import IngredientPicker from './IngredientPicker.vue'
 import { UNITS, UNIT_ABBREV, type Unit } from '@/types/units'
 
 export interface RecipeIngredientFormRow {
+  /**
+   * Stabile UI-Id pro Zeile — wird ausschliesslich fuer `v-for :key` benutzt,
+   * damit Vue beim Einfuegen/Loeschen oder Reordern nicht versehentlich
+   * Inputs zwischen Zeilen recycled. Keine Server-Bedeutung.
+   */
+  id: string
   ingredientId: string | null
   ingredientName: string
   amount: number
