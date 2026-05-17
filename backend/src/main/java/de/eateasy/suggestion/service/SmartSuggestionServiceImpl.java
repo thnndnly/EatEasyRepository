@@ -19,7 +19,6 @@ import de.eateasy.suggestion.client.OllamaGenerateResponse;
 import de.eateasy.suggestion.dto.SuggestionDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
 import java.util.Comparator;
@@ -54,7 +53,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
         PantryService pantryService,
         IngredientService ingredientService,
         HouseholdService householdService,
-        @RestClient OllamaClient ollamaClient,
+        OllamaClient ollamaClient,
         ObjectMapper objectMapper,
         @ConfigProperty(name = "ollama.model", defaultValue = "llama3") String ollamaModel
     ) {
@@ -135,9 +134,15 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
             OllamaGenerateResponse response = ollamaClient.generate(
                 OllamaGenerateRequest.of(ollamaModel, prompt));
             if (response == null || response.response() == null || response.response().isBlank()) {
+                LOG.warnf("Ollama lieferte leere Antwort");
                 return Map.of();
             }
-            return parseOllamaResponse(response.response());
+            LOG.debugf("Ollama raw response: %s", response.response());
+            Map<UUID, String> parsed = parseOllamaResponse(response.response());
+            if (parsed.isEmpty()) {
+                LOG.warnf("Ollama-Antwort parsed zu leerer Map. Raw: %s", response.response());
+            }
+            return parsed;
         } catch (Exception ex) {
             LOG.warnf(ex, "Ollama-Aufruf fehlgeschlagen — falle zurueck auf Coverage-Reihenfolge");
             return Map.of();
@@ -201,15 +206,24 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
     private Map<UUID, String> parseOllamaResponse(String body) {
         try {
             JsonNode root = objectMapper.readTree(body);
-            if (!root.isArray()) {
-                // Manchmal wrapped Ollama es: {"suggestions": [...]} oder aehnlich.
-                root = findFirstArray(root);
+            // Drei Formen, die wir in echt gesehen haben:
+            //   1) [{"recipeId":"...","reason":"..."}]   — der spec-conforme Fall
+            //   2) {"recipeId":"...","reason":"..."}     — kleine Modelle geben oft nur ein Objekt
+            //   3) {"suggestions":[...]} o.ae.            — wrap im Top-Level-Object
+            List<JsonNode> entries;
+            if (root.isArray()) {
+                entries = toList((ArrayNode) root);
+            } else if (root.isObject() && root.has("recipeId")) {
+                entries = List.of(root);
+            } else {
+                JsonNode array = findFirstArray(root);
+                entries = array != null && array.isArray()
+                    ? toList((ArrayNode) array)
+                    : List.of();
             }
-            if (root == null || !root.isArray()) {
-                return Map.of();
-            }
+
             Map<UUID, String> result = new HashMap<>();
-            for (JsonNode node : (ArrayNode) root) {
+            for (JsonNode node : entries) {
                 JsonNode idNode = node.get("recipeId");
                 JsonNode reasonNode = node.get("reason");
                 if (idNode == null || !idNode.isTextual()) {
@@ -227,6 +241,14 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
             LOG.warnf(ex, "Ollama-Antwort nicht parsbar: %s", body);
             return Map.of();
         }
+    }
+
+    private static List<JsonNode> toList(ArrayNode array) {
+        List<JsonNode> out = new java.util.ArrayList<>(array.size());
+        for (JsonNode n : array) {
+            out.add(n);
+        }
+        return out;
     }
 
     private static JsonNode findFirstArray(JsonNode node) {

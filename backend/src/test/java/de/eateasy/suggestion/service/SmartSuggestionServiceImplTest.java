@@ -29,7 +29,6 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +61,6 @@ class SmartSuggestionServiceImplTest {
     RecipeService recipeService;
 
     @InjectMock
-    @RestClient
     OllamaClient ollamaClient;
 
     @Inject
@@ -119,6 +117,27 @@ class SmartSuggestionServiceImplTest {
         assertThat(suggestions.get(0).recipe().title()).isEqualTo("Tomatensalat");
         assertThat(suggestions.get(0).reason()).isEqualTo("Alle Zutaten im Vorrat");
         assertThat(suggestions.get(0).coverage()).isEqualTo(1.0);
+    }
+
+    @Test
+    @DisplayName("Single-Object-Antwort wird ebenfalls akzeptiert (kleine Modelle)")
+    void singleObjectResponse() {
+        UUID userId = registerUser("alice@example.com");
+        UUID householdId = createHousehold(userId, "WG").id();
+        addPantry(userId, householdId, "Tomate", Unit.PIECE);
+        RecipeDto recipe = createRecipe(userId, householdId, "Salat",
+            List.of("Tomate"));
+
+        // Kein Array — direkt das einzelne Objekt. Beobachtet bei llama3.2.
+        String ollamaJson = "{\"recipeId\":\"" + recipe.id() + "\","
+            + "\"reason\":\"Tomate verfuegbar\"}";
+        when(ollamaClient.generate(ArgumentMatchers.any(OllamaGenerateRequest.class)))
+            .thenReturn(new OllamaGenerateResponse("llama3", ollamaJson, true));
+
+        List<SuggestionDto> suggestions = suggestionService.suggest(userId, householdId, 3);
+
+        assertThat(suggestions).hasSize(1);
+        assertThat(suggestions.get(0).reason()).isEqualTo("Tomate verfuegbar");
     }
 
     @Test

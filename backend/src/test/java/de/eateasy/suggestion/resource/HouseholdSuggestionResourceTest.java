@@ -16,7 +16,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ import static org.mockito.Mockito.when;
 class HouseholdSuggestionResourceTest {
 
     @InjectMock
-    @RestClient
     OllamaClient ollamaClient;
 
     @Inject
