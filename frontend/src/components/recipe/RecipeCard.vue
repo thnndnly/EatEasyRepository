@@ -17,8 +17,11 @@ defineProps<Props>()
       <h3 class="text-base font-bold text-ink-900 transition-colors group-hover:text-peach-600">
         {{ recipe.title }}
       </h3>
-      <span v-if="recipe.householdId" class="ee-chip-butter shrink-0">
-        Haushalt
+      <span
+        class="shrink-0"
+        :class="recipe.householdId ? 'ee-chip-butter' : 'ee-chip-lavender'"
+      >
+        {{ recipe.householdId ? 'Haushalt' : 'Privat' }}
       </span>
     </header>
 

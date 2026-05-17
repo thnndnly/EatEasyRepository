@@ -276,7 +276,30 @@ body {
     box-shadow: 0 4px 10px -3px rgba(176, 65, 65, 0.3);
   }
 
-  .ee-chip {
+  /*
+   * Chip-System "Soft Pastel Tags" — gleiche Form + Hoehe + Typografie
+   * ueber alle Farb-Varianten. Tag-Inhalt = Bedeutung; Farb-Variante =
+   * semantische Kategorie:
+   *   peach    → Marken-/Highlight-Tags (selten benutzen)
+   *   mint     → "gesund / frisch / positiv" (Diaet-Tags, Coverage-OK)
+   *   butter   → "wichtig / Rolle Owner / Auszeichnung"
+   *   lavender → "info / neutraler Hinweis"
+   *   rose     → "Warnung / abgelaufen / dringend"
+   *   ink      → "dunkler Akzent / privat / strong"
+   *   neutral  → "Default / passiv / Rolle Mitglied"
+   *
+   * Wie bei den Buttons greift der Sammel-Selektor auf alle Variant-Klassen
+   * direkt — Templates nutzen nur die Color-Klasse ("class=ee-chip-mint"),
+   * nicht "class=ee-chip ee-chip-mint".
+   */
+  .ee-chip,
+  .ee-chip-peach,
+  .ee-chip-mint,
+  .ee-chip-butter,
+  .ee-chip-lavender,
+  .ee-chip-rose,
+  .ee-chip-ink,
+  .ee-chip-neutral {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
@@ -286,6 +309,12 @@ body {
     font-weight: 600;
     line-height: 1.25;
     letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .ee-chip-peach {
+    background: var(--color-peach-100);
+    color: var(--color-peach-700);
   }
   .ee-chip-mint {
     background: var(--color-mint-100);
@@ -302,6 +331,10 @@ body {
   .ee-chip-rose {
     background: var(--color-rose-100);
     color: var(--color-rose-700);
+  }
+  .ee-chip-ink {
+    background: var(--color-ink-100);
+    color: var(--color-ink-900);
   }
   .ee-chip-neutral {
     background: var(--color-cream-200);
