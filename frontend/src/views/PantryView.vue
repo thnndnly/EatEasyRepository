@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { usePantryStore } from '@/stores/pantryStore'
 import AddPantryItemForm from '@/components/pantry/AddPantryItemForm.vue'
-import BarcodeScanner from '@/components/pantry/BarcodeScanner.vue'
 import PantryRow from '@/components/pantry/PantryRow.vue'
+
+// Lazy-loaded — der Scanner zieht @zxing/browser (~430 kB) nach. Wird erst
+// beim Klick auf "Barcode scannen" geladen, damit das initiale Pantry-Bundle
+// klein bleibt.
+const BarcodeScanner = defineAsyncComponent(
+  () => import('@/components/pantry/BarcodeScanner.vue'),
+)
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
