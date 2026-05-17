@@ -27,4 +27,13 @@ public interface IngredientService {
      * Recipe-Zutaten in einer Query zu laden statt n+1.
      */
     Map<UUID, IngredientDto> getByIds(Collection<UUID> ids);
+
+    /**
+     * Loest eine Zutat anhand von (optionaler) ID oder Name auf. Ist {@code id}
+     * gesetzt, wird die Existenz validiert und die ID zurueckgegeben — sonst
+     * wird per {@link #findOrCreate(String, Unit)} angelegt. Vereinheitlicht
+     * das Pattern, das sonst in {@code RecipeServiceImpl} und
+     * {@code PantryServiceImpl} dupliziert ist.
+     */
+    UUID resolveOrCreate(UUID id, String name, Unit defaultUnit);
 }

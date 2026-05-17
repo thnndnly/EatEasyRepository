@@ -1,6 +1,5 @@
 package de.eateasy.shoppinglist.service;
 
-import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.common.units.UnitConverter;
@@ -94,9 +93,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             .orElseThrow(() -> new NotFoundException("Listen-Eintrag nicht gefunden: " + itemId));
 
         UUID householdId = item.getShoppingList().getHouseholdId();
-        if (!householdService.isMember(userId, householdId)) {
-            throw new ForbiddenException("Kein Zugriff auf diese Einkaufsliste");
-        }
+        householdService.assertMember(userId, householdId);
         boolean wasChecked = item.isChecked();
         item.setChecked(checked);
 

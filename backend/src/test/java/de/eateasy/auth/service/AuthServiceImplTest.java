@@ -3,6 +3,7 @@ package de.eateasy.auth.service;
 import de.eateasy.auth.dto.AuthResponse;
 import de.eateasy.auth.dto.LoginRequest;
 import de.eateasy.auth.dto.RegisterRequest;
+import de.eateasy.auth.dto.UserDto;
 import de.eateasy.auth.repository.UserRepository;
 import de.eateasy.common.exception.EmailAlreadyExistsException;
 import de.eateasy.common.exception.InvalidCredentialsException;
@@ -13,6 +14,8 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -85,5 +88,35 @@ class AuthServiceImplTest {
     void loginUnknownEmail() {
         assertThatThrownBy(() -> authService.login(new LoginRequest("unknown@example.com", "secret12")))
             .isInstanceOf(InvalidCredentialsException.class);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("findByEmail liefert Optional.empty fuer unbekannte Email")
+    void findByEmailReturnsEmptyForUnknown() {
+        Optional<UserDto> result = authService.findByEmail("ghost@example.com");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("findByEmail liefert Optional.empty fuer null/leeren Input")
+    void findByEmailReturnsEmptyForBlankInput() {
+        assertThat(authService.findByEmail(null)).isEmpty();
+        assertThat(authService.findByEmail("")).isEmpty();
+        assertThat(authService.findByEmail("   ")).isEmpty();
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("findByEmail findet User case-insensitive")
+    void findByEmailCaseInsensitive() {
+        authService.register(new RegisterRequest("alice@example.com", "secret12", "Alice"));
+
+        Optional<UserDto> result = authService.findByEmail("ALICE@example.com");
+
+        assertThat(result).isPresent();
+        assertThat(result.get().email()).isEqualTo("alice@example.com");
     }
 }

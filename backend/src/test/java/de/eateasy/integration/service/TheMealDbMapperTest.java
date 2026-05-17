@@ -129,6 +129,26 @@ class TheMealDbMapperTest {
             assertThat(TheMealDbMapper.parseMeasure("250 g").unit()).isEqualTo(Unit.GRAM);
             assertThat(TheMealDbMapper.parseMeasure("250 gram").unit()).isEqualTo(Unit.GRAM);
         }
+
+        @Test
+        @DisplayName("kg wird zu GRAM mit Menge x1000 skaliert (Bug-Fix)")
+        void kilogramConvertsToGramWithScaledAmount() {
+            var p = TheMealDbMapper.parseMeasure("2 kg");
+
+            assertThat(p.unit()).isEqualTo(Unit.GRAM);
+            assertThat(p.amount()).isEqualByComparingTo("2000");
+            assertThat(p.fallback()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Liter wird zu ML mit Menge x1000 skaliert")
+        void literConvertsToMlWithScaledAmount() {
+            var p = TheMealDbMapper.parseMeasure("1.5 l");
+
+            assertThat(p.unit()).isEqualTo(Unit.ML);
+            assertThat(p.amount()).isEqualByComparingTo("1500.0");
+            assertThat(p.fallback()).isFalse();
+        }
     }
 
     // --- Builder ---------------------------------------------------------

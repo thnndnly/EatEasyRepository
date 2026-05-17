@@ -47,6 +47,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
     public List<RecipeDto> list(UUID userId, RecipeFilter filter) {
         List<UUID> householdIds = householdService.listHouseholdIdsForUser(userId);
 
@@ -70,6 +71,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
     public RecipeDto get(UUID userId, UUID recipeId) {
         Recipe recipe = loadRecipe(recipeId);
         assertCanRead(userId, recipe);
@@ -134,6 +136,14 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
+    public void updateExternalMetadata(UUID recipeId, String sourceUrl, String externalSource) {
+        Recipe recipe = loadRecipe(recipeId);
+        recipe.setSourceUrl(sourceUrl);
+        recipe.setExternalSource(externalSource);
+    }
+
+    @Override
     public Map<UUID, RecipeMiniDto> getMinis(Collection<UUID> recipeIds) {
         if (recipeIds == null || recipeIds.isEmpty()) {
             return Map.of();
@@ -189,23 +199,11 @@ public class RecipeServiceImpl implements RecipeService {
         }
         List<RecipeIngredient> result = new ArrayList<>(requests.size());
         for (RecipeIngredientRequest req : requests) {
-            UUID ingredientId = resolveIngredientId(req);
+            UUID ingredientId = ingredientService.resolveOrCreate(
+                req.ingredientId(), req.ingredientName(), req.unit());
             result.add(new RecipeIngredient(ingredientId, req.amount(), req.unit(), req.note()));
         }
         return result;
-    }
-
-    private UUID resolveIngredientId(RecipeIngredientRequest req) {
-        if (req.ingredientId() != null) {
-            // Validate existence by triggering NotFound bei unbekannter ID.
-            ingredientService.getById(req.ingredientId());
-            return req.ingredientId();
-        }
-        if (req.ingredientName() == null || req.ingredientName().isBlank()) {
-            throw new BadRequestException("ingredientId oder ingredientName muss gesetzt sein");
-        }
-        IngredientDto created = ingredientService.findOrCreate(req.ingredientName(), req.unit());
-        return created.id();
     }
 
     private Map<UUID, IngredientDto> loadIngredientNames(List<Recipe> recipes) {

@@ -1,5 +1,6 @@
 package de.eateasy.household.service;
 
+import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.household.dto.HouseholdCreateRequest;
 import de.eateasy.household.dto.HouseholdDto;
 import de.eateasy.household.dto.HouseholdUpdateRequest;
@@ -48,4 +49,15 @@ public interface HouseholdService {
      * Wird z. B. von {@code RecipeService} fuer Sichtbarkeits-Queries genutzt.
      */
     List<UUID> listHouseholdIdsForUser(UUID userId);
+
+    /**
+     * Hartes Guard: wirft {@link ForbiddenException}, wenn der User nicht
+     * Mitglied des angegebenen Haushalts ist. Vereinheitlicht das Pattern, das
+     * sonst in jeder fremden Komponente per Hand wiederholt wuerde.
+     */
+    default void assertMember(UUID userId, UUID householdId) {
+        if (!isMember(userId, householdId)) {
+            throw new ForbiddenException("Kein Zugriff auf diesen Haushalt");
+        }
+    }
 }

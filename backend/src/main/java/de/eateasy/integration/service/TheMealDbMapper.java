@@ -2,6 +2,8 @@ package de.eateasy.integration.service;
 
 import de.eateasy.common.diet.DietTag;
 import de.eateasy.common.units.Unit;
+import de.eateasy.common.units.UnitParser;
+import de.eateasy.common.units.UnitParser.UnitParseResult;
 import de.eateasy.integration.client.TheMealDbResponse.IngredientSlot;
 import de.eateasy.integration.client.TheMealDbResponse.TheMealDbMeal;
 import de.eateasy.recipe.dto.RecipeCreateRequest;
@@ -117,9 +119,14 @@ public final class TheMealDbMapper {
             return new ParsedMeasure(BigDecimal.ONE, Unit.PIECE, true);
         }
         BigDecimal amount = parseFraction(m.group("num"));
-        String unitToken = m.group("unit");
-        Unit unit = mapUnit(unitToken);
-        return new ParsedMeasure(amount, unit, false);
+        UnitParseResult unitResult = UnitParser.parse(m.group("unit"), Unit.PIECE);
+        // Multiplier != 1 entspricht einer Einheitskonvertierung (z. B. kg → g).
+        // Wir wenden ihn direkt auf die Menge an, damit das DTO konsistent in
+        // kanonischen Einheiten landet.
+        if (unitResult.multiplier() != 1.0) {
+            amount = amount.multiply(BigDecimal.valueOf(unitResult.multiplier()));
+        }
+        return new ParsedMeasure(amount, unitResult.unit(), false);
     }
 
     private static BigDecimal parseFraction(String token) {
@@ -131,21 +138,6 @@ public final class TheMealDbMapper {
             return num.divide(den, 4, java.math.RoundingMode.HALF_UP);
         }
         return new BigDecimal(token);
-    }
-
-    private static Unit mapUnit(String token) {
-        if (token == null) {
-            return Unit.PIECE;
-        }
-        return switch (token.toLowerCase(Locale.ROOT)) {
-            case "g", "gr", "gram", "grams", "gramme", "gramms" -> Unit.GRAM;
-            case "kg" -> Unit.GRAM; // Konvertierung kommt erst in Stretch — vorerst as-is.
-            case "ml", "milliliter", "milliliters" -> Unit.ML;
-            case "l", "liter", "liters", "litre", "litres" -> Unit.ML;
-            case "tbsp", "tbs", "tablespoon", "tablespoons", "el" -> Unit.TBSP;
-            case "tsp", "teaspoon", "teaspoons", "tl" -> Unit.TSP;
-            default -> Unit.PIECE;
-        };
     }
 
     record ParsedMeasure(BigDecimal amount, Unit unit, boolean fallback) {

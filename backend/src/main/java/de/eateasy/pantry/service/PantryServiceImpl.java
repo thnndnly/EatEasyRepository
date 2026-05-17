@@ -1,6 +1,5 @@
 package de.eateasy.pantry.service;
 
-import de.eateasy.common.exception.BadRequestException;
 import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.common.units.Unit;
@@ -42,10 +41,9 @@ public class PantryServiceImpl implements PantryService {
     }
 
     @Override
+    @Transactional
     public List<PantryItemDto> list(UUID userId, UUID householdId) {
-        if (!householdService.isMember(userId, householdId)) {
-            throw new ForbiddenException("Kein Zugriff auf diesen Haushalt");
-        }
+        householdService.assertMember(userId, householdId);
         List<PantryItem> items = pantryRepository.listByHousehold(householdId);
         Map<UUID, IngredientDto> names = collectIngredientNames(items);
         List<PantryItemDto> result = new ArrayList<>(items.size());
@@ -58,11 +56,10 @@ public class PantryServiceImpl implements PantryService {
     @Override
     @Transactional
     public PantryItemDto add(UUID userId, UUID householdId, AddPantryItemRequest request) {
-        if (!householdService.isMember(userId, householdId)) {
-            throw new ForbiddenException("Kein Zugriff auf diesen Haushalt");
-        }
+        householdService.assertMember(userId, householdId);
 
-        UUID ingredientId = resolveIngredientId(request);
+        UUID ingredientId = ingredientService.resolveOrCreate(
+            request.ingredientId(), request.ingredientName(), request.unit());
 
         Optional<PantryItem> existing = pantryRepository
             .findByHouseholdAndIngredientAndUnit(householdId, ingredientId, request.unit());
@@ -137,17 +134,6 @@ public class PantryServiceImpl implements PantryService {
     private PantryItem loadItem(UUID itemId) {
         return pantryRepository.findByIdOptional(itemId)
             .orElseThrow(() -> new NotFoundException("Vorrats-Eintrag nicht gefunden: " + itemId));
-    }
-
-    private UUID resolveIngredientId(AddPantryItemRequest request) {
-        if (request.ingredientId() != null) {
-            ingredientService.getById(request.ingredientId());
-            return request.ingredientId();
-        }
-        if (request.ingredientName() == null || request.ingredientName().isBlank()) {
-            throw new BadRequestException("ingredientId oder ingredientName muss gesetzt sein");
-        }
-        return ingredientService.findOrCreate(request.ingredientName(), request.unit()).id();
     }
 
     private Map<UUID, IngredientDto> collectIngredientNames(List<PantryItem> items) {

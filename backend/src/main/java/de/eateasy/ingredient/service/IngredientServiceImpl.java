@@ -1,5 +1,6 @@
 package de.eateasy.ingredient.service;
 
+import de.eateasy.common.exception.BadRequestException;
 import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.ingredient.dto.IngredientDto;
@@ -63,5 +64,19 @@ public class IngredientServiceImpl implements IngredientService {
         return ingredientRepository.findByIds(ids).stream()
             .map(IngredientDto::from)
             .collect(Collectors.toMap(IngredientDto::id, Function.identity()));
+    }
+
+    @Override
+    @Transactional
+    public UUID resolveOrCreate(UUID id, String name, Unit defaultUnit) {
+        if (id != null) {
+            // Validate existence — throws NotFoundException bei unbekannter ID.
+            getById(id);
+            return id;
+        }
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("ingredientId oder ingredientName muss gesetzt sein");
+        }
+        return findOrCreate(name, defaultUnit).id();
     }
 }

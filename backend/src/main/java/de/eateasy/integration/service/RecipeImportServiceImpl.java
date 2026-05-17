@@ -9,8 +9,6 @@ import de.eateasy.integration.dto.ExternalRecipePreviewDto;
 import de.eateasy.integration.dto.RecipeImportRequest;
 import de.eateasy.recipe.dto.RecipeCreateRequest;
 import de.eateasy.recipe.dto.RecipeDto;
-import de.eateasy.recipe.entity.Recipe;
-import de.eateasy.recipe.repository.RecipeRepository;
 import de.eateasy.recipe.service.RecipeService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -27,14 +25,11 @@ public class RecipeImportServiceImpl implements RecipeImportService {
 
     private final TheMealDbClient theMealDbClient;
     private final RecipeService recipeService;
-    private final RecipeRepository recipeRepository;
 
     public RecipeImportServiceImpl(@RestClient TheMealDbClient theMealDbClient,
-                                   RecipeService recipeService,
-                                   RecipeRepository recipeRepository) {
+                                   RecipeService recipeService) {
         this.theMealDbClient = theMealDbClient;
         this.recipeService = recipeService;
-        this.recipeRepository = recipeRepository;
     }
 
     @Override
@@ -79,10 +74,9 @@ public class RecipeImportServiceImpl implements RecipeImportService {
         // externen Felder nachpflegen.
         RecipeDto created = recipeService.create(userId, createRequest);
 
-        Recipe persisted = recipeRepository.findByIdOptional(created.id())
-            .orElseThrow(() -> new IllegalStateException("Rezept verschwand direkt nach Anlage: " + created.id()));
-        persisted.setSourceUrl(safeSourceUrl(meal));
-        persisted.setExternalSource(SOURCE_THEMEALDB);
+        // Externe Metadaten nachpflegen via RecipeService — wir vermeiden bewusst
+        // den direkten Zugriff auf RecipeRepository ueber Komponentengrenzen hinweg.
+        recipeService.updateExternalMetadata(created.id(), safeSourceUrl(meal), SOURCE_THEMEALDB);
 
         // Re-fetch ueber RecipeService, damit der Aufrufer die aktualisierten
         // Felder im DTO sieht (sourceUrl, externalSource).

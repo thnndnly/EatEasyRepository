@@ -15,7 +15,12 @@ import jakarta.transaction.Transactional;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class AuthServiceImpl implements AuthService {
@@ -47,7 +52,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
     public AuthResponse login(LoginRequest request) {
         String email = normalizeEmail(request.email());
         User user = userRepository.findByEmail(email)
@@ -61,11 +65,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto getCurrentUser(UUID userId) {
-        return getUser(userId);
-    }
-
-    @Override
     public UserDto getUser(UUID userId) {
         return userRepository.findByIdOptional(userId)
             .map(UserDto::from)
@@ -73,13 +72,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto findByEmail(String email) {
+    public Optional<UserDto> findByEmail(String email) {
         if (email == null || email.isBlank()) {
-            return null;
+            return Optional.empty();
         }
         return userRepository.findByEmail(normalizeEmail(email))
+            .map(UserDto::from);
+    }
+
+    @Override
+    public Map<UUID, UserDto> getUsers(Collection<UUID> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Map.of();
+        }
+        return userRepository.findByIds(userIds).stream()
             .map(UserDto::from)
-            .orElse(null);
+            .collect(Collectors.toMap(UserDto::id, Function.identity()));
     }
 
     private String issueToken(User user) {
