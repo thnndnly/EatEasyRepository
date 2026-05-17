@@ -158,7 +158,7 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | 5     | Vorrat                         | done   |
 | 6     | Einkaufsliste                  | done   |
 | 7     | Externe Rezept-API             | done   |
-| 8     | Barcode-Scan                   | open   |
+| 8     | Barcode-Scan                   | done   |
 | 9     | Smart-Suggestion (Ollama)      | open   |
 | 10    | E-Mail-Notifications           | open   |
 

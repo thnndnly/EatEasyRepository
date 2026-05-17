@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { usePantryStore } from '@/stores/pantryStore'
 import AddPantryItemForm from '@/components/pantry/AddPantryItemForm.vue'
+import BarcodeScanner from '@/components/pantry/BarcodeScanner.vue'
 import PantryRow from '@/components/pantry/PantryRow.vue'
 
 const router = useRouter()
@@ -11,6 +12,7 @@ const householdStore = useHouseholdStore()
 const pantryStore = usePantryStore()
 
 const selected = computed(() => householdStore.selected)
+const scannerOpen = ref(false)
 
 async function ensureLoaded(): Promise<void> {
   await householdStore.load()
@@ -70,12 +72,29 @@ async function onRemove(id: string): Promise<void> {
 
 <template>
   <section class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-semibold">Vorrat</h1>
-      <p class="mt-1 text-sm text-slate-600">
-        {{ selected ? selected.name : 'Keinen Haushalt ausgewaehlt' }}
-      </p>
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold">Vorrat</h1>
+        <p class="mt-1 text-sm text-slate-600">
+          {{ selected ? selected.name : 'Keinen Haushalt ausgewaehlt' }}
+        </p>
+      </div>
+      <button
+        v-if="selected"
+        type="button"
+        class="rounded border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        @click="scannerOpen = true"
+      >
+        Barcode scannen
+      </button>
     </div>
+
+    <BarcodeScanner
+      v-if="scannerOpen && selected"
+      :household-id="selected.id"
+      @close="scannerOpen = false"
+      @added="scannerOpen = false"
+    />
 
     <p
       v-if="!selected"

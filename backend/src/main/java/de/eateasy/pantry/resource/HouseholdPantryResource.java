@@ -1,6 +1,8 @@
 package de.eateasy.pantry.resource;
 
 import de.eateasy.common.security.CurrentUser;
+import de.eateasy.integration.dto.BarcodePantryRequest;
+import de.eateasy.integration.service.BarcodeService;
 import de.eateasy.pantry.dto.AddPantryItemRequest;
 import de.eateasy.pantry.dto.PantryItemDto;
 import de.eateasy.pantry.service.PantryService;
@@ -30,10 +32,14 @@ import java.util.UUID;
 public class HouseholdPantryResource {
 
     private final PantryService pantryService;
+    private final BarcodeService barcodeService;
     private final CurrentUser currentUser;
 
-    public HouseholdPantryResource(PantryService pantryService, CurrentUser currentUser) {
+    public HouseholdPantryResource(PantryService pantryService,
+                                   BarcodeService barcodeService,
+                                   CurrentUser currentUser) {
         this.pantryService = pantryService;
+        this.barcodeService = barcodeService;
         this.currentUser = currentUser;
     }
 
@@ -46,6 +52,14 @@ public class HouseholdPantryResource {
     public Response add(@PathParam("householdId") UUID householdId,
                         @Valid AddPantryItemRequest request) {
         PantryItemDto dto = pantryService.add(currentUser.id(), householdId, request);
+        return Response.status(Response.Status.CREATED).entity(dto).build();
+    }
+
+    @POST
+    @Path("/barcode")
+    public Response addByBarcode(@PathParam("householdId") UUID householdId,
+                                 @Valid BarcodePantryRequest request) {
+        PantryItemDto dto = barcodeService.addToPantry(currentUser.id(), householdId, request);
         return Response.status(Response.Status.CREATED).entity(dto).build();
     }
 }
