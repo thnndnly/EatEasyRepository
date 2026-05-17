@@ -63,11 +63,13 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
+    @Transactional
     public MealPlanDto getCurrent(UUID userId, UUID householdId) {
         return getOrCreate(userId, householdId, LocalDate.now());
     }
 
     @Override
+    @Transactional
     public MealPlanDto getById(UUID userId, UUID mealPlanId) {
         MealPlan plan = loadPlan(mealPlanId);
         if (!householdService.isMember(userId, plan.getHouseholdId())) {

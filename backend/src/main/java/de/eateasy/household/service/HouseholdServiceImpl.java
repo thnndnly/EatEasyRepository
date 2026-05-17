@@ -27,9 +27,15 @@ import jakarta.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class HouseholdServiceImpl implements HouseholdService {
@@ -75,17 +81,33 @@ public class HouseholdServiceImpl implements HouseholdService {
     }
 
     @Override
+    @Transactional
     public List<HouseholdDto> listForUser(UUID userId) {
-        return membershipRepository.findByUser(userId).stream()
-            .map(m -> {
-                Household household = householdRepository.findByIdOptional(m.getHouseholdId())
-                    .orElseThrow(() -> new NotFoundException("Haushalt nicht gefunden: " + m.getHouseholdId()));
-                return HouseholdDto.from(household, m.getRole());
-            })
-            .toList();
+        // N+1 vermeiden: erst alle Memberships laden, dann die zugehoerigen
+        // Haushalte in einem Batch-Query holen, anschliessend in-memory mappen.
+        List<HouseholdMembership> memberships = membershipRepository.findByUser(userId);
+        if (memberships.isEmpty()) {
+            return List.of();
+        }
+        Set<UUID> householdIds = memberships.stream()
+            .map(HouseholdMembership::getHouseholdId)
+            .collect(Collectors.toCollection(HashSet::new));
+        Map<UUID, Household> householdsById = householdRepository.findByIds(householdIds).stream()
+            .collect(Collectors.toMap(Household::getId, Function.identity()));
+
+        List<HouseholdDto> result = new ArrayList<>(memberships.size());
+        for (HouseholdMembership m : memberships) {
+            Household household = householdsById.get(m.getHouseholdId());
+            if (household == null) {
+                throw new NotFoundException("Haushalt nicht gefunden: " + m.getHouseholdId());
+            }
+            result.add(HouseholdDto.from(household, m.getRole()));
+        }
+        return result;
     }
 
     @Override
+    @Transactional
     public HouseholdDto get(UUID userId, UUID householdId) {
         HouseholdMembership membership = assertMembership(userId, householdId);
         Household household = loadHousehold(householdId);
@@ -174,19 +196,34 @@ public class HouseholdServiceImpl implements HouseholdService {
     }
 
     @Override
+    @Transactional
     public List<MemberDto> listMembers(UUID userId, UUID householdId) {
         assertMembership(userId, householdId);
-        return membershipRepository.findByHousehold(householdId).stream()
-            .map(m -> {
-                UserDto user = authService.getUser(m.getUserId());
-                return new MemberDto(
-                    user.id(),
-                    user.email(),
-                    user.displayName(),
-                    m.getRole(),
-                    m.getJoinedAt());
-            })
-            .toList();
+        List<HouseholdMembership> memberships = membershipRepository.findByHousehold(householdId);
+        if (memberships.isEmpty()) {
+            return List.of();
+        }
+        // N+1 vermeiden: User-Daten in einem Batch-Query holen statt pro Member
+        // einzeln. AuthService kapselt den Cross-Component-Zugriff aufs UserRepo.
+        Set<UUID> userIds = memberships.stream()
+            .map(HouseholdMembership::getUserId)
+            .collect(Collectors.toCollection(HashSet::new));
+        Map<UUID, UserDto> usersById = authService.getUsers(userIds);
+
+        List<MemberDto> result = new ArrayList<>(memberships.size());
+        for (HouseholdMembership m : memberships) {
+            UserDto user = usersById.get(m.getUserId());
+            if (user == null) {
+                throw new NotFoundException("User nicht gefunden: " + m.getUserId());
+            }
+            result.add(new MemberDto(
+                user.id(),
+                user.email(),
+                user.displayName(),
+                m.getRole(),
+                m.getJoinedAt()));
+        }
+        return result;
     }
 
     @Override
@@ -205,11 +242,13 @@ public class HouseholdServiceImpl implements HouseholdService {
     }
 
     @Override
+    @Transactional
     public boolean isMember(UUID userId, UUID householdId) {
         return membershipRepository.existsByUserAndHousehold(userId, householdId);
     }
 
     @Override
+    @Transactional
     public List<UUID> listHouseholdIdsForUser(UUID userId) {
         return membershipRepository.findByUser(userId).stream()
             .map(HouseholdMembership::getHouseholdId)

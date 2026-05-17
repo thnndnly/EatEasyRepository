@@ -5,6 +5,8 @@ import de.eateasy.auth.dto.LoginRequest;
 import de.eateasy.auth.dto.RegisterRequest;
 import de.eateasy.auth.dto.UserDto;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,4 +33,12 @@ public interface AuthService {
      * sein muss.
      */
     Optional<UserDto> findByEmail(String email);
+
+    /**
+     * Batch-Lookup mehrerer User per ID. Wird von anderen Komponenten genutzt,
+     * die mehrere Foreign-Keys auf einmal aufloesen muessen (z. B.
+     * {@code HouseholdService.listMembers}). Fehlende IDs tauchen schlicht
+     * nicht in der Map auf — kein Throw.
+     */
+    Map<UUID, UserDto> getUsers(Collection<UUID> userIds);
 }

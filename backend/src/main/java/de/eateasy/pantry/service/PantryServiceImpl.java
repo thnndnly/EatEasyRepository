@@ -42,6 +42,7 @@ public class PantryServiceImpl implements PantryService {
     }
 
     @Override
+    @Transactional
     public List<PantryItemDto> list(UUID userId, UUID householdId) {
         if (!householdService.isMember(userId, householdId)) {
             throw new ForbiddenException("Kein Zugriff auf diesen Haushalt");

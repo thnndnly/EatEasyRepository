@@ -47,6 +47,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
     public List<RecipeDto> list(UUID userId, RecipeFilter filter) {
         List<UUID> householdIds = householdService.listHouseholdIdsForUser(userId);
 
@@ -70,6 +71,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
     public RecipeDto get(UUID userId, UUID recipeId) {
         Recipe recipe = loadRecipe(recipeId);
         assertCanRead(userId, recipe);
