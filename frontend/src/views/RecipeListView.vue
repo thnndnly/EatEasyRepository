@@ -5,7 +5,9 @@ import { useRecipeStore } from '@/stores/recipeStore'
 import { useHouseholdStore } from '@/stores/householdStore'
 import RecipeCard from '@/components/recipe/RecipeCard.vue'
 import DietTagSelector from '@/components/common/DietTagSelector.vue'
+import ExternalRecipeSearch from '@/components/recipe/ExternalRecipeSearch.vue'
 import type { DietTag } from '@/types/dietTags'
+import type { RecipeDto } from '@/types/recipe'
 
 const router = useRouter()
 const recipeStore = useRecipeStore()
@@ -14,6 +16,12 @@ const householdStore = useHouseholdStore()
 const query = ref('')
 const tags = ref<DietTag[]>([])
 const householdFilter = ref<string>('')
+const importOpen = ref(false)
+
+async function onImported(recipe: RecipeDto): Promise<void> {
+  importOpen.value = false
+  await router.push({ name: 'recipe-detail', params: { id: recipe.id } })
+}
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -53,14 +61,29 @@ const recipes = computed(() => recipeStore.recipes)
         <h1 class="text-2xl font-semibold">Rezepte</h1>
         <p class="mt-1 text-slate-600">Eigene und Haushalts-Rezepte mit Filter.</p>
       </div>
-      <button
-        type="button"
-        class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-        @click="router.push({ name: 'recipe-new' })"
-      >
-        Neues Rezept
-      </button>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="rounded border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          @click="importOpen = true"
+        >
+          Aus Quelle importieren
+        </button>
+        <button
+          type="button"
+          class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+          @click="router.push({ name: 'recipe-new' })"
+        >
+          Neues Rezept
+        </button>
+      </div>
     </div>
+
+    <ExternalRecipeSearch
+      v-if="importOpen"
+      @close="importOpen = false"
+      @imported="onImported"
+    />
 
     <div class="grid gap-4 lg:grid-cols-[220px_1fr]">
       <aside class="space-y-5 rounded-lg border border-slate-200 bg-white p-4">

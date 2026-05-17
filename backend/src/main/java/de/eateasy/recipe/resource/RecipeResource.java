@@ -1,6 +1,8 @@
 package de.eateasy.recipe.resource;
 
 import de.eateasy.common.security.CurrentUser;
+import de.eateasy.integration.dto.RecipeImportRequest;
+import de.eateasy.integration.service.RecipeImportService;
 import de.eateasy.recipe.dto.RecipeCreateRequest;
 import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
@@ -31,10 +33,14 @@ import java.util.UUID;
 public class RecipeResource {
 
     private final RecipeService recipeService;
+    private final RecipeImportService recipeImportService;
     private final CurrentUser currentUser;
 
-    public RecipeResource(RecipeService recipeService, CurrentUser currentUser) {
+    public RecipeResource(RecipeService recipeService,
+                          RecipeImportService recipeImportService,
+                          CurrentUser currentUser) {
         this.recipeService = recipeService;
+        this.recipeImportService = recipeImportService;
         this.currentUser = currentUser;
     }
 
@@ -56,6 +62,13 @@ public class RecipeResource {
     @POST
     public Response create(@Valid RecipeCreateRequest request) {
         RecipeDto dto = recipeService.create(currentUser.id(), request);
+        return Response.status(Response.Status.CREATED).entity(dto).build();
+    }
+
+    @POST
+    @Path("/import")
+    public Response importRecipe(@Valid RecipeImportRequest request) {
+        RecipeDto dto = recipeImportService.importRecipe(currentUser.id(), request);
         return Response.status(Response.Status.CREATED).entity(dto).build();
     }
 

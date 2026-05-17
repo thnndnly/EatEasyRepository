@@ -104,6 +104,19 @@ watch(recipeId, load)
           <dt>Sichtbarkeit:</dt>
           <dd class="font-medium text-slate-800">Haushalt</dd>
         </div>
+        <div v-if="recipe.sourceUrl" class="flex items-center gap-1">
+          <dt>Quelle:</dt>
+          <dd class="font-medium">
+            <a
+              :href="recipe.sourceUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-emerald-700 hover:underline"
+            >
+              {{ recipe.externalSource ?? 'Externer Link' }} ↗
+            </a>
+          </dd>
+        </div>
       </dl>
 
       <section class="space-y-3 rounded-lg border border-slate-200 bg-white p-5">
