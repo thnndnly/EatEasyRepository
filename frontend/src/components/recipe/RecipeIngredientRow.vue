@@ -82,7 +82,7 @@ function patch<K extends keyof RecipeIngredientFormRow>(
       <button
         v-if="removable"
         type="button"
-        class="rounded border border-rose-200 bg-white px-2 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-100"
+        class="ee-btn-danger ee-btn-sm"
         @click="emit('remove')"
       >
         ✕

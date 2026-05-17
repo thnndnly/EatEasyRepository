@@ -169,7 +169,7 @@ onMounted(async () => {
           </ul>
           <button
             type="button"
-            class="ee-btn-secondary mt-3 w-full text-xs"
+            class="ee-btn-secondary ee-btn-sm mt-3 w-full"
             @click="startPlanAdd(s)"
           >
             Zum Wochenplan

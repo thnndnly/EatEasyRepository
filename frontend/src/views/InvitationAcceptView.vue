@@ -64,7 +64,7 @@ onMounted(() => {
         </p>
         <button
           type="button"
-          class="mt-4 w-full rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500"
+          class="mt-4 ee-btn-primary w-full"
           @click="accept"
         >
           Annehmen
@@ -81,7 +81,7 @@ onMounted(() => {
         </p>
         <button
           type="button"
-          class="mt-4 w-full rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500"
+          class="mt-4 ee-btn-primary w-full"
           @click="goToHousehold"
         >
           Zum Haushalt
@@ -89,12 +89,12 @@ onMounted(() => {
       </template>
 
       <template v-else-if="status === 'error'">
-        <p class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+        <p class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
           {{ error }}
         </p>
         <button
           type="button"
-          class="mt-4 w-full rounded border border-cream-300 bg-white px-4 py-2 font-medium text-ink-700 hover:bg-cream-50"
+          class="ee-btn-secondary mt-4 w-full"
           @click="accept"
         >
           Erneut versuchen

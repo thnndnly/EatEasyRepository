@@ -260,7 +260,7 @@ watch(editId, loadForEdit)
           <h2 class="text-base font-semibold text-ink-900">Zutaten</h2>
           <button
             type="button"
-            class="rounded border border-cream-300 bg-white px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-cream-50"
+            class="ee-btn-secondary"
             @click="addRow"
           >
             + Zutat
@@ -291,14 +291,14 @@ watch(editId, loadForEdit)
         />
       </div>
 
-      <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
         {{ error }}
       </p>
 
       <button
         type="submit"
         :disabled="submitting"
-        class="rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+        class="ee-btn-primary"
       >
         {{ submitting ? 'Speichere ...' : isEdit ? 'Aenderungen speichern' : 'Rezept anlegen' }}
       </button>

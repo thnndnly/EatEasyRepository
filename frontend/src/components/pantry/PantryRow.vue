@@ -137,18 +137,18 @@ function onRemove(): void {
 
     <td class="px-4 py-3 text-right text-sm">
       <template v-if="editing">
-        <button type="button" class="ee-btn-primary text-xs" @click="save">
+        <button type="button" class="ee-btn-primary ee-btn-sm" @click="save">
           Speichern
         </button>
-        <button type="button" class="ee-btn-ghost ml-2 text-xs" @click="cancel">
+        <button type="button" class="ee-btn-ghost ee-btn-sm ml-2" @click="cancel">
           Abbrechen
         </button>
       </template>
       <template v-else>
-        <button type="button" class="ee-btn-secondary text-xs" @click="startEdit">
+        <button type="button" class="ee-btn-secondary ee-btn-sm" @click="startEdit">
           Bearbeiten
         </button>
-        <button type="button" class="ee-btn-danger ml-2 text-xs" @click="onRemove">
+        <button type="button" class="ee-btn-danger ee-btn-sm ml-2" @click="onRemove">
           Loeschen
         </button>
       </template>

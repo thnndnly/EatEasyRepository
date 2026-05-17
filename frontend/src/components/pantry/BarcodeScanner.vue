@@ -161,7 +161,7 @@ onBeforeUnmount(() => {
       <div class="space-y-4 px-5 py-4">
         <p
           v-if="error"
-          class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700"
+          class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700"
         >
           {{ error }}
         </p>
@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
           </p>
           <button
             type="button"
-            class="w-full rounded border border-cream-300 px-3 py-2 text-sm font-medium text-ink-700 hover:bg-cream-50"
+            class="ee-btn-secondary w-full"
             @click="switchToManual"
           >
             Stattdessen manuell eingeben
@@ -200,7 +200,7 @@ onBeforeUnmount(() => {
             <button
               type="submit"
               :disabled="loading"
-              class="w-full rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+              class="ee-btn-primary w-full"
             >
               {{ loading ? 'Lade ...' : 'Produkt suchen' }}
             </button>
@@ -264,7 +264,7 @@ onBeforeUnmount(() => {
             <button
               type="submit"
               :disabled="loading"
-              class="w-full rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+              class="ee-btn-primary w-full"
             >
               {{ loading ? 'Speichere ...' : 'In Vorrat uebernehmen' }}
             </button>

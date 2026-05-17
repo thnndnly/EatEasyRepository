@@ -111,7 +111,7 @@ function back(): void {
       &larr; Zurueck zur Liste
     </button>
 
-    <p v-if="loadError" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+    <p v-if="loadError" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
       {{ loadError }}
     </p>
 
@@ -147,14 +147,14 @@ function back(): void {
           <DietTagSelector v-model="editTags" />
         </div>
 
-        <p v-if="saveError" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+        <p v-if="saveError" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
           {{ saveError }}
         </p>
 
         <button
           type="submit"
           :disabled="saving"
-          class="rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+          class="ee-btn-primary"
         >
           {{ saving ? 'Speichere ...' : 'Speichern' }}
         </button>

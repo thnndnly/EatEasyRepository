@@ -64,19 +64,19 @@ async function onSubmit(): Promise<void> {
       <button
         type="submit"
         :disabled="submitting"
-        class="rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+        class="ee-btn-primary"
       >
         {{ submitting ? 'Sende ...' : 'Einladen' }}
       </button>
     </form>
 
-    <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
       {{ error }}
     </p>
 
     <p
       v-if="lastInvitation"
-      class="rounded border border-peach-200 bg-peach-50 px-4 py-3 text-sm text-peach-700"
+      class="rounded-2xl border border-mint-200 bg-mint-50 px-4 py-3 text-sm font-medium text-mint-700"
     >
       Einladungsmail an <strong>{{ lastInvitation.email }}</strong> verschickt.
       Sie ist 7 Tage gueltig.

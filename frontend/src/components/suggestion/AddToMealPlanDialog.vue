@@ -78,7 +78,7 @@ async function onSave(): Promise<void> {
       <form class="space-y-3 px-5 py-4" @submit.prevent="onSave">
         <p
           v-if="error"
-          class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700"
+          class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700"
         >
           {{ error }}
         </p>
@@ -124,7 +124,7 @@ async function onSave(): Promise<void> {
         <button
           type="submit"
           :disabled="saving"
-          class="w-full rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+          class="ee-btn-primary w-full"
         >
           {{ saving ? 'Speichere ...' : 'Slot setzen' }}
         </button>

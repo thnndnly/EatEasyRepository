@@ -54,7 +54,7 @@ watch(recipeId, load)
       &larr; Zurueck zur Liste
     </button>
 
-    <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
       {{ error }}
     </p>
 
@@ -67,7 +67,7 @@ watch(recipeId, load)
             <li
               v-for="tag in recipe.dietTags"
               :key="tag"
-              class="rounded bg-peach-50 px-2 py-0.5 text-xs font-medium text-peach-700"
+              class="ee-chip-mint"
             >
               {{ DIET_TAG_LABELS[tag as DietTag] }}
             </li>
@@ -76,14 +76,14 @@ watch(recipeId, load)
         <div v-if="isOwner" class="flex gap-2">
           <button
             type="button"
-            class="rounded border border-cream-300 bg-white px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-cream-50"
+            class="ee-btn-secondary"
             @click="router.push({ name: 'recipe-edit', params: { id: recipe.id } })"
           >
             Bearbeiten
           </button>
           <button
             type="button"
-            class="rounded border border-rose-200 bg-white px-3 py-1.5 text-sm font-medium text-rose-700 hover:bg-rose-100"
+            class="ee-btn-danger"
             @click="onDelete"
           >
             Loeschen

@@ -47,7 +47,7 @@ async function onCreate(): Promise<void> {
       </div>
       <button
         type="button"
-        class="rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500"
+        class="ee-btn-primary"
         @click="showCreate = !showCreate"
       >
         {{ showCreate ? 'Abbrechen' : 'Neuer Haushalt' }}
@@ -76,14 +76,14 @@ async function onCreate(): Promise<void> {
         <DietTagSelector v-model="newTags" />
       </div>
 
-      <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
         {{ error }}
       </p>
 
       <button
         type="submit"
         :disabled="submitting"
-        class="rounded bg-peach-400 px-4 py-2 font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+        class="ee-btn-primary"
       >
         {{ submitting ? 'Lege an ...' : 'Anlegen' }}
       </button>
@@ -100,14 +100,7 @@ async function onCreate(): Promise<void> {
       >
         <div class="flex items-start justify-between gap-3">
           <h2 class="text-lg font-semibold text-ink-900">{{ household.name }}</h2>
-          <span
-            class="rounded px-2 py-0.5 text-xs font-medium"
-            :class="
-              household.role === 'OWNER'
-                ? 'bg-butter-100 text-butter-700'
-                : 'bg-cream-200 text-ink-700'
-            "
-          >
+          <span :class="household.role === 'OWNER' ? 'ee-chip-butter' : 'ee-chip-neutral'">
             {{ household.role === 'OWNER' ? 'Owner' : 'Mitglied' }}
           </span>
         </div>

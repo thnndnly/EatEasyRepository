@@ -110,7 +110,7 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
               <button
                 type="submit"
                 :disabled="searching"
-                class="rounded bg-peach-400 px-4 py-2 text-sm font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+                class="ee-btn-primary"
               >
                 {{ searching ? 'Suche ...' : 'Suchen' }}
               </button>
@@ -140,7 +140,7 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
       </div>
 
       <div class="flex-1 overflow-auto px-5 py-4">
-        <p v-if="error" class="rounded border border-rose-200 bg-rose-100 px-3 py-2 text-sm text-rose-700">
+        <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700">
           {{ error }}
         </p>
 
@@ -167,7 +167,7 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
             <button
               type="button"
               :disabled="importingId !== null"
-              class="rounded bg-peach-400 px-3 py-1.5 text-xs font-medium text-white hover:bg-peach-500 disabled:cursor-not-allowed disabled:opacity-60"
+              class="ee-btn-primary ee-btn-sm"
               @click="onImport(preview)"
             >
               {{ importingId === preview.externalId ? 'Importiere ...' : 'Importieren' }}
