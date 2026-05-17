@@ -86,6 +86,22 @@ npm run type-check
 npm run test:unit -- --run
 ```
 
+**End-to-End-Smoke-Test** (Backend + Maildev + Ollama muessen laufen):
+
+```bash
+bash scripts/smoke-test.sh
+```
+
+Geht alle Phasen 0–10 live durch (Auth, Haushalt, Rezepte, Wochenplan,
+Vorrat, Einkaufsliste, TheMealDB-Import, OpenFoodFacts-Lookup,
+Ollama-Suggestion, Mail-Versand an Maildev). Setzt eindeutige
+Test-Emails pro Run (`alice-<timestamp>@example.com`), kann beliebig
+wiederholt werden.
+
+**CI:** `.github/workflows/ci.yml` faehrt Backend-Tests (mit
+Testcontainers/Postgres) und Frontend-Build parallel bei jedem
+push/PR auf `main`.
+
 ---
 
 ## Datenbank
