@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { searchIngredients } from '@/services/ingredientService'
-import { useAuthStore } from '@/stores/authStore'
+import { useIngredientStore } from '@/stores/ingredientStore'
 import type { IngredientDto } from '@/types/ingredient'
 
 interface Props {
@@ -17,9 +16,11 @@ const emit = defineEmits<{
   'update:modelValue': [value: { id: string | null; name: string }]
 }>()
 
-const authStore = useAuthStore()
+const ingredientStore = useIngredientStore()
 
 const inputValue = ref(props.modelValue.name)
+// Lokale Kopie der Treffer — eigenes Snapshot pro Picker, damit zwei
+// Picker auf derselben Seite sich nicht gegenseitig die Liste ueberschreiben.
 const results = ref<IngredientDto[]>([])
 const open = ref(false)
 const loading = ref(false)
@@ -36,12 +37,11 @@ watch(
 )
 
 async function runSearch(): Promise<void> {
-  if (!authStore.token) {
-    return
-  }
   loading.value = true
   try {
-    results.value = await searchIngredients(authStore.token, inputValue.value, 10)
+    results.value = await ingredientStore.search(inputValue.value, 10)
+  } catch {
+    results.value = []
   } finally {
     loading.value = false
   }

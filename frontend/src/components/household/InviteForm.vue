@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { inviteMember } from '@/services/householdService'
-import { useAuthStore } from '@/stores/authStore'
+import { useHouseholdStore } from '@/stores/householdStore'
 import { useToastStore } from '@/stores/toastStore'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import type { InvitationDto } from '@/types/household'
@@ -12,7 +11,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const authStore = useAuthStore()
+const householdStore = useHouseholdStore()
 const toastStore = useToastStore()
 
 const email = ref('')
@@ -21,17 +20,12 @@ const error = ref<string | null>(null)
 const lastInvitation = ref<InvitationDto | null>(null)
 
 async function onSubmit(): Promise<void> {
-  if (!authStore.token) {
-    error.value = 'Nicht eingeloggt'
-    return
-  }
   error.value = null
   submitting.value = true
   try {
-    lastInvitation.value = await inviteMember(authStore.token, props.householdId, {
-      email: email.value.trim(),
-    })
-    toastStore.success(`Einladung an ${lastInvitation.value.email} verschickt`)
+    const created = await householdStore.invite(props.householdId, email.value.trim())
+    lastInvitation.value = created
+    toastStore.success(`Einladung an ${created.email} verschickt`)
     email.value = ''
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Einladung fehlgeschlagen'

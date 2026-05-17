@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import * as externalRecipeService from '@/services/externalRecipeService'
-import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
+import { useIntegrationStore } from '@/stores/integrationStore'
 import BaseModal from '@/components/common/BaseModal.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import type { ExternalRecipePreviewDto } from '@/types/externalRecipe'
@@ -18,54 +17,34 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
+const integrationStore = useIntegrationStore()
 
 const source = ref<string>('themealdb')
 const query = ref('')
 const householdId = ref<string>('')
-const results = ref<ExternalRecipePreviewDto[]>([])
-const searching = ref(false)
-const importingId = ref<string | null>(null)
-const error = ref<string | null>(null)
 
 async function onSearch(): Promise<void> {
-  if (!authStore.token || !query.value.trim()) {
+  if (!query.value.trim()) {
     return
   }
-  searching.value = true
-  error.value = null
   try {
-    results.value = await externalRecipeService.searchExternal(
-      authStore.token,
-      source.value,
-      query.value.trim(),
-    )
-  } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Suche fehlgeschlagen'
-    results.value = []
-  } finally {
-    searching.value = false
+    await integrationStore.searchExternal(source.value, query.value.trim())
+  } catch {
+    // integrationStore.error ist gesetzt.
   }
 }
 
 async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
-  if (!authStore.token) {
-    return
-  }
-  importingId.value = preview.externalId
-  error.value = null
   try {
-    const recipe = await externalRecipeService.importExternalRecipe(authStore.token, {
+    const recipe = await integrationStore.importExternal({
       source: preview.source,
       externalId: preview.externalId,
       householdId: householdId.value || null,
     })
     emit('imported', recipe)
-  } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Import fehlgeschlagen'
-  } finally {
-    importingId.value = null
+  } catch {
+    // integrationStore.error ist gesetzt.
   }
 }
 </script>
@@ -104,10 +83,10 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
               />
               <button
                 type="submit"
-                :disabled="searching"
+                :disabled="integrationStore.searching"
                 class="ee-btn-primary"
               >
-                {{ searching ? 'Suche ...' : 'Suchen' }}
+                {{ integrationStore.searching ? 'Suche ...' : 'Suchen' }}
               </button>
             </form>
           </div>
@@ -134,11 +113,11 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
         </div>
       </div>
 
-      <ErrorMessage :message="error ?? ''" />
+      <ErrorMessage :message="integrationStore.error ?? ''" />
 
-      <ul v-if="results.length > 0" class="space-y-2">
+      <ul v-if="integrationStore.results.length > 0" class="space-y-2">
         <li
-          v-for="preview in results"
+          v-for="preview in integrationStore.results"
           :key="preview.externalId"
           class="flex items-center gap-3 rounded border border-cream-200 px-3 py-2 hover:border-peach-300"
         >
@@ -158,17 +137,17 @@ async function onImport(preview: ExternalRecipePreviewDto): Promise<void> {
           </div>
           <button
             type="button"
-            :disabled="importingId !== null"
+            :disabled="integrationStore.importingId !== null"
             class="ee-btn-primary ee-btn-sm"
             @click="onImport(preview)"
           >
-            {{ importingId === preview.externalId ? 'Importiere ...' : 'Importieren' }}
+            {{ integrationStore.importingId === preview.externalId ? 'Importiere ...' : 'Importieren' }}
           </button>
         </li>
       </ul>
 
       <p
-        v-else-if="!searching && !error"
+        v-else-if="!integrationStore.searching && !integrationStore.error"
         class="text-sm text-ink-500"
       >
         Suche eintippen und auf "Suchen" klicken — oder bei TheMealDB einfach mal "pasta" probieren.

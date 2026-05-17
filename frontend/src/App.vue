@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, watch } from 'vue'
+import { watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
@@ -30,12 +30,15 @@ const navLinks = [
   { name: 'shoppinglist', label: 'Einkaufsliste' },
 ] as const
 
-onBeforeMount(async () => {
-  await authStore.restoreSession()
-  if (authStore.isAuthenticated) {
-    void householdStore.load()
-  }
-})
+// `authStore.restoreSession()` wird zentral im Router-Guard
+// (router/index.ts:beforeEach) ausgefuehrt — ein zusaetzlicher Aufruf im
+// onBeforeMount der App-Komponente wuerde dieselbe Initialisierung
+// doppelt ansteuern.
+// Bei bereits eingeloggtem User triggert der Watcher unten den Lade-Pfad
+// (siehe `useAuthStore` returns isAuthenticated=true sofort nach Guard).
+if (authStore.isAuthenticated) {
+  void householdStore.load()
+}
 
 // Synchronisiert den Haushalts-Store mit dem Auth-Status: Login → laden,
 // Logout → Cache leeren, damit der naechste User keinen veralteten Switcher

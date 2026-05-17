@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import * as mealPlanService from '@/services/mealPlanService'
-import { useAuthStore } from '@/stores/authStore'
+import { useMealPlanStore } from '@/stores/mealPlanStore'
 import BaseModal from '@/components/common/BaseModal.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import {
@@ -26,7 +25,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const authStore = useAuthStore()
+const mealPlanStore = useMealPlanStore()
 
 const day = ref<DayOfWeek>('MONDAY')
 const mealType = ref<MealType>('LUNCH')
@@ -35,14 +34,10 @@ const saving = ref(false)
 const error = ref<string | null>(null)
 
 async function onSave(): Promise<void> {
-  if (!authStore.token) {
-    return
-  }
   saving.value = true
   error.value = null
   try {
-    const plan = await mealPlanService.getMealPlan(authStore.token, props.householdId)
-    await mealPlanService.setEntry(authStore.token, plan.id, {
+    await mealPlanStore.setEntryForHousehold(props.householdId, {
       dayOfWeek: day.value,
       mealType: mealType.value,
       recipeId: props.recipeId,
@@ -50,8 +45,7 @@ async function onSave(): Promise<void> {
     })
     emit('saved')
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+    error.value = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
   } finally {
     saving.value = false
   }

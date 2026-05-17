@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { listRecipes } from '@/services/recipeService'
-import { useAuthStore } from '@/stores/authStore'
+import { useRecipeStore } from '@/stores/recipeStore'
 import DietTagSelector from '@/components/common/DietTagSelector.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
@@ -21,14 +20,11 @@ const emit = defineEmits<{
   select: [recipe: RecipeDto, servings: number]
 }>()
 
-const authStore = useAuthStore()
+const recipeStore = useRecipeStore()
 
 const query = ref('')
 const tags = ref<DietTag[]>([])
-const recipes = ref<RecipeDto[]>([])
-const loading = ref(false)
 const servings = ref(props.initialServings)
-const error = ref<string | null>(null)
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -47,21 +43,13 @@ watch(
 )
 
 async function runSearch(): Promise<void> {
-  if (!authStore.token) {
-    return
-  }
-  loading.value = true
-  error.value = null
   try {
-    recipes.value = await listRecipes(authStore.token, {
+    await recipeStore.load({
       query: query.value.trim() || undefined,
       dietTags: tags.value.length > 0 ? tags.value : undefined,
     })
-  } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Laden fehlgeschlagen'
-    recipes.value = []
-  } finally {
-    loading.value = false
+  } catch {
+    // recipeStore.error ist gesetzt.
   }
 }
 
@@ -74,7 +62,7 @@ function onQueryInput(): void {
 
 watch(tags, runSearch, { deep: true })
 
-const sortedRecipes = computed(() => recipes.value)
+const sortedRecipes = computed(() => recipeStore.recipes)
 
 function selectRecipe(recipe: RecipeDto): void {
   if (servings.value < 1) {
@@ -114,9 +102,9 @@ function selectRecipe(recipe: RecipeDto): void {
         <DietTagSelector v-model="tags" />
       </div>
 
-      <ErrorMessage :message="error ?? ''" />
+      <ErrorMessage :message="recipeStore.error ?? ''" />
 
-      <p v-if="loading" class="text-sm text-ink-500">Suche ...</p>
+      <p v-if="recipeStore.loading" class="text-sm text-ink-500">Suche ...</p>
 
       <ul v-else-if="sortedRecipes.length > 0" class="space-y-2">
         <li
@@ -145,7 +133,7 @@ function selectRecipe(recipe: RecipeDto): void {
         </li>
       </ul>
 
-      <p v-else-if="!error" class="text-sm text-ink-500">Keine Treffer. Anderen Filter probieren.</p>
+      <p v-else-if="!recipeStore.error" class="text-sm text-ink-500">Keine Treffer. Anderen Filter probieren.</p>
     </div>
   </BaseModal>
 </template>

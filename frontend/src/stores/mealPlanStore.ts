@@ -93,6 +93,41 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     }
   }
 
+  /**
+   * Setzt einen Eintrag im aktuellen Wochenplan eines Haushalts —
+   * laedt den Plan automatisch nach, falls noch nicht geladen oder ein
+   * anderer Haushalt aktiv ist. Praktisch fuer das HomeView-Dialog
+   * "in Wochenplan uebernehmen", das nicht zwingend vom Mealplan-View
+   * kommt.
+   */
+  async function setEntryForHousehold(
+    targetHouseholdId: string,
+    request: SetEntryRequest,
+  ): Promise<MealPlanEntryDto> {
+    error.value = null
+    try {
+      const token = requireToken()
+      const currentPlan = await mealPlanService.getMealPlan(
+        token,
+        targetHouseholdId,
+        weekStart.value,
+      )
+      const updated = await mealPlanService.setEntry(token, currentPlan.id, request)
+      // Wenn wir gerade auf diesen Haushalt schauen, lokal mergen.
+      if (householdId.value === targetHouseholdId && plan.value) {
+        const next = plan.value.entries.filter(
+          (e) => !(e.dayOfWeek === request.dayOfWeek && e.mealType === request.mealType),
+        )
+        next.push(updated)
+        plan.value = { ...plan.value, entries: next }
+      }
+      return updated
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+      throw err
+    }
+  }
+
   async function removeEntry(day: DayOfWeek, mealType: MealType): Promise<void> {
     if (!plan.value) {
       return
@@ -147,6 +182,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
     gotoWeek,
     gotoToday,
     setEntry,
+    setEntryForHousehold,
     removeEntry,
     reset,
     entryAt,

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import * as householdService from '@/services/householdService'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
 import DietTagSelector from '@/components/common/DietTagSelector.vue'
@@ -9,7 +8,6 @@ import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import MemberList from '@/components/household/MemberList.vue'
 import InviteForm from '@/components/household/InviteForm.vue'
 import type { DietTag } from '@/types/dietTags'
-import type { MemberDto } from '@/types/household'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,7 +19,7 @@ const household = computed(() =>
   householdStore.households.find((h) => h.id === householdId.value) ?? null,
 )
 
-const members = ref<MemberDto[]>([])
+const members = computed(() => householdStore.membersOf(householdId.value))
 const loadError = ref<string | null>(null)
 
 const editName = ref('')
@@ -43,7 +41,7 @@ async function loadAll(): Promise<void> {
     if (!household.value) {
       await householdStore.refreshOne(householdId.value)
     }
-    members.value = await householdService.listMembers(authStore.token, householdId.value)
+    await householdStore.loadMembers(householdId.value)
   } catch (err: unknown) {
     loadError.value = err instanceof Error ? err.message : 'Laden fehlgeschlagen'
   }
@@ -86,12 +84,8 @@ async function onSave(): Promise<void> {
 }
 
 async function onRemoveMember(memberId: string): Promise<void> {
-  if (!authStore.token) {
-    return
-  }
   try {
-    await householdService.removeMember(authStore.token, householdId.value, memberId)
-    members.value = members.value.filter((m) => m.userId !== memberId)
+    await householdStore.removeMember(householdId.value, memberId)
   } catch (err: unknown) {
     loadError.value = err instanceof Error ? err.message : 'Entfernen fehlgeschlagen'
   }
