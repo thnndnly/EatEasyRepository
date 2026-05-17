@@ -17,6 +17,8 @@ const pantryStore = usePantryStore()
 const shoppingListStore = useShoppingListStore()
 const router = useRouter()
 
+const isDev = import.meta.env.DEV
+
 onBeforeMount(async () => {
   await authStore.restoreSession()
   if (authStore.isAuthenticated) {
@@ -132,5 +134,21 @@ async function onLogout(): Promise<void> {
     <main class="mx-auto max-w-5xl px-6 py-10">
       <RouterView />
     </main>
+
+    <footer
+      v-if="isDev"
+      class="border-t border-dashed border-amber-300 bg-amber-50 px-6 py-2 text-center text-xs text-amber-800"
+    >
+      Dev-Modus &mdash;
+      <a
+        href="http://localhost:1080"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-medium underline hover:text-amber-900"
+      >
+        Maildev-Postfach oeffnen (localhost:1080)
+      </a>
+      &middot; Einladungsmails landen dort, nicht im echten Postfach.
+    </footer>
   </div>
 </template>

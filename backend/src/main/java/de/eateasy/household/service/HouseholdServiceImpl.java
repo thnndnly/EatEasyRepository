@@ -20,6 +20,7 @@ import de.eateasy.household.entity.MembershipRole;
 import de.eateasy.household.repository.HouseholdInvitationRepository;
 import de.eateasy.household.repository.HouseholdMembershipRepository;
 import de.eateasy.household.repository.HouseholdRepository;
+import de.eateasy.notification.service.NotificationService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -40,16 +41,19 @@ public class HouseholdServiceImpl implements HouseholdService {
     private final HouseholdMembershipRepository membershipRepository;
     private final HouseholdInvitationRepository invitationRepository;
     private final AuthService authService;
+    private final NotificationService notificationService;
     private final SecureRandom random = new SecureRandom();
 
     public HouseholdServiceImpl(HouseholdRepository householdRepository,
                                 HouseholdMembershipRepository membershipRepository,
                                 HouseholdInvitationRepository invitationRepository,
-                                AuthService authService) {
+                                AuthService authService,
+                                NotificationService notificationService) {
         this.householdRepository = householdRepository;
         this.membershipRepository = membershipRepository;
         this.invitationRepository = invitationRepository;
         this.authService = authService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -109,6 +113,7 @@ public class HouseholdServiceImpl implements HouseholdService {
     public InvitationDto invite(UUID userId, UUID householdId, InvitationCreateRequest request) {
         assertOwner(userId, householdId);
         Household household = loadHousehold(householdId);
+        UserDto inviter = authService.getUser(userId);
 
         String email = request.email().trim().toLowerCase();
 
@@ -124,6 +129,11 @@ public class HouseholdServiceImpl implements HouseholdService {
         Instant expiresAt = Instant.now().plus(INVITATION_TTL);
         HouseholdInvitation invitation = new HouseholdInvitation(householdId, email, token, expiresAt);
         invitationRepository.persist(invitation);
+
+        // Mail-Versand — Fehler werden im Service geloggt, Invitation bleibt
+        // unabhaengig davon persistiert (Token-Weitergabe als Fallback moeglich).
+        notificationService.sendInvitation(email, household.getName(),
+            inviter.displayName(), token);
 
         return InvitationDto.from(invitation, household.getName());
     }

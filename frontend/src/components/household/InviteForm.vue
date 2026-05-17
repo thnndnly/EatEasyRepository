@@ -35,17 +35,6 @@ async function onSubmit(): Promise<void> {
     submitting.value = false
   }
 }
-
-function inviteLink(token: string): string {
-  return `${window.location.origin}/invitations/accept?token=${encodeURIComponent(token)}`
-}
-
-async function copyLink(): Promise<void> {
-  if (!lastInvitation.value) {
-    return
-  }
-  await navigator.clipboard.writeText(inviteLink(lastInvitation.value.token))
-}
 </script>
 
 <template>
@@ -53,7 +42,7 @@ async function copyLink(): Promise<void> {
     <div>
       <h3 class="text-base font-semibold text-slate-800">Mitglied einladen</h3>
       <p class="text-sm text-slate-500">
-        Token wird per E-Mail verschickt (in Phase 2 noch simuliert: Link unten).
+        Token-Link wird per E-Mail an die angegebene Adresse verschickt.
       </p>
     </div>
 
@@ -82,23 +71,12 @@ async function copyLink(): Promise<void> {
       {{ error }}
     </p>
 
-    <div
+    <p
       v-if="lastInvitation"
       class="rounded border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
     >
-      <p class="font-medium">
-        Einladung an {{ lastInvitation.email }} erstellt.
-      </p>
-      <p class="mt-1 break-all text-emerald-800">
-        {{ inviteLink(lastInvitation.token) }}
-      </p>
-      <button
-        type="button"
-        class="mt-2 rounded border border-emerald-400 bg-white px-2 py-1 text-xs font-medium text-emerald-800 hover:bg-emerald-100"
-        @click="copyLink"
-      >
-        Link kopieren
-      </button>
-    </div>
+      Einladungsmail an <strong>{{ lastInvitation.email }}</strong> verschickt.
+      Sie ist 7 Tage gueltig.
+    </p>
   </div>
 </template>
