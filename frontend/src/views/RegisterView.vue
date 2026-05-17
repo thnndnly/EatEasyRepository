@@ -65,7 +65,7 @@ async function onSubmit(): Promise<void> {
         {{ error }}
       </p>
 
-      <button type="submit" :disabled="submitting" class="ee-btn-primary w-full">
+      <button type="submit" :disabled="submitting" class="ee-btn-primary ee-btn-lg w-full">
         {{ submitting ? 'Lege Konto an ...' : 'Registrieren' }}
       </button>
     </form>

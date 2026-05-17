@@ -124,7 +124,7 @@ async function onSave(): Promise<void> {
         <button
           type="submit"
           :disabled="saving"
-          class="ee-btn-primary w-full"
+          class="ee-btn-primary ee-btn-lg w-full"
         >
           {{ saving ? 'Speichere ...' : 'Slot setzen' }}
         </button>

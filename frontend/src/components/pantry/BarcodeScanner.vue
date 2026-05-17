@@ -200,7 +200,7 @@ onBeforeUnmount(() => {
             <button
               type="submit"
               :disabled="loading"
-              class="ee-btn-primary w-full"
+              class="ee-btn-primary ee-btn-lg w-full"
             >
               {{ loading ? 'Lade ...' : 'Produkt suchen' }}
             </button>
@@ -264,7 +264,7 @@ onBeforeUnmount(() => {
             <button
               type="submit"
               :disabled="loading"
-              class="ee-btn-primary w-full"
+              class="ee-btn-primary ee-btn-lg w-full"
             >
               {{ loading ? 'Speichere ...' : 'In Vorrat uebernehmen' }}
             </button>

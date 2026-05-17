@@ -64,7 +64,7 @@ onMounted(() => {
         </p>
         <button
           type="button"
-          class="mt-4 ee-btn-primary w-full"
+          class="ee-btn-primary ee-btn-lg mt-4 w-full"
           @click="accept"
         >
           Annehmen
@@ -81,7 +81,7 @@ onMounted(() => {
         </p>
         <button
           type="button"
-          class="mt-4 ee-btn-primary w-full"
+          class="ee-btn-primary ee-btn-lg mt-4 w-full"
           @click="goToHousehold"
         >
           Zum Haushalt
