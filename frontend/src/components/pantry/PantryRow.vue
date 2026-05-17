@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { UNIT_ABBREV } from '@/types/units'
 import type { PantryItemDto } from '@/types/pantry'
 
@@ -18,6 +18,60 @@ const emit = defineEmits<{
 const editing = ref(false)
 const draftAmount = ref<number>(props.item.amount)
 const draftBestBefore = ref<string>(props.item.bestBefore ?? '')
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24
+
+function daysUntil(isoDate: string): number {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const target = new Date(isoDate)
+  target.setHours(0, 0, 0, 0)
+  return Math.round((target.getTime() - today.getTime()) / MS_PER_DAY)
+}
+
+interface MhdStatus {
+  level: 'expired' | 'urgent' | 'soon' | 'ok'
+  label: string
+  rowClass: string
+  badgeClass: string
+}
+
+const mhdStatus = computed<MhdStatus | null>(() => {
+  if (!props.item.bestBefore) {
+    return null
+  }
+  const days = daysUntil(props.item.bestBefore)
+  if (days < 0) {
+    return {
+      level: 'expired',
+      label: days === -1 ? 'gestern abgelaufen' : `vor ${-days} Tagen abgelaufen`,
+      rowClass: 'bg-red-50',
+      badgeClass: 'bg-red-100 text-red-800',
+    }
+  }
+  if (days <= 3) {
+    return {
+      level: 'urgent',
+      label: days === 0 ? 'heute' : days === 1 ? 'morgen' : `in ${days} Tagen`,
+      rowClass: 'bg-red-50',
+      badgeClass: 'bg-red-100 text-red-800',
+    }
+  }
+  if (days <= 7) {
+    return {
+      level: 'soon',
+      label: `in ${days} Tagen`,
+      rowClass: 'bg-amber-50',
+      badgeClass: 'bg-amber-100 text-amber-800',
+    }
+  }
+  return {
+    level: 'ok',
+    label: `in ${days} Tagen`,
+    rowClass: '',
+    badgeClass: 'bg-slate-100 text-slate-600',
+  }
+})
 
 watch(
   () => props.item,
@@ -58,7 +112,7 @@ function onRemove(): void {
 </script>
 
 <template>
-  <tr class="border-b border-slate-100 last:border-b-0">
+  <tr class="border-b border-slate-100 last:border-b-0" :class="mhdStatus?.rowClass">
     <td class="px-3 py-2 text-sm font-medium text-slate-800">{{ item.ingredientName }}</td>
 
     <td class="px-3 py-2 text-sm text-slate-700">
@@ -82,7 +136,19 @@ function onRemove(): void {
         type="date"
         class="rounded border border-slate-300 px-2 py-1 focus:border-emerald-500 focus:outline-none"
       />
-      <span v-else>{{ item.bestBefore ?? '–' }}</span>
+      <template v-else-if="item.bestBefore">
+        <div class="flex items-center gap-2">
+          <span>{{ item.bestBefore }}</span>
+          <span
+            v-if="mhdStatus"
+            class="rounded px-1.5 py-0.5 text-xs font-medium"
+            :class="mhdStatus.badgeClass"
+          >
+            {{ mhdStatus.label }}
+          </span>
+        </div>
+      </template>
+      <span v-else class="text-slate-400">–</span>
     </td>
 
     <td class="px-3 py-2 text-right text-sm">
