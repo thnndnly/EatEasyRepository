@@ -1,11 +1,12 @@
 package de.eateasy.integration.service;
 
 import de.eateasy.common.units.Unit;
+import de.eateasy.common.units.UnitParser;
+import de.eateasy.common.units.UnitParser.UnitParseResult;
 import de.eateasy.integration.client.OpenFoodFactsResponse;
 import de.eateasy.integration.client.OpenFoodFactsResponse.Product;
 import de.eateasy.integration.dto.BarcodeProductDto;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,10 +58,16 @@ public final class OpenFoodFactsMapper {
         if (!m.find()) {
             return Unit.PIECE;
         }
-        return switch (m.group("unit").toLowerCase(Locale.ROOT)) {
-            case "g", "gr", "gram", "grams", "kg" -> Unit.GRAM;
-            case "ml", "l", "cl", "liter", "litre" -> Unit.ML;
-            default -> Unit.PIECE;
-        };
+        // OpenFoodFacts speichert nur die Verpackungsgroesse als Anzeige —
+        // wir interessieren uns hier nur fuer die kanonische Einheit, nicht
+        // fuer den Multiplier. {@code cl} ist im Parser nicht abgebildet
+        // und faellt damit auf den Default zurueck, was historischem
+        // Verhalten widerspraeche; deshalb hier explizit als Sonderfall.
+        String token = m.group("unit").trim().toLowerCase(java.util.Locale.ROOT);
+        if ("cl".equals(token)) {
+            return Unit.ML;
+        }
+        UnitParseResult parsed = UnitParser.parse(token, Unit.PIECE);
+        return parsed.unit();
     }
 }

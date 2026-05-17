@@ -3,7 +3,6 @@ package de.eateasy.suggestion.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.JsonNode;
-import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.household.service.HouseholdService;
 import de.eateasy.ingredient.dto.IngredientDto;
 import de.eateasy.ingredient.service.IngredientService;
@@ -68,9 +67,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
 
     @Override
     public List<SuggestionDto> suggest(UUID userId, UUID householdId, int numSuggestions) {
-        if (!householdService.isMember(userId, householdId)) {
-            throw new ForbiddenException("Kein Zugriff auf diesen Haushalt");
-        }
+        householdService.assertMember(userId, householdId);
 
         List<RecipeDto> recipes = recipeService.list(
             userId, new RecipeFilter(null, List.of(), null));

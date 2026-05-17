@@ -199,23 +199,11 @@ public class RecipeServiceImpl implements RecipeService {
         }
         List<RecipeIngredient> result = new ArrayList<>(requests.size());
         for (RecipeIngredientRequest req : requests) {
-            UUID ingredientId = resolveIngredientId(req);
+            UUID ingredientId = ingredientService.resolveOrCreate(
+                req.ingredientId(), req.ingredientName(), req.unit());
             result.add(new RecipeIngredient(ingredientId, req.amount(), req.unit(), req.note()));
         }
         return result;
-    }
-
-    private UUID resolveIngredientId(RecipeIngredientRequest req) {
-        if (req.ingredientId() != null) {
-            // Validate existence by triggering NotFound bei unbekannter ID.
-            ingredientService.getById(req.ingredientId());
-            return req.ingredientId();
-        }
-        if (req.ingredientName() == null || req.ingredientName().isBlank()) {
-            throw new BadRequestException("ingredientId oder ingredientName muss gesetzt sein");
-        }
-        IngredientDto created = ingredientService.findOrCreate(req.ingredientName(), req.unit());
-        return created.id();
     }
 
     private Map<UUID, IngredientDto> loadIngredientNames(List<Recipe> recipes) {

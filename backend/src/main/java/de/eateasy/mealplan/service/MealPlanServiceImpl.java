@@ -1,6 +1,5 @@
 package de.eateasy.mealplan.service;
 
-import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.household.service.HouseholdService;
 import de.eateasy.mealplan.dto.MealPlanDto;
@@ -47,9 +46,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     @Override
     @Transactional
     public MealPlanDto getOrCreate(UUID userId, UUID householdId, LocalDate anyDateInWeek) {
-        if (!householdService.isMember(userId, householdId)) {
-            throw new ForbiddenException("Kein Zugriff auf diesen Haushalt");
-        }
+        householdService.assertMember(userId, householdId);
 
         LocalDate monday = normalizeToMonday(anyDateInWeek == null ? LocalDate.now() : anyDateInWeek);
         MealPlan plan = mealPlanRepository.findByHouseholdAndWeek(householdId, monday)
@@ -72,9 +69,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     @Transactional
     public MealPlanDto getById(UUID userId, UUID mealPlanId) {
         MealPlan plan = loadPlan(mealPlanId);
-        if (!householdService.isMember(userId, plan.getHouseholdId())) {
-            throw new ForbiddenException("Kein Zugriff auf diesen Wochenplan");
-        }
+        householdService.assertMember(userId, plan.getHouseholdId());
         return toDto(plan);
     }
 
@@ -82,9 +77,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     @Transactional
     public MealPlanEntryDto setEntry(UUID userId, UUID mealPlanId, SetEntryRequest request) {
         MealPlan plan = loadPlan(mealPlanId);
-        if (!householdService.isMember(userId, plan.getHouseholdId())) {
-            throw new ForbiddenException("Kein Zugriff auf diesen Wochenplan");
-        }
+        householdService.assertMember(userId, plan.getHouseholdId());
         // RecipeService.get prueft Sichtbarkeit/Auth fuer das Rezept aus User-Sicht.
         recipeService.get(userId, request.recipeId());
 
@@ -118,9 +111,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     @Transactional
     public void removeEntry(UUID userId, UUID mealPlanId, DayOfWeek day, MealType mealType) {
         MealPlan plan = loadPlan(mealPlanId);
-        if (!householdService.isMember(userId, plan.getHouseholdId())) {
-            throw new ForbiddenException("Kein Zugriff auf diesen Wochenplan");
-        }
+        householdService.assertMember(userId, plan.getHouseholdId());
 
         plan.getEntries().stream()
             .filter(e -> e.getDayOfWeek() == day && e.getMealType() == mealType)

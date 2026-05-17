@@ -180,18 +180,16 @@ public class HouseholdServiceImpl implements HouseholdService {
             throw new ForbiddenException("Diese Einladung ist fuer eine andere Email-Adresse");
         }
 
-        if (membershipRepository.existsByUserAndHousehold(userId, invitation.getHouseholdId())) {
-            invitation.markAccepted(now);
-            Household household = loadHousehold(invitation.getHouseholdId());
-            return HouseholdDto.from(household, MembershipRole.MEMBER);
+        Household household = loadHousehold(invitation.getHouseholdId());
+        boolean alreadyMember = membershipRepository
+            .existsByUserAndHousehold(userId, invitation.getHouseholdId());
+        if (!alreadyMember) {
+            HouseholdMembership membership = new HouseholdMembership(
+                userId, invitation.getHouseholdId(), MembershipRole.MEMBER);
+            membershipRepository.persist(membership);
         }
-
-        HouseholdMembership membership = new HouseholdMembership(
-            userId, invitation.getHouseholdId(), MembershipRole.MEMBER);
-        membershipRepository.persist(membership);
         invitation.markAccepted(now);
 
-        Household household = loadHousehold(invitation.getHouseholdId());
         return HouseholdDto.from(household, MembershipRole.MEMBER);
     }
 
