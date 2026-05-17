@@ -134,6 +134,14 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
+    public void updateExternalMetadata(UUID recipeId, String sourceUrl, String externalSource) {
+        Recipe recipe = loadRecipe(recipeId);
+        recipe.setSourceUrl(sourceUrl);
+        recipe.setExternalSource(externalSource);
+    }
+
+    @Override
     public Map<UUID, RecipeMiniDto> getMinis(Collection<UUID> recipeIds) {
         if (recipeIds == null || recipeIds.isEmpty()) {
             return Map.of();

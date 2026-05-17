@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -68,13 +69,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto findByEmail(String email) {
+    public Optional<UserDto> findByEmail(String email) {
         if (email == null || email.isBlank()) {
-            return null;
+            return Optional.empty();
         }
         return userRepository.findByEmail(normalizeEmail(email))
-            .map(UserDto::from)
-            .orElse(null);
+            .map(UserDto::from);
     }
 
     private String issueToken(User user) {

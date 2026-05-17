@@ -30,6 +30,14 @@ public interface RecipeService {
     void delete(UUID userId, UUID recipeId);
 
     /**
+     * Aktualisiert die externen Metadaten ({@code sourceUrl}, {@code externalSource})
+     * eines bestehenden Rezepts. Wird vom Recipe-Import nach erfolgreichem
+     * {@link #create(UUID, RecipeCreateRequest)} aufgerufen, ohne dass der Aufrufer
+     * direkt auf das Repository zugreifen muss.
+     */
+    void updateExternalMetadata(UUID recipeId, String sourceUrl, String externalSource);
+
+    /**
      * Batch-Lookup nur per ID — ohne Auth-Check. Wird von Komponenten genutzt,
      * die bereits einen authorisierten Container (z. B. einen MealPlan-Eintrag)
      * in der Hand haben und nur die Mini-Daten der referenzierten Rezepte

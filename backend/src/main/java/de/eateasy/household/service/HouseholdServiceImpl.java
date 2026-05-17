@@ -119,9 +119,10 @@ public class HouseholdServiceImpl implements HouseholdService {
 
         // Falls die Email schon einem registrierten User gehoert und der bereits
         // im Haushalt ist → Konflikt, sonst lohnt der Token nicht.
-        UserDto existingUser = authService.findByEmail(email);
-        if (existingUser != null
-            && membershipRepository.existsByUserAndHousehold(existingUser.id(), householdId)) {
+        boolean existingMember = authService.findByEmail(email)
+            .map(existing -> membershipRepository.existsByUserAndHousehold(existing.id(), householdId))
+            .orElse(false);
+        if (existingMember) {
             throw new ConflictException("User ist bereits Mitglied dieses Haushalts");
         }
 

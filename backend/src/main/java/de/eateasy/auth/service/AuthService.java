@@ -5,6 +5,7 @@ import de.eateasy.auth.dto.LoginRequest;
 import de.eateasy.auth.dto.RegisterRequest;
 import de.eateasy.auth.dto.UserDto;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AuthService {
@@ -24,9 +25,10 @@ public interface AuthService {
     UserDto getUser(UUID userId);
 
     /**
-     * Sucht einen User per Email (case-insensitive). Liefert {@code null}, wenn
-     * kein User mit der Email existiert. Wird z. B. fuer Invitation-Annahme
-     * genutzt, wo nicht jeder Empfaenger schon registriert sein muss.
+     * Sucht einen User per Email (case-insensitive). Liefert ein leeres
+     * {@link Optional}, wenn kein User mit der Email existiert. Wird z. B. fuer
+     * Invitation-Annahme genutzt, wo nicht jeder Empfaenger schon registriert
+     * sein muss.
      */
-    UserDto findByEmail(String email);
+    Optional<UserDto> findByEmail(String email);
 }
