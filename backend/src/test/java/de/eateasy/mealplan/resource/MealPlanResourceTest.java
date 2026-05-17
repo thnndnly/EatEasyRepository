@@ -142,6 +142,7 @@ class MealPlanResourceTest {
 
         given()
             .header("Authorization", "Bearer " + token)
+            .queryParam("weekStart", "2026-04-27")
             .when().get("/api/v1/households/" + householdId + "/mealplans")
             .then()
                 .statusCode(200)
@@ -166,6 +167,7 @@ class MealPlanResourceTest {
 
         given()
             .header("Authorization", "Bearer " + token)
+            .queryParam("weekStart", "2026-04-27")
             .when().get("/api/v1/households/" + householdId + "/mealplans")
             .then()
                 .statusCode(200)
