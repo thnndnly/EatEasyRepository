@@ -131,8 +131,11 @@ class ShoppingListResourceTest {
     }
 
     @Test
-    @DisplayName("POST /shoppinglist/regenerate baut Liste neu auf, behaelt checked")
-    void regeneratePreservesChecked() {
+    @DisplayName("POST /shoppinglist/regenerate: gechecktes Item liegt jetzt im Vorrat → faellt aus Liste raus")
+    void regenerateAfterCheckedDropsItem() {
+        // Mit Auto-Nachbuchen (Phase 10/Post-MVP): toggleChecked(true) bucht
+        // den Posten in den Vorrat. Beim Regenerate zieht subtractPantry den
+        // Eintrag wieder ab — Item ist weg.
         String token = registerUser("alice@example.com");
         String householdId = createHousehold(token, "Test");
         String recipeId = createRecipe(token, householdId, "Suppe");
@@ -156,7 +159,7 @@ class ShoppingListResourceTest {
             .when().post("/api/v1/mealplans/" + planId + "/shoppinglist/regenerate")
             .then()
                 .statusCode(200)
-                .body("items[0].checked", is(true));
+                .body("items.size()", is(0));
     }
 
     @Test

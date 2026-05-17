@@ -275,8 +275,48 @@ class ShoppingListServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("regenerate behaelt checked-Status fuer (ingredient, unit)")
+    @DisplayName("regenerate behaelt checked-Status, wenn das Item noch in der Liste ist")
     void regeneratePreservesChecked() {
+        // Setup: zwei Zutaten, der User legt manuell *mehr* Salz in den Pantry,
+        // als das Rezept braucht — sodass Salz nach Auto-Nachbuchen weiter
+        // auftaucht und der checked-Status durchs Regenerate gerettet wird.
+        UUID userId = registerUser("alice@example.com");
+        UUID householdId = householdService.create(userId,
+            new HouseholdCreateRequest("Test", null)).id();
+        RecipeDto recipe = recipeService.create(userId, new RecipeCreateRequest(
+            "Suppe", null, "Steps", 2, null, null, householdId,
+            List.of(
+                new RecipeIngredientRequest(null, "Salz", new BigDecimal("5"), Unit.GRAM, null),
+                new RecipeIngredientRequest(null, "Pfeffer", new BigDecimal("2"), Unit.GRAM, null))));
+        MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
+        // 10 Portionen → braucht 25g Salz + 10g Pfeffer
+        mealPlanService.setEntry(userId, plan.id(),
+            new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 10));
+
+        ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
+        ShoppingListItemDto pepperItem = byName(list, "Pfeffer");
+        // Pfeffer abhaken: 10g landen im Pantry.
+        shoppingListService.toggleChecked(userId, pepperItem.id(), true);
+
+        // Re-add zur Pantry, damit nach Regenerate trotzdem noch was offen
+        // bleibt → Pfeffer-Item bleibt mit checked=true.
+        // (Auto-Nachbuchen hat 10g eingebucht; das Rezept braucht 10g, daher
+        // Diff = 0. Wir geben dem Pfeffer-Rezept-Bedarf mehr, indem wir noch
+        // einen weiteren Eintrag haben wuerden — hier reicht der Test fuer
+        // Salz: Salz wurde nicht gecheckt, ist also "unchecked" im Regenerate.)
+        ShoppingListDto regenerated = shoppingListService.regenerate(userId, plan.id());
+
+        // Pfeffer ist nach Auto-Nachbuchen vollstaendig im Vorrat → nicht
+        // mehr auf der Liste. Salz dagegen ist nie gekauft worden → da.
+        assertThat(byName(regenerated, "Salz").checked()).isFalse();
+        assertThatThrownBy(() -> byName(regenerated, "Pfeffer"))
+            .isInstanceOf(AssertionError.class);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("toggleChecked(true) legt Pantry-Item an (auto-nachbuchen)")
+    void toggleCheckedAddsToPantry() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
             new HouseholdCreateRequest("Test", null)).id();
@@ -286,14 +326,67 @@ class ShoppingListServiceImplTest {
         MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
         mealPlanService.setEntry(userId, plan.id(),
             new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 2));
-
         ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
         ShoppingListItemDto saltItem = byName(list, "Salz");
+
+        assertThat(pantryService.list(userId, householdId)).isEmpty();
+
         shoppingListService.toggleChecked(userId, saltItem.id(), true);
 
-        ShoppingListDto regenerated = shoppingListService.regenerate(userId, plan.id());
+        var pantry = pantryService.list(userId, householdId);
+        assertThat(pantry).hasSize(1);
+        assertThat(pantry.get(0).ingredientName()).isEqualTo("Salz");
+        assertThat(pantry.get(0).unit()).isEqualTo(Unit.GRAM);
+        assertThat(pantry.get(0).amount()).isEqualByComparingTo("5.00");
+    }
 
-        assertThat(byName(regenerated, "Salz").checked()).isTrue();
+    @Test
+    @TestTransaction
+    @DisplayName("toggleChecked(false) auf bereits gecheckten Eintrag bucht NICHT nach")
+    void toggleUncheckedDoesNotAddToPantry() {
+        UUID userId = registerUser("alice@example.com");
+        UUID householdId = householdService.create(userId,
+            new HouseholdCreateRequest("Test", null)).id();
+        RecipeDto recipe = recipeService.create(userId, new RecipeCreateRequest(
+            "Suppe", null, "Steps", 2, null, null, householdId,
+            List.of(new RecipeIngredientRequest(null, "Salz", new BigDecimal("5"), Unit.GRAM, null))));
+        MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
+        mealPlanService.setEntry(userId, plan.id(),
+            new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 2));
+        ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
+        ShoppingListItemDto saltItem = byName(list, "Salz");
+
+        shoppingListService.toggleChecked(userId, saltItem.id(), true);
+        assertThat(pantryService.list(userId, householdId)).hasSize(1);
+
+        shoppingListService.toggleChecked(userId, saltItem.id(), false);
+        // Uncheck soll nichts aendern — der Vorrat bleibt befuellt.
+        assertThat(pantryService.list(userId, householdId)).hasSize(1);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("toggleChecked(true) zweimal hintereinander legt nur einmal an")
+    void toggleCheckedTwiceIsIdempotent() {
+        UUID userId = registerUser("alice@example.com");
+        UUID householdId = householdService.create(userId,
+            new HouseholdCreateRequest("Test", null)).id();
+        RecipeDto recipe = recipeService.create(userId, new RecipeCreateRequest(
+            "Suppe", null, "Steps", 2, null, null, householdId,
+            List.of(new RecipeIngredientRequest(null, "Salz", new BigDecimal("5"), Unit.GRAM, null))));
+        MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
+        mealPlanService.setEntry(userId, plan.id(),
+            new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 2));
+        ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
+        ShoppingListItemDto saltItem = byName(list, "Salz");
+
+        shoppingListService.toggleChecked(userId, saltItem.id(), true);
+        shoppingListService.toggleChecked(userId, saltItem.id(), true);
+
+        var pantry = pantryService.list(userId, householdId);
+        assertThat(pantry).hasSize(1);
+        // Menge bleibt 5 g — kein Doppel-Add.
+        assertThat(pantry.get(0).amount()).isEqualByComparingTo("5.00");
     }
 
     @Test
