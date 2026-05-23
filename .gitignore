@@ -36,6 +36,16 @@ dist-ssr/
 coverage/
 .nyc_output/
 
+# ---------- Playwright ----------
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# ---------- VitePress ----------
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
 # ---------- Env / Secrets ----------
 .env
 .env.local
