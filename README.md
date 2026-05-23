@@ -80,6 +80,17 @@ Quarkus generiert die OpenAPI-Spec automatisch aus den REST-Resources:
 Authentifizierung in Swagger UI: über den `Authorize`-Knopf den JWT eintragen,
 den `/api/v1/auth/login` zurückgibt.
 
+### Projekt-Doku (VitePress)
+
+Komplette Projektdoku (Setup, Architektur, API, Tech-Stack) liegt unter `docs/`:
+
+```bash
+cd docs
+npm install        # nur beim ersten Mal
+npm run docs:dev   # → http://localhost:5173 (VitePress-Dev-Server)
+npm run docs:build # statische Site nach docs/.vitepress/dist
+```
+
 ---
 
 ## Tests
