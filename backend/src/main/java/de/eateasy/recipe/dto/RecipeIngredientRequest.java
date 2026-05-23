@@ -2,7 +2,6 @@ package de.eateasy.recipe.dto;
 
 import de.eateasy.common.units.Unit;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 

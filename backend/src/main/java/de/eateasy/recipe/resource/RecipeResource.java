@@ -52,11 +52,15 @@ public class RecipeResource {
     }
 
     @GET
-    @Operation(summary = "Rezepte auflisten", description = "Liefert alle Rezepte, optional gefiltert nach Suchtext, Diät-Tags und Haushalt.")
+    @Operation(
+        summary = "Rezepte auflisten",
+        description = "Liefert alle Rezepte, optional gefiltert nach Suchtext, Diät-Tags und Haushalt."
+    )
     @APIResponse(responseCode = "200", description = "Liste der Rezepte (kann leer sein).")
-    public List<RecipeDto> list(@Parameter(description = "Freitext-Suche (Titel, Zutaten).") @QueryParam("q") String query,
-                                @Parameter(description = "Diät-Tags kommasepariert, z. B. 'vegan,glutenfrei'.") @QueryParam("dietTags") String dietTags,
-                                @Parameter(description = "Auf Haushalt einschränken.") @QueryParam("householdId") UUID householdId) {
+    public List<RecipeDto> list(
+            @Parameter(description = "Freitext-Suche (Titel, Zutaten).") @QueryParam("q") String query,
+            @Parameter(description = "Diät-Tags kommasepariert, z. B. 'vegan,glutenfrei'.") @QueryParam("dietTags") String dietTags,
+            @Parameter(description = "Auf Haushalt einschränken.") @QueryParam("householdId") UUID householdId) {
         List<String> tags = parseDietTags(dietTags);
         RecipeFilter filter = new RecipeFilter(query, tags, householdId);
         return recipeService.list(currentUser.id(), filter);

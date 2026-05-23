@@ -28,6 +28,10 @@ jobs:
           java-version: 21
           cache: maven
 
+      - name: Checkstyle (non-blocking)
+        run: ./mvnw -B checkstyle:check
+        continue-on-error: true
+
       - name: Run tests
         run: ./mvnw -B test
 
