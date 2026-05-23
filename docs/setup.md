@@ -48,6 +48,7 @@ curl http://localhost:8080/api/v1/health
 | --- | --- | --- |
 | Backend Unit + Integration | `cd backend && ./mvnw test` | Quarkus Dev Services startet einen Postgres-Testcontainer (Docker erforderlich) |
 | Frontend Unit (Vitest + MSW) | `cd frontend && npm run test:unit` | Mock Service Worker liefert deterministische Backend-Antworten |
+| Frontend Coverage | `cd frontend && npm run test:coverage` | HTML-Report unter `frontend/coverage/index.html` |
 | Frontend E2E (Playwright) | `cd frontend && npm run test:e2e` | Vite-Dev-Server wird automatisch gestartet, Backend-Calls werden gemockt |
 | Java-Lint | `cd backend && ./mvnw checkstyle:check` | Lenient, blockiert den Build nicht |
 | TypeScript-Type-Check | `cd frontend && npm run type-check` | |

@@ -12,7 +12,7 @@ Im Modul „Web Frameworks" sollten mehrere der vorgegebenen Technologien im Pro
 | **TypeScript (strict)** | Frontend | Voll typisiert, kein `any` |
 | **Tailwind CSS 4** | Frontend-Styles | Utility-First, eigenes Designsystem (`ee-btn-*`) |
 | **VueUse** | Frontend-Composables | `useStorage` für Auth-Persistenz, `useEventListener` + `useScrollLock` in `BaseModal` |
-| **Vitest 4** | Frontend-Tests | Unit-Test-Runner, jsdom-Environment |
+| **Vitest 4** | Frontend-Tests | Unit-Test-Runner, jsdom-Environment, V8-Coverage (≥80% Stores+Services) |
 | **MSW (Mock Service Worker)** | Frontend-Tests | Backend-Mocks für deterministische Store-Tests |
 | **Playwright** | Frontend-E2E | Smoke-Flows in Chromium, Backend-Calls per `page.route()` gemockt |
 | **ESLint + oxlint + Prettier** | Frontend-Quality | Linting + Auto-Format |

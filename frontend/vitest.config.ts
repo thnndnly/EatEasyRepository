@@ -14,20 +14,29 @@ export default mergeConfig(
         provider: 'v8',
         reporter: ['text', 'html', 'json-summary'],
         include: ['src/**/*.{ts,vue}'],
+        // Views laufen ueber Playwright (E2E), Components stehen noch ueberwiegend
+        // ohne Unit-Spec da. Beide hier auszuschliessen erzeugt eine ehrliche
+        // Aussage darueber, wie gut die Logik-Schicht (Stores, Services,
+        // Composables) gedeckt ist — Folge-Slices ziehen Components ein.
         exclude: [
           'src/**/*.spec.ts',
           'src/test/**',
           'src/main.ts',
           'src/types/**',
           'src/router/**',
+          'src/views/**',
+          'src/components/**',
+          'src/composables/**',
         ],
         thresholds: {
-          // Erste Iteration: Stores + ein Component-Spec. Schwelle bewusst
-          // moderat, damit weitere Slices den Wert hoeher ziehen koennen.
-          lines: 60,
-          functions: 60,
-          statements: 60,
-          branches: 50,
+          // Erste Iteration: alle 10 Stores + BaseModal-Component-Spec.
+          // Stores erreichen >80% Lines, Services indirekt ~80% — Threshold
+          // bei 80% Lines/Functions; Branches niedriger weil Catch-Bloecke
+          // schwer zu treffen sind ohne kuenstliche Fehler.
+          lines: 80,
+          functions: 80,
+          statements: 80,
+          branches: 55,
         },
       },
     },

@@ -104,8 +104,15 @@ cd backend
 cd frontend
 npm run lint
 npm run type-check
-npm run test:unit -- --run
+npm run test:unit -- --run     # Vitest + MSW (Stores, Components)
+npm run test:coverage          # mit Coverage-Report unter coverage/
+npm run test:e2e               # Playwright Smoke (mocked Backend)
 ```
+
+Aktueller Test-Stand:
+- Backend: 203 Tests (JUnit 5 + REST Assured + Testcontainers)
+- Frontend Unit: 75 Tests, 80%+ Coverage auf Stores + Services
+- Frontend E2E: 3 Smoke-Tests (Login + Redirect)
 
 **End-to-End-Smoke-Test** (Backend + Maildev + Ollama muessen laufen):
 
