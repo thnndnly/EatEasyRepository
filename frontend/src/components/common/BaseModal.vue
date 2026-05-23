@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from 'vue'
+import { toRef, watch } from 'vue'
+import { useEventListener, useScrollLock } from '@vueuse/core'
 
 interface Props {
   open: boolean
@@ -10,29 +11,20 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-function onKeyDown(event: KeyboardEvent): void {
+// Esc schliesst das Modal. VueUse raeumt den Listener automatisch beim
+// Unmount auf — kein manuelles onUnmounted noetig.
+useEventListener(document, 'keydown', (event: KeyboardEvent) => {
   if (event.key === 'Escape' && props.open) {
     emit('close')
   }
-}
-
-onMounted(() => {
-  document.addEventListener('keydown', onKeyDown)
 })
 
-onUnmounted(() => {
-  document.removeEventListener('keydown', onKeyDown)
-})
-
-// Body-Scroll sperren, solange Modal offen.
-watch(
-  () => props.open,
-  (next) => {
-    if (typeof document === 'undefined') return
-    document.body.style.overflow = next ? 'hidden' : ''
-  },
-  { immediate: true },
-)
+// Body-Scroll sperren, solange das Modal offen ist.
+const isBodyScrollLocked = useScrollLock(document.body)
+const openRef = toRef(props, 'open')
+watch(openRef, (next) => {
+  isBodyScrollLocked.value = next
+}, { immediate: true })
 
 function onBackdropClick(): void {
   emit('close')

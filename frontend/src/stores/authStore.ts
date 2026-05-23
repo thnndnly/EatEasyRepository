@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { StorageSerializers, useStorage } from '@vueuse/core'
 import * as authService from '@/services/authService'
 import type { LoginRequest, RegisterRequest, UserDto } from '@/types/auth'
 
@@ -7,8 +8,12 @@ const STORAGE_TOKEN = 'eateasy.auth.token'
 const STORAGE_USER = 'eateasy.auth.user'
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(null)
-  const user = ref<UserDto | null>(null)
+  // Token + User werden via VueUse useStorage automatisch mit localStorage
+  // synchronisiert (selbe Keys wie zuvor, damit bestehende Sessions weiterlaufen).
+  const token = useStorage<string | null>(STORAGE_TOKEN, null)
+  const user = useStorage<UserDto | null>(STORAGE_USER, null, undefined, {
+    serializer: StorageSerializers.object,
+  })
   const initialized = ref(false)
 
   const isAuthenticated = computed<boolean>(() => Boolean(token.value && user.value))
@@ -16,15 +21,11 @@ export const useAuthStore = defineStore('auth', () => {
   function persist(nextToken: string, nextUser: UserDto): void {
     token.value = nextToken
     user.value = nextUser
-    localStorage.setItem(STORAGE_TOKEN, nextToken)
-    localStorage.setItem(STORAGE_USER, JSON.stringify(nextUser))
   }
 
   function clear(): void {
     token.value = null
     user.value = null
-    localStorage.removeItem(STORAGE_TOKEN)
-    localStorage.removeItem(STORAGE_USER)
   }
 
   async function register(request: RegisterRequest): Promise<void> {
@@ -42,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * Liest persistiertes Token aus localStorage und verifiziert es per /auth/me.
+   * Verifiziert ein bereits persistiertes Token per /auth/me.
    * Bei 401 oder anderem Fehler wird die Session geleert.
    * Idempotent — laeuft nur einmal pro App-Lifecycle.
    */
@@ -52,16 +53,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
     initialized.value = true
 
-    const storedToken = localStorage.getItem(STORAGE_TOKEN)
+    const storedToken = token.value
     if (!storedToken) {
       return
     }
 
     try {
       const me = await authService.getMe(storedToken)
-      token.value = storedToken
       user.value = me
-      localStorage.setItem(STORAGE_USER, JSON.stringify(me))
     } catch {
       clear()
     }
