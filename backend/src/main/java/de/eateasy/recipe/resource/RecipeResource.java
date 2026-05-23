@@ -21,6 +21,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +35,8 @@ import java.util.UUID;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RolesAllowed("user")
+@Tag(name = "Rezepte", description = "Verwaltung von Haushalts-Rezepten inkl. Diät-Tags und Import aus externen Quellen.")
+@SecurityRequirement(name = "BearerAuth")
 public class RecipeResource {
 
     private final RecipeService recipeService;
@@ -45,9 +52,11 @@ public class RecipeResource {
     }
 
     @GET
-    public List<RecipeDto> list(@QueryParam("q") String query,
-                                @QueryParam("dietTags") String dietTags,
-                                @QueryParam("householdId") UUID householdId) {
+    @Operation(summary = "Rezepte auflisten", description = "Liefert alle Rezepte, optional gefiltert nach Suchtext, Diät-Tags und Haushalt.")
+    @APIResponse(responseCode = "200", description = "Liste der Rezepte (kann leer sein).")
+    public List<RecipeDto> list(@Parameter(description = "Freitext-Suche (Titel, Zutaten).") @QueryParam("q") String query,
+                                @Parameter(description = "Diät-Tags kommasepariert, z. B. 'vegan,glutenfrei'.") @QueryParam("dietTags") String dietTags,
+                                @Parameter(description = "Auf Haushalt einschränken.") @QueryParam("householdId") UUID householdId) {
         List<String> tags = parseDietTags(dietTags);
         RecipeFilter filter = new RecipeFilter(query, tags, householdId);
         return recipeService.list(currentUser.id(), filter);
@@ -55,11 +64,17 @@ public class RecipeResource {
 
     @GET
     @Path("/{id}")
-    public RecipeDto get(@PathParam("id") UUID id) {
+    @Operation(summary = "Einzelnes Rezept laden")
+    @APIResponse(responseCode = "200", description = "Rezept gefunden.")
+    @APIResponse(responseCode = "404", description = "Rezept nicht vorhanden oder kein Zugriff.")
+    public RecipeDto get(@Parameter(description = "Rezept-UUID.") @PathParam("id") UUID id) {
         return recipeService.get(currentUser.id(), id);
     }
 
     @POST
+    @Operation(summary = "Rezept anlegen")
+    @APIResponse(responseCode = "201", description = "Rezept erstellt.")
+    @APIResponse(responseCode = "400", description = "Validierung fehlgeschlagen.")
     public Response create(@Valid RecipeCreateRequest request) {
         RecipeDto dto = recipeService.create(currentUser.id(), request);
         return Response.status(Response.Status.CREATED).entity(dto).build();

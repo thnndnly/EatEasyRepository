@@ -70,6 +70,16 @@ curl http://localhost:8080/api/v1/health
 Im Browser oeffnet `http://localhost:5173` die Home-Seite und zeigt
 „Backend status: ok", sobald das Backend antwortet.
 
+### API-Dokumentation (OpenAPI / Swagger UI)
+
+Quarkus generiert die OpenAPI-Spec automatisch aus den REST-Resources:
+
+- **Spec (JSON/YAML):** `http://localhost:8080/q/openapi`
+- **Swagger UI (interaktiv):** `http://localhost:8080/q/swagger-ui`
+
+Authentifizierung in Swagger UI: über den `Authorize`-Knopf den JWT eintragen,
+den `/api/v1/auth/login` zurückgibt.
+
 ---
 
 ## Tests
