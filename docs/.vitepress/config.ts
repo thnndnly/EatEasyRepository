@@ -34,9 +34,6 @@ export default defineConfig({
         ],
       },
     ],
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/' },
-    ],
     footer: {
       message: 'Studienprojekt — Gruppe 5',
       copyright: 'Dimitrios Tsakos · Kardeena Kameran',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toRef, watch } from 'vue'
+import { watch } from 'vue'
 import { useEventListener, useScrollLock } from '@vueuse/core'
 
 interface Props {
@@ -21,8 +21,7 @@ useEventListener(document, 'keydown', (event: KeyboardEvent) => {
 
 // Body-Scroll sperren, solange das Modal offen ist.
 const isBodyScrollLocked = useScrollLock(document.body)
-const openRef = toRef(props, 'open')
-watch(openRef, (next) => {
+watch(() => props.open, (next) => {
   isBodyScrollLocked.value = next
 }, { immediate: true })
 

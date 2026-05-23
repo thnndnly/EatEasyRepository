@@ -86,6 +86,9 @@ public class RecipeResource {
 
     @POST
     @Path("/import")
+    @Operation(summary = "Rezept aus externer Quelle importieren (TheMealDB).")
+    @APIResponse(responseCode = "201", description = "Importiertes Rezept.")
+    @APIResponse(responseCode = "404", description = "Quelle/Slug nicht gefunden.")
     public Response importRecipe(@Valid RecipeImportRequest request) {
         RecipeDto dto = recipeImportService.importRecipe(currentUser.id(), request);
         return Response.status(Response.Status.CREATED).entity(dto).build();
@@ -93,13 +96,20 @@ public class RecipeResource {
 
     @PATCH
     @Path("/{id}")
-    public RecipeDto update(@PathParam("id") UUID id, @Valid RecipeUpdateRequest request) {
+    @Operation(summary = "Rezept aktualisieren (partial update).")
+    @APIResponse(responseCode = "200", description = "Aktualisiertes Rezept.")
+    @APIResponse(responseCode = "404", description = "Rezept nicht vorhanden oder kein Zugriff.")
+    public RecipeDto update(@Parameter(description = "Rezept-UUID.") @PathParam("id") UUID id,
+                            @Valid RecipeUpdateRequest request) {
         return recipeService.update(currentUser.id(), id, request);
     }
 
     @DELETE
     @Path("/{id}")
-    public Response delete(@PathParam("id") UUID id) {
+    @Operation(summary = "Rezept loeschen (Soft-Delete).")
+    @APIResponse(responseCode = "204", description = "Geloescht.")
+    @APIResponse(responseCode = "404", description = "Rezept nicht vorhanden oder kein Zugriff.")
+    public Response delete(@Parameter(description = "Rezept-UUID.") @PathParam("id") UUID id) {
         recipeService.delete(currentUser.id(), id);
         return Response.noContent().build();
     }

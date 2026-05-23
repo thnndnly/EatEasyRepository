@@ -18,11 +18,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed<boolean>(() => Boolean(token.value && user.value))
 
-  function persist(nextToken: string, nextUser: UserDto): void {
-    token.value = nextToken
-    user.value = nextUser
-  }
-
   function clear(): void {
     token.value = null
     user.value = null
@@ -30,16 +25,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function register(request: RegisterRequest): Promise<void> {
     const response = await authService.register(request)
-    persist(response.token, response.user)
+    token.value = response.token
+    user.value = response.user
   }
 
   async function login(request: LoginRequest): Promise<void> {
     const response = await authService.login(request)
-    persist(response.token, response.user)
-  }
-
-  function logout(): void {
-    clear()
+    token.value = response.token
+    user.value = response.user
   }
 
   /**
@@ -53,14 +46,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
     initialized.value = true
 
-    const storedToken = token.value
-    if (!storedToken) {
+    if (!token.value) {
       return
     }
 
     try {
-      const me = await authService.getMe(storedToken)
-      user.value = me
+      user.value = await authService.getMe(token.value)
     } catch {
       clear()
     }
@@ -72,7 +63,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     register,
     login,
-    logout,
+    logout: clear,
     restoreSession,
   }
 })

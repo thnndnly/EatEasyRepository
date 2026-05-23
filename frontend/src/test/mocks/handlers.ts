@@ -1,32 +1,20 @@
 import { http, HttpResponse } from 'msw'
-import type { AuthResponse, UserDto } from '@/types/auth'
+import type { AuthResponse } from '@/types/auth'
+import { TEST_TOKEN, TEST_USER } from '@/test/fixtures'
 
 /**
- * MSW-Handler fuer Unit-Tests. Spiegelt das Backend-API auf
- * deterministische Stub-Antworten, damit Stores und Services ohne
- * laufenden Quarkus-Server getestet werden koennen.
- *
- * Reihenfolge: spezifischste Routen zuerst, damit dynamische Pfade
- * (z. B. /api/v1/recipes/:id) nicht von Catch-Alls verschluckt werden.
+ * MSW-Handler fuer Vitest. Spiegelt das Backend-API auf deterministische
+ * Stubs, damit Stores und Services ohne laufenden Quarkus getestet werden.
  */
-const USER_FIXTURE: UserDto = {
-  id: '11111111-1111-1111-1111-111111111111',
-  email: 'test@eateasy.local',
-  displayName: 'Test User',
-  createdAt: '2026-01-01T00:00:00Z',
-}
-
-const TOKEN_FIXTURE = 'msw.fake.jwt.token'
-
 export const handlers = [
   http.post('/api/v1/auth/register', async ({ request }) => {
     const body = (await request.json()) as { email?: string; displayName?: string }
     const response: AuthResponse = {
-      token: TOKEN_FIXTURE,
+      token: TEST_TOKEN,
       user: {
-        ...USER_FIXTURE,
-        email: body.email ?? USER_FIXTURE.email,
-        displayName: body.displayName ?? USER_FIXTURE.displayName,
+        ...TEST_USER,
+        email: body.email ?? TEST_USER.email,
+        displayName: body.displayName ?? TEST_USER.displayName,
       },
     }
     return HttpResponse.json(response, { status: 201 })
@@ -37,25 +25,18 @@ export const handlers = [
     if (body.email === 'fail@eateasy.local') {
       return HttpResponse.json({ error: 'Ungueltige Anmeldedaten' }, { status: 401 })
     }
-    const response: AuthResponse = {
-      token: TOKEN_FIXTURE,
-      user: { ...USER_FIXTURE, email: body.email ?? USER_FIXTURE.email },
-    }
-    return HttpResponse.json(response)
+    return HttpResponse.json({
+      token: TEST_TOKEN,
+      user: { ...TEST_USER, email: body.email ?? TEST_USER.email },
+    } satisfies AuthResponse)
   }),
 
   http.get('/api/v1/auth/me', ({ request }) => {
-    const auth = request.headers.get('Authorization')
-    if (auth !== `Bearer ${TOKEN_FIXTURE}`) {
+    if (request.headers.get('Authorization') !== `Bearer ${TEST_TOKEN}`) {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    return HttpResponse.json(USER_FIXTURE)
+    return HttpResponse.json(TEST_USER)
   }),
 
   http.get('/api/v1/health', () => HttpResponse.json({ status: 'ok' })),
 ]
-
-export const fixtures = {
-  user: USER_FIXTURE,
-  token: TOKEN_FIXTURE,
-}

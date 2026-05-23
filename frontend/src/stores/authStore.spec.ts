@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { http, HttpResponse } from 'msw'
 import { server } from '@/test/mocks/server'
-import { fixtures } from '@/test/mocks/handlers'
+import { TEST_TOKEN, TEST_USER } from '@/test/fixtures'
 import { useAuthStore } from './authStore'
 
 describe('authStore', () => {
@@ -16,10 +16,10 @@ describe('authStore', () => {
 
     await store.login({ email: 'test@eateasy.local', password: 'secret123' })
 
-    expect(store.token).toBe(fixtures.token)
+    expect(store.token).toBe(TEST_TOKEN)
     expect(store.user?.email).toBe('test@eateasy.local')
     expect(store.isAuthenticated).toBe(true)
-    expect(localStorage.getItem('eateasy.auth.token')).toBe(fixtures.token)
+    expect(localStorage.getItem('eateasy.auth.token')).toBe(TEST_TOKEN)
   })
 
   it('wirft bei falschen Anmeldedaten und persistiert nichts', async () => {
@@ -50,12 +50,12 @@ describe('authStore', () => {
   })
 
   it('restoreSession verifiziert ein gueltiges Token und laedt den User', async () => {
-    localStorage.setItem('eateasy.auth.token', fixtures.token)
+    localStorage.setItem('eateasy.auth.token', TEST_TOKEN)
 
     const store = useAuthStore()
     await store.restoreSession()
 
-    expect(store.user?.id).toBe(fixtures.user.id)
+    expect(store.user?.id).toBe(TEST_USER.id)
     expect(store.isAuthenticated).toBe(true)
   })
 })
