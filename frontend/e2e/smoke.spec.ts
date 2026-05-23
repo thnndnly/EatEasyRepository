@@ -5,9 +5,10 @@ import { TEST_TOKEN, TEST_USER } from '../src/test/fixtures'
  * Smoke-Tests ohne Backend-Abhaengigkeit. Decken die ersten Schritte des
  * Login-Flows ab und stellen sicher, dass das Frontend bootet.
  *
- * beforeEach setzt Default-Mocks fuer /auth/me (immer 401, weil unauthenticated)
- * und /auth/login (default: 401 ungueltig). Einzelne Tests ueberschreiben den
- * Login-Mock via page.route() — Playwright nutzt die zuletzt gesetzte Route.
+ * beforeEach setzt Default-Mocks fuer alle erwarteten Endpunkte und einen
+ * Catch-All, der unerwartete /api/*-Calls als Test-Fehler markiert — sonst
+ * wuerden neue ungemockte Calls stumm durchrutschen (Vite-Proxy → kein
+ * Backend → leise 500).
  */
 const jsonResponse = (status: number, body: unknown) => ({
   status,
@@ -17,6 +18,14 @@ const jsonResponse = (status: number, body: unknown) => ({
 
 test.describe('Login-View Smoke', () => {
   test.beforeEach(async ({ page }) => {
+    // Playwright probiert Route-Handler in umgekehrter Reihenfolge der
+    // Registrierung. Catch-All zuerst registrieren, damit nachfolgende
+    // spezifische Routen ihn ueberstimmen koennen. Ohne diesen Catch-All
+    // wuerden ungemockte /api/*-Calls leise durch den Vite-Proxy ans
+    // (im Test nicht laufende) Backend gehen.
+    await page.route('**/api/v1/**', (route) => {
+      throw new Error(`Unmocked API-Call: ${route.request().method()} ${route.request().url()}`)
+    })
     await page.route('**/api/v1/auth/me', (route) =>
       route.fulfill(jsonResponse(401, { error: 'Unauthorized' })),
     )
@@ -47,6 +56,14 @@ test.describe('Login-View Smoke', () => {
     await page.route('**/api/v1/auth/login', (route) =>
       route.fulfill(jsonResponse(200, { token: TEST_TOKEN, user: TEST_USER })),
     )
+    // HomeView mounted ruft /health und /households parallel auf — beides
+    // explizit stubben, damit der Catch-All nicht zuschlaegt.
+    await page.route('**/api/v1/health', (route) =>
+      route.fulfill(jsonResponse(200, { status: 'ok' })),
+    )
+    await page.route('**/api/v1/households', (route) =>
+      route.fulfill(jsonResponse(200, [])),
+    )
 
     await page.goto('/login')
     await page.locator('#login-email').fill(TEST_USER.email)
@@ -54,5 +71,6 @@ test.describe('Login-View Smoke', () => {
     await page.getByRole('button', { name: /Einloggen/ }).click()
 
     await expect(page).toHaveURL(/\/$/)
+    await expect(page.getByText(`Hallo, ${TEST_USER.displayName}`, { exact: false })).toBeVisible()
   })
 })
