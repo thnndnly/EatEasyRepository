@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser'
 import * as barcodeService from '@/services/barcodeService'
 import { useAuthStore } from '@/stores/authStore'
@@ -135,9 +135,20 @@ function switchToManual(): void {
   error.value = null
 }
 
-onMounted(() => {
-  void startScanner()
-})
+watch(
+  () => props.open,
+  async (open) => {
+    if (open) {
+      stage.value = 'scan'
+      error.value = null
+      await nextTick()
+      void startScanner()
+    } else {
+      stopScanner()
+    }
+  },
+  { immediate: true },
+)
 
 onBeforeUnmount(() => {
   stopScanner()
