@@ -39,7 +39,9 @@ Rezeptverwaltung und automatische Einkaufslisten. Studienprojekt, Gruppe 5
 git clone <repo-url> compprojekt
 cd compprojekt
 
-# 1) JWT-Keys lokal erzeugen (Keys werden NICHT eingecheckt)
+# 1) JWT-Keys für dev/prod lokal erzeugen (diese Keys werden NICHT eingecheckt).
+#    Tests brauchen das NICHT: ein dediziertes Test-Keypaar liegt bereits unter
+#    backend/src/test/resources/ im Repo, damit `mvnw test` und das CI ohne Setup laufen.
 bash scripts/gen-jwt-keys.sh
 
 # 2) Optional: lokale Konfig anlegen
