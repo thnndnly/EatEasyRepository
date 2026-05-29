@@ -171,7 +171,7 @@ Bei jedem Push/PR auf `main` laufen zwei Jobs **parallel**
 | Job | Schritte |
 | --- | --- |
 | **Backend** (Quarkus/Maven, JDK 21) | Checkstyle (non-blocking) → `./mvnw test` (mit Testcontainers-Postgres) |
-| **Frontend** (Vue/Vite, Node 22) | `npm ci` → `npm run type-check` → `npm run build` |
+| **Frontend** (Vue/Vite, Node 22) | `npm ci` → `type-check` → `lint:ci` (Check-Modus, kein Auto-Fix) → `test:unit --run` (Vitest + MSW) → `build` → Playwright-E2E (Chromium) |
 
 > Externe APIs (TheMealDB, OpenFoodFacts, Ollama) sind in den Tests gemockt —
 > die CI braucht **kein** Internet zu diesen Diensten und **keine** Secrets.

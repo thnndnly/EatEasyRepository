@@ -709,6 +709,12 @@ CREATE TABLE shopping_list_item (
 
 > **Empfehlung:** Beide unterstützen, mit `external_source`-Feld. TheMealDB ist gratis und braucht keinen API-Key — gute Default-Wahl für Demo.
 
+> **Umgesetzt:** Nur **TheMealDB** (gratis, kein API-Key). Der Spoonacular-Client
+> wurde bewusst **nicht** gebaut; `RecipeImportService` akzeptiert ausschließlich
+> die Quelle `themealdb` und lehnt andere mit `400 Bad Request` ab. Die ehemaligen
+> Spoonacular-Config-Stubs (`integration.spoonacular.api-key`, `SPOONACULAR_API_KEY`)
+> wurden entfernt.
+
 ### Backend
 
 **Komponente `integration/`:**
@@ -909,14 +915,21 @@ Eine Phase gilt als **fertig**, wenn alle Punkte erfüllt sind:
 
 ## Architektur-Rücksprache mit der Lehrperson
 
-**Vor Phase 1 sollten folgende Punkte mit dem Prof geklärt werden:**
+> **Geklärt (Stand 2026-05-29) — alle Phasen 0–10 umgesetzt:**
+>
+> 1. **Modularer Monolith vs. Microservices:** umgesetzt als **modularer Monolith**
+>    mit klarer Komponenten-Trennung (siehe `docs/architektur.md`).
+> 2. **CI/CD-Anspruch:** **GitHub Actions** (`.github/workflows/ci.yml`), Backend-
+>    und Frontend-Job parallel. **Kein** SonarCloud.
+> 3. **Dokumentations-Tiefe:** README + **VitePress-Doku** (`docs/`) + automatisch
+>    generierte **OpenAPI/Swagger-UI** + JavaDoc an den Service-Interfaces.
 
-1. **Modularer Monolith vs. Microservices:** Aktuelle Annahme = modularer Monolith mit klarer Komponenten-Trennung. Falls separate Container/Services pro Komponente verlangt werden, wären Auth + Core + Smart-Suggestion die natürlichen Splits.
+Die ursprünglich vor Phase 1 zu klärenden Punkte waren:
+
+1. **Modularer Monolith vs. Microservices:** Annahme war modularer Monolith. Falls separate Container/Services pro Komponente verlangt würden, wären Auth + Core + Smart-Suggestion die natürlichen Splits.
 2. **CI/CD-Anspruch:** SonarCloud + GitHub Actions Pipeline ja/nein?
 3. **Dokumentations-Tiefe:** Reichen JavaDoc + README, oder Architektur-Dokument zusätzlich erforderlich?
 
-Falls einer dieser Punkte anders entschieden wird, werden Phase 0 und ggf. Phase 1 entsprechend angepasst.
-
 ---
 
-**Stand:** 27.04.2026 · Version 1.0
+**Stand:** 27.04.2026 · Version 1.0 (Plan) · Umsetzungsstand siehe Hinweis oben (2026-05-29)

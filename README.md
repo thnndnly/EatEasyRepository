@@ -112,7 +112,7 @@ npm run test:e2e               # Playwright Smoke (mocked Backend)
 ```
 
 Aktueller Test-Stand:
-- Backend: 203 Tests (JUnit 5 + REST Assured + Testcontainers)
+- Backend: 248 Tests in 28 Klassen (JUnit 5 + REST Assured + Testcontainers)
 - Frontend Unit: 75 Tests, 80%+ Coverage auf Stores + Services
 - Frontend E2E: 3 Smoke-Tests (Login + Redirect)
 
@@ -128,9 +128,10 @@ Ollama-Suggestion, Mail-Versand an Maildev). Setzt eindeutige
 Test-Emails pro Run (`alice-<timestamp>@example.com`), kann beliebig
 wiederholt werden.
 
-**CI:** `.github/workflows/ci.yml` faehrt Backend-Tests (mit
-Testcontainers/Postgres) und Frontend-Build parallel bei jedem
-push/PR auf `main`.
+**CI:** `.github/workflows/ci.yml` faehrt zwei Jobs parallel bei jedem
+push/PR auf `main`: **Backend** (Checkstyle non-blocking + `./mvnw test`
+mit Testcontainers/Postgres) und **Frontend** (type-check, lint, Vitest-Unit-Tests,
+Build und Playwright-E2E-Smoke). Externe APIs sind in allen Tests gemockt.
 
 ---
 
