@@ -40,7 +40,9 @@ EatEasy ist ein Studienprojekt der Gruppe 5 (Dimitrios Tsakos, Kardeena Kameran)
 
 ## Diese Doku abdeckt
 
-- **[Setup & Commands](/setup)** — Voraussetzungen, Bootstrap, Standard-Workflows
+- **[Onboarding · Lokale Entwicklung](/lokale-entwicklung)** — Schritt-für-Schritt vom frischen Rechner zur laufenden Dev-Umgebung (Windows & macOS/Linux)
+- **[Kollaboration · Git-Workflow](/kollaboration)** — Branches, Commits, Pull Requests, CI, Review-Etikette
+- **[Setup & Commands](/setup)** — Voraussetzungen, Bootstrap, Standard-Workflows (Kurzreferenz)
 - **[Architektur](/architektur)** — Komponenten, Layer-Regeln, Datenmodell
 - **[API](/api)** — OpenAPI-Spec und Swagger UI
 - **[Tech-Stack](/tech-stack)** — alle eingesetzten Technologien mit kurzem Steckbrief

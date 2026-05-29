@@ -8,22 +8,25 @@ export default defineConfig({
   lastUpdated: true,
   // localhost-Links zur Swagger UI sind keine "echten" Dead Links —
   // sie zeigen auf den Backend-Endpunkt, der zur Laufzeit erreichbar ist.
-  ignoreDeadLinks: [/^https?:\/\/localhost(:\d+)?\//],
+  ignoreDeadLinks: [/^https?:\/\/localhost(:\d+)?(\/.*)?$/],
   themeConfig: {
     nav: [
       { text: 'Start', link: '/' },
       { text: 'Setup', link: '/setup' },
+      { text: 'Onboarding', link: '/lokale-entwicklung' },
+      { text: 'Kollaboration', link: '/kollaboration' },
       { text: 'Architektur', link: '/architektur' },
       { text: 'API', link: '/api' },
       { text: 'Tech-Stack', link: '/tech-stack' },
     ],
     sidebar: [
       {
-        text: 'Überblick',
+        text: 'Loslegen',
         items: [
           { text: 'Startseite', link: '/' },
+          { text: 'Onboarding · Lokale Entwicklung', link: '/lokale-entwicklung' },
           { text: 'Setup & Commands', link: '/setup' },
-          { text: 'Tech-Stack', link: '/tech-stack' },
+          { text: 'Kollaboration · Git-Workflow', link: '/kollaboration' },
         ],
       },
       {
@@ -31,6 +34,7 @@ export default defineConfig({
         items: [
           { text: 'Architektur', link: '/architektur' },
           { text: 'API-Dokumentation', link: '/api' },
+          { text: 'Tech-Stack', link: '/tech-stack' },
         ],
       },
     ],
