@@ -27,7 +27,7 @@ describe('authStore', () => {
 
     await expect(
       store.login({ email: 'fail@eateasy.local', password: 'wrong' }),
-    ).rejects.toThrow()
+    ).rejects.toThrow('Ungueltige Anmeldedaten')
 
     expect(store.token).toBeNull()
     expect(store.isAuthenticated).toBe(false)

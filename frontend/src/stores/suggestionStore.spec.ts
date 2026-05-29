@@ -36,7 +36,9 @@ describe('suggestionStore', () => {
     )
     const store = useSuggestionStore()
 
-    await expect(store.fetch(TEST_HOUSEHOLD.id, { numSuggestions: 3 })).rejects.toThrow()
+    await expect(store.fetch(TEST_HOUSEHOLD.id, { numSuggestions: 3 })).rejects.toThrow(
+      'LLM nicht erreichbar',
+    )
 
     expect(store.suggestions).toEqual([])
     expect(store.error).toBe('LLM nicht erreichbar')

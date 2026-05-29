@@ -55,7 +55,7 @@ describe('integrationStore', () => {
 
     await expect(
       store.importExternal({ source: 'themealdb', externalId: 'ext-x' }),
-    ).rejects.toThrow()
+    ).rejects.toThrow('Quelle nicht erreichbar')
 
     expect(store.error).toBe('Quelle nicht erreichbar')
     expect(store.importingId).toBeNull()
