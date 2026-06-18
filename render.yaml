@@ -1,0 +1,69 @@
+# Render Blueprint — kostenlose Demo-Umgebung fuer EatEasy.
+#
+# Anlegen (einmalig, im Browser):
+#   1. render.com -> New -> Blueprint
+#   2. dieses GitHub-Repo verbinden, Branch waehlen
+#   3. "Apply" -> Render baut Postgres + Backend + Frontend automatisch
+#
+# Architektur (alles eine Origin, daher kein CORS und keine Frontend-Aenderung):
+#   Browser -> eateasy-web (statisches Vue, CDN) --/api,/q proxy--> eateasy-api (Quarkus) -> eateasy-db
+#
+# Gratis-Tier-Grenzen (bewusst akzeptiert fuer eine Demo):
+#   - Postgres laeuft nach 30 Tagen ab (danach 14 Tage Gnadenfrist), 1 GB, keine Backups
+#   - Das Backend "schlaeft" nach 15 Min Inaktivitaet -> erster API-Call danach ~1 Min Kaltstart
+#   - Das statische Frontend ist immer sofort da
+
+databases:
+  - name: eateasy-db
+    plan: free
+    databaseName: eateasy
+    user: eateasy
+
+services:
+  # ---------- Backend: Quarkus im Docker-Container ----------
+  - name: eateasy-api
+    type: web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: QUARKUS_PROFILE
+        value: prod
+      # Demo: keine echten Mails verschicken — Haushalts-Einladungen laufen sonst
+      # in einen SMTP-Fehler, weil kein Maildev/SMTP erreichbar ist.
+      - key: QUARKUS_MAILER_MOCK
+        value: "true"
+      - key: DB_HOST
+        fromDatabase: { name: eateasy-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: eateasy-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: eateasy-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: eateasy-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: eateasy-db, property: password }
+
+  # ---------- Frontend: statisches Vue-Build mit Proxy aufs Backend ----------
+  - name: eateasy-web
+    type: web
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    # Reihenfolge zaehlt: spezifische Proxy-Regeln zuerst, SPA-Fallback zuletzt.
+    # Render wendet eine Rewrite-Regel nur an, wenn an dem Pfad KEINE statische
+    # Datei liegt — Assets (js/css) werden also direkt ausgeliefert.
+    routes:
+      # WICHTIG: Die Ziel-URL muss exakt der oeffentlichen URL von eateasy-api
+      # entsprechen. Falls Render dem Namen einen Suffix gibt (z. B.
+      # eateasy-api-xy12.onrender.com), beide Zeilen hier anpassen.
+      - type: rewrite
+        source: /api/*
+        destination: https://eateasy-api.onrender.com/api/*
+      - type: rewrite
+        source: /q/*
+        destination: https://eateasy-api.onrender.com/q/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
