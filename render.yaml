@@ -25,8 +25,10 @@ services:
     type: web
     runtime: docker
     plan: free
+    # Render nutzt fuer Docker-Builds das Repo-Root als Context. Das Dockerfile
+    # kopiert deshalb selbst aus backend/ (siehe backend/Dockerfile).
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerContext: .
     envVars:
       - key: QUARKUS_PROFILE
         value: prod

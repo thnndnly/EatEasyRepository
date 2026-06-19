@@ -5,7 +5,9 @@
 # bewusst nicht (die uebernimmt die CI), damit der Deploy-Build schlank bleibt.
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY . .
+# Render nutzt fuer Docker-Builds das Repo-Root als Build-Context (ignoriert
+# dockerContext), daher explizit aus backend/ kopieren statt "COPY . .".
+COPY backend/ ./
 # Das Base-Image bringt Maven mit -> kein Wrapper noetig (vermeidet ./mvnw-Probleme
 # mit Datei-Modi / CRLF im Docker-Build).
 RUN mvn -B package -DskipTests
