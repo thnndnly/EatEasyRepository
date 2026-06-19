@@ -122,7 +122,7 @@ def slide_structure():
     box(50, 392, 560, 48, CARD, BORDER, 10)
     text(70, 421, "Frontend", 13, FB, PRIMARY)
     text(70, 403, "Vue 3 · Pinia · Vue Router · TypeScript", 9.5, F, SUBTEXT)
-    chip(420, 405, "SPA · Vercel", 9, TINT, PRIMARY)
+    chip(400, 405, "SPA · Render (static)", 9, TINT, PRIMARY)
     # REST Pfeil
     arrow(330, 392, 330, 366, SECONDARY, 1.8, 7)
     text(340, 374, "REST  /api/v1  ·  JWT", 9, FB, SECONDARY)
@@ -179,52 +179,97 @@ def entity(x, ytop, name, fields, w=168):
     return {"x": x, "w": w, "top": ytop, "bottom": ytop - h, "cx": x + w / 2}
 
 
-def relv(a, b, label):
-    """Vertikaler Pfeil von Box a (oben) nach Box b (unten) oder umgekehrt."""
+def _mid(b):
+    return (b["top"] + b["bottom"]) / 2
+
+
+def _label(x, y, s, color):
+    w = c.stringWidth(s, FB, 8) + 6
+    c.setFillColor(WHITE); c.rect(x - w / 2, y - 5, w, 11, fill=1, stroke=0)
+    text(x, y - 3, s, 8, FB, color, "c")
+
+
+def relv(a, b, label, color=SECONDARY):
+    """Vertikaler Pfeil zwischen gestapelten Boxen einer Spalte."""
     x = a["cx"]
-    arrow(x, a["bottom"], x, b["top"], GREEN3, 1.3, 5)
-    my = (a["bottom"] + b["top"]) / 2
-    c.setFillColor(WHITE); c.rect(x - 11, my - 5, 22, 11, fill=1, stroke=0)
-    text(x, my - 3, label, 8, FB, GREEN3, "c")
+    arrow(x, a["bottom"], x, b["top"], color, 1.3, 5)
+    if label:
+        _label(x, (a["bottom"] + b["top"]) / 2, label, color)
+
+
+def relh(a, b, label, color=GREEN3):
+    """Diagonaler Querpfeil von rechter Kante a zu linker Kante b (Modul→Modul)."""
+    x1, y1 = a["x"] + a["w"], _mid(a)
+    x2, y2 = b["x"], _mid(b)
+    arrow(x1, y1, x2, y2, color, 1.4, 6)
+    _label((x1 + x2) / 2, (y1 + y2) / 2, label, color)
+
+
+def relh_rev(a, b, label, color=GREEN3):
+    """Querpfeil von linker Kante a zu rechter Kante b (nach links zeigend)."""
+    x1, y1 = a["x"], _mid(a)
+    x2, y2 = b["x"] + b["w"], _mid(b)
+    arrow(x1, y1, x2, y2, color, 1.4, 6)
+    _label((x1 + x2) / 2, (y1 + y2) / 2, label, color)
+
+
+def elbow(pts, label, color=GREEN3):
+    """Orthogonaler Pfad (Liste von Punkten), Pfeilspitze am letzten Segment."""
+    c.setStrokeColor(color); c.setLineWidth(1.4)
+    for i in range(len(pts) - 2):
+        c.line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1])
+    arrow(pts[-2][0], pts[-2][1], pts[-1][0], pts[-1][1], color, 1.4, 6)
+    m = len(pts) // 2  # Label mittig auf der Bodenspur
+    _label((pts[m - 1][0] + pts[m][0]) / 2, pts[m - 1][1], label, color)
 
 
 def cluster(x, w, label):
-    box(x, 80, w, 372, HexColor("#F1F6F2"), HexColor("#DCE8E0"), 10, 1)
-    text(x + 13, 432, label, 9.5, FB, GREEN3)
+    box(x, 86, w, 366, HexColor("#F1F6F2"), HexColor("#DCE8E0"), 10, 1)
+    text(x + 13, 434, label, 9.5, FB, GREEN3)
 
 
 def slide_datamodel():
     header("2", "Datenmodell")
+    # Cluster in Fluss-Reihenfolge: Haushalt → Wochenplan → Rezepte → Vorrat
     cluster(46, 200, "Nutzer & Haushalt")
-    cluster(262, 200, "Rezepte & Zutaten")
-    cluster(478, 186, "Wochenplan")
-    cluster(684, 232, "Vorrat & Einkauf")
-    # Cluster A
+    cluster(260, 176, "Wochenplan")
+    cluster(450, 200, "Rezepte & Zutaten")
+    cluster(664, 236, "Vorrat & Einkauf")
+    # Cluster 1 — Nutzer & Haushalt
     user = entity(62, 416, "User", ["email · UNIQUE", "display_name"])
-    hh = entity(62, 318, "Household", ["name", "default_diet_tags[]"])
-    mem = entity(62, 214, "HouseholdMembership", ["role: OWNER / MEMBER", "→ user · → household"])
+    hh = entity(62, 320, "Household", ["name", "default_diet_tags[]"])
+    mem = entity(62, 216, "HouseholdMembership", ["role: OWNER / MEMBER", "→ user · → household"])
     relv(user, hh, "")
     relv(hh, mem, "n:m")
-    # Cluster B
-    rec = entity(278, 416, "Recipe", ["title · servings", "diet_tags[] · instructions"])
-    ri = entity(278, 318, "RecipeIngredient", ["amount · unit", "→ recipe · → ingredient"])
-    ing = entity(278, 214, "Ingredient", ["name · UNIQUE", "default_unit"])
+    # Cluster 2 — Wochenplan
+    mp = entity(272, 416, "MealPlan", ["week_start (Mo)", "→ household"], w=152)
+    mpe = entity(272, 300, "MealPlanEntry", ["day · meal_type", "servings · → recipe"], w=152)
+    relv(mp, mpe, "1:n")
+    # Cluster 3 — Rezepte & Zutaten
+    rec = entity(466, 416, "Recipe", ["title · servings", "diet_tags[] · instructions"])
+    ri = entity(466, 320, "RecipeIngredient", ["amount · unit", "→ recipe · → ingredient"])
+    ing = entity(466, 216, "Ingredient", ["name · UNIQUE", "default_unit"])
     relv(rec, ri, "1:n")
     relv(ri, ing, "n:1")
-    # Cluster C
-    mp = entity(486, 416, "MealPlan", ["week_start (Mo)", "→ household"], w=170)
-    mpe = entity(486, 300, "MealPlanEntry", ["day · meal_type · servings", "→ recipe"], w=170)
-    relv(mp, mpe, "1:n")
-    # Cluster D
-    pan = entity(700, 416, "PantryItem", ["amount · unit · best_before", "→ ingredient"], w=200)
-    sl = entity(700, 300, "ShoppingList", ["→ household", "→ meal_plan"], w=200)
-    sli = entity(700, 196, "ShoppingListItem", ["amount · unit · checked", "→ ingredient"], w=200)
+    # Cluster 4 — Vorrat & Einkauf
+    pan = entity(680, 416, "PantryItem", ["amount · unit · best_before", "→ ingredient"], w=204)
+    sl = entity(680, 300, "ShoppingList", ["→ household", "→ meal_plan"], w=204)
+    sli = entity(680, 196, "ShoppingListItem", ["amount · unit · checked", "→ ingredient"], w=204)
     relv(sl, sli, "1:n")
+    # --- Modul-uebergreifende Pfeile (das war der fehlende Teil) ---
+    relh(hh, mp, "1:n")          # Haushalt → Wochenplan
+    relh(mpe, rec, "n:1")        # Wochenplan-Eintrag → Rezept
+    relh_rev(sli, ing, "n:1")    # Einkaufsposten → Zutat
+    # Vorratsposten → Zutat (laengerer Querpfeil)
+    arrow(pan["x"], _mid(pan), ing["x"] + ing["w"], _mid(ing), GREEN3, 1.3, 6)
+    _label((pan["x"] + ing["x"] + ing["w"]) / 2, (_mid(pan) + _mid(ing)) / 2, "n:1", GREEN3)
+    # Einkaufsliste → Wochenplan (orthogonal ueber die untere Spur, an den
+    # Boxen vorbei: rechts runter, unten quer, links wieder hoch in MealPlan)
+    elbow([(sl["x"], _mid(sl)), (654, _mid(sl)), (654, 112), (256, 112),
+           (256, _mid(mp)), (mp["x"], _mid(mp))], "1:1")
     # Legende
-    text(50, 60, "FK-Referenzen (→ Feld):  MealPlanEntry → Recipe   ·   ShoppingList → MealPlan   ·   "
-                 "RecipeIngredient / PantryItem / ShoppingListItem → Ingredient", 8.5, F, SUBTEXT)
-    text(50, 44, "Konventionen:  household_id auf allen Haushalts-Entitäten   ·   UUID-PK + created_at / updated_at überall   ·   "
-                 "Soft-Delete nur bei Recipe", 8.5, F, MUTED)
+    text(50, 60, "→ household_id auf allen Haushalts-Entitäten (Haushalt besitzt Rezepte, Plan, Vorrat, Liste)   ·   "
+                 "UUID-PK + created_at / updated_at überall   ·   Soft-Delete nur bei Recipe", 8.5, F, MUTED)
     footer(3)
     c.showPage()
 
@@ -267,7 +312,7 @@ def slide_tech():
         ("Externe APIs", ["TheMealDB", "OpenFoodFacts"]),
         ("Testing", ["JUnit 5", "REST Assured", "Vitest", "MSW", "Playwright E2E"]),
         ("Qualität / CI", ["Checkstyle", "ESLint", "Prettier", "GitHub Actions"]),
-        ("Build & Deployment", ["Maven", "npm", "Docker", "Render", "Vercel"]),
+        ("Build & Deployment", ["Maven", "npm", "Docker", "Render: DB + API + Web"]),
     ]
     colw = 410
     xL, xR = 50, 50 + colw + 40
