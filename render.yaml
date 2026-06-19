@@ -36,6 +36,10 @@ services:
       # in einen SMTP-Fehler, weil kein Maildev/SMTP erreichbar ist.
       - key: QUARKUS_MAILER_MOCK
         value: "true"
+      # CORS: der Browser sendet die oeffentliche Frontend-Origin. Ohne diesen
+      # Eintrag blockt Quarkus jeden Request mit 403 (Default ist nur localhost).
+      - key: QUARKUS_HTTP_CORS_ORIGINS
+        value: https://eateasy-web.onrender.com,http://localhost:5173
       - key: DB_HOST
         fromDatabase: { name: eateasy-db, property: host }
       - key: DB_PORT
