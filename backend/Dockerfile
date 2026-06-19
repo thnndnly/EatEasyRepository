@@ -1,6 +1,6 @@
 # Multi-Stage-Build fuer die Render-Gratis-Demo.
 #
-# Stage 1 baut das Quarkus-Fast-Jar mit dem committeten Maven-Wrapper — so
+# Stage 1 baut das Quarkus-Fast-Jar mit dem Maven aus dem Base-Image — so
 # funktioniert "Deploy aus dem Repo" ohne lokales Maven/JDK. Tests laufen hier
 # bewusst nicht (die uebernimmt die CI), damit der Deploy-Build schlank bleibt.
 FROM maven:3.9-eclipse-temurin-21 AS build
