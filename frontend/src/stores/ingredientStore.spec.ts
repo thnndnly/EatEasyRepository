@@ -47,7 +47,7 @@ describe('ingredientStore', () => {
     )
     const store = useIngredientStore()
 
-    await expect(store.search('x')).rejects.toThrow()
+    await expect(store.search('x')).rejects.toThrow('kaputt')
 
     expect(store.results).toEqual([])
     expect(store.error).toBe('kaputt')

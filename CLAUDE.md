@@ -14,7 +14,7 @@ Komponentenbasierte Web-Anwendung für haushaltsweite Mahlzeitenplanung, Rezeptv
 | Backend | Quarkus (Java 21), RESTEasy Reactive, Hibernate ORM mit Panache, MicroProfile, SmallRye JWT, Quarkus Mailer |
 | Datenbank | PostgreSQL 16 |
 | LLM (self-hosted) | Ollama mit Llama 3 oder Mistral |
-| Externe APIs | Spoonacular / TheMealDB, OpenFoodFacts |
+| Externe APIs | TheMealDB (Rezept-Import), OpenFoodFacts (Barcode) |
 | Build | Maven (Backend), npm + Vite (Frontend) |
 | Testing | JUnit 5 + REST Assured (Backend), Vitest + Vue Test Utils (Frontend) |
 | Container | Docker, docker-compose |
@@ -44,7 +44,7 @@ eateasy-ee/
 │   │   └── db/migration/       # Flyway-Migrations
 │   ├── src/test/java/...
 │   ├── pom.xml
-│   └── Dockerfile
+│   └── src/main/docker/        # von Quarkus generierte Dockerfiles (Dockerfile.jvm)
 ├── frontend/                   # Vue-Anwendung
 │   ├── src/
 │   │   ├── views/              # Routen-Komponenten
@@ -55,10 +55,10 @@ eateasy-ee/
 │   │   └── router/
 │   ├── public/
 │   ├── package.json
-│   ├── vite.config.ts
-│   └── Dockerfile
-├── docker-compose.yml
-├── docker-compose.dev.yml      # Mit Hot-Reload
+│   └── vite.config.ts
+├── docker-compose.dev.yml      # Lokale Infrastruktur (Postgres, Ollama, Maildev)
+├── scripts/                    # Helper (gen-jwt-keys.sh, smoke-test.sh)
+├── docs/                       # VitePress-Projektdoku
 ├── .env.example
 ├── README.md
 ├── CLAUDE.md                   # diese Datei
@@ -137,18 +137,22 @@ cd frontend && npm run dev
 
 # Tests
 cd backend && ./mvnw test
-cd frontend && npm test
+cd frontend && npm run test:unit -- --run
 ```
 
 ### Produktion
 
-```bash
-# Komplettes Setup hochfahren
-docker-compose up -d --build
-
-# Logs
-docker-compose logs -f backend
-```
+> Ein dediziertes Produktions-Setup (eigene `docker-compose.yml`, gebautes
+> Frontend-Image) ist bewusst **out of scope** für die Pflichtabgabe (siehe
+> Abschnitt „Out of Scope"). Für die Demo läuft alles über `docker-compose.dev.yml`
+> plus die auf dem Host gestarteten Dev-Server. Ein produktiver JVM-Build des
+> Backends ist über das von Quarkus generierte `backend/src/main/docker/Dockerfile.jvm`
+> möglich:
+>
+> ```bash
+> cd backend && ./mvnw package
+> docker build -f src/main/docker/Dockerfile.jvm -t eateasy/backend .
+> ```
 
 ### Datenbank
 

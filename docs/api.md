@@ -21,9 +21,9 @@ Quarkus generiert die vollständige OpenAPI-3-Spezifikation automatisch aus den 
 | `/api/v1/households` | Household | CRUD + Mitglieder, Einladungen |
 | `/api/v1/recipes` | Recipe | CRUD, Filter, Import (TheMealDB) |
 | `/api/v1/ingredients` | Ingredient | Stammdaten |
-| `/api/v1/mealplans` | Mealplan | Wochenplan-Einträge |
-| `/api/v1/pantry/*` | Pantry | Vorrats-Items, Barcode-Import (OpenFoodFacts) |
-| `/api/v1/shopping-lists/*` | Shopping List | Auto-Berechnung, manuelle Anpassungen |
+| `/api/v1/mealplans` | Mealplan | Wochenplan-Einträge (`/{id}/entries`), Anlage via `/households/{id}/mealplans` |
+| `/api/v1/pantry/*` | Pantry | Vorrats-Items; Anlage + Barcode-Import via `/households/{id}/pantry` (OpenFoodFacts) |
+| `/api/v1/mealplans/{id}/shoppinglist` | Shopping List | Auto-Berechnung (`GET`) + Neuberechnung (`POST /regenerate`); Abhaken via `/shoppinglist/items/{id}` |
 | `/api/v1/integration/*` | Integration | Externe Quellen anzapfen |
 | `/api/v1/health` | – | Health-Probe, öffentlich |
 

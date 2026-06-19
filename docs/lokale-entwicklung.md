@@ -138,8 +138,8 @@ Für die Standard-Dev-Umgebung brauchst du **keine** eigene Konfiguration — al
 Defaults (`localhost`, Ports, DB-Credentials `eateasy/eateasy`) sind im Code und
 in `docker-compose.dev.yml` hinterlegt.
 
-Eine `.env` brauchst du nur, wenn du Defaults überschreiben willst (z. B. Ports)
-oder einen **Spoonacular-API-Key** für den externen Rezept-Import setzen möchtest:
+Eine `.env` brauchst du nur, wenn du Defaults überschreiben willst (z. B. Ports
+oder den Ollama-Modellnamen):
 
 ::: code-group
 ```powershell [Windows · PowerShell]
@@ -152,18 +152,20 @@ cp .env.example .env
 
 > **Wichtig:** Die `.env` wird von **Docker Compose** gelesen (Postgres/Ollama/
 > Maildev). Das auf dem Host laufende Backend liest die `.env` **nicht**
-> automatisch. Für lokale Standardwerte ist das egal. Brauchst du z. B. den
-> Spoonacular-Key im Backend, setze ihn als echte Umgebungsvariable, bevor du
-> `quarkus:dev` startest:
+> automatisch. Für lokale Standardwerte ist das egal. Willst du im Backend einen
+> Wert überschreiben (z. B. `OLLAMA_MODEL`), setze ihn als echte
+> Umgebungsvariable, bevor du `quarkus:dev` startest:
 >
 > ```powershell
-> $env:SPOONACULAR_API_KEY = "dein-key"   # PowerShell
+> $env:OLLAMA_MODEL = "mistral"   # PowerShell
 > ```
 > ```bash
-> export SPOONACULAR_API_KEY="dein-key"   # bash
+> export OLLAMA_MODEL="mistral"   # bash
 > ```
-> Ohne Key funktioniert alles außer dem Spoonacular-Import (TheMealDB läuft
-> keyfrei).
+>
+> Der externe Rezept-Import läuft ausschließlich über **TheMealDB** (gratis,
+> kein API-Key). Spoonacular ist bewusst nicht implementiert (siehe
+> `IMPLEMENTATION.md`, Phase 7).
 
 ---
 
@@ -195,9 +197,9 @@ docker exec eateasy-ollama ollama pull llama3
 ```
 
 > **Modellname:** Das Backend liest den Modellnamen aus `OLLAMA_MODEL`
-> (Default in `application.properties`: `llama3.2`). Ziehe entweder das Modell,
-> das du in der `.env` setzt, oder setze `OLLAMA_MODEL=llama3`, wenn du `llama3`
-> gezogen hast. Wichtig ist: **gezogenes Modell == konfiguriertes Modell.**
+> (Default in `application.properties`: `llama3`). Willst du ein anderes Modell
+> nutzen (z. B. `mistral`), setze `OLLAMA_MODEL` entsprechend und ziehe genau
+> dieses Modell. Wichtig ist: **gezogenes Modell == konfiguriertes Modell.**
 
 Test:
 
