@@ -6,7 +6,9 @@
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
-RUN ./mvnw -B package -DskipTests
+# Das Base-Image bringt Maven mit -> kein Wrapper noetig (vermeidet ./mvnw-Probleme
+# mit Datei-Modi / CRLF im Docker-Build).
+RUN mvn -B package -DskipTests
 
 # Stage 2: schlankes JRE-Runtime-Image mit nur dem fertigen quarkus-app.
 FROM eclipse-temurin:21-jre
