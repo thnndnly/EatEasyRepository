@@ -8,6 +8,11 @@ WORKDIR /app
 # Render nutzt fuer Docker-Builds das Repo-Root als Build-Context (ignoriert
 # dockerContext), daher explizit aus backend/ kopieren statt "COPY . .".
 COPY backend/ ./
+# Die JWT-Keys in src/main/resources sind per .gitignore (*.pem) ausgeschlossen und
+# fehlen daher im geklonten Repo. Fuer die Demo das bereits committete Test-Keypaar
+# aus src/test/resources verwenden — reproduzierbar, kein echtes Secret.
+RUN cp src/test/resources/publicKey.pem  src/main/resources/publicKey.pem \
+ && cp src/test/resources/privateKey.pem src/main/resources/privateKey.pem
 # Das Base-Image bringt Maven mit -> kein Wrapper noetig (vermeidet ./mvnw-Probleme
 # mit Datei-Modi / CRLF im Docker-Build).
 RUN mvn -B package -DskipTests
