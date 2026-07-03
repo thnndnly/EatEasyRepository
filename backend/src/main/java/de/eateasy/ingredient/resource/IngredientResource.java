@@ -2,12 +2,14 @@ package de.eateasy.ingredient.resource;
 
 import de.eateasy.ingredient.dto.IngredientCreateRequest;
 import de.eateasy.ingredient.dto.IngredientDto;
+import de.eateasy.ingredient.dto.IngredientUpdateRequest;
 import de.eateasy.ingredient.service.IngredientService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -47,5 +49,11 @@ public class IngredientResource {
     public Response create(@Valid IngredientCreateRequest request) {
         IngredientDto dto = ingredientService.findOrCreate(request.name(), request.defaultUnit());
         return Response.status(Response.Status.CREATED).entity(dto).build();
+    }
+
+    @PATCH
+    @Path("/{id}")
+    public IngredientDto update(@PathParam("id") UUID id, @Valid IngredientUpdateRequest request) {
+        return ingredientService.updateCategory(id, request.category());
     }
 }

@@ -5,6 +5,7 @@ import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.ingredient.dto.IngredientDto;
 import de.eateasy.ingredient.entity.Ingredient;
+import de.eateasy.ingredient.entity.IngredientCategory;
 import de.eateasy.ingredient.repository.IngredientRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -64,6 +65,15 @@ public class IngredientServiceImpl implements IngredientService {
         return ingredientRepository.findByIds(ids).stream()
             .map(IngredientDto::from)
             .collect(Collectors.toMap(IngredientDto::id, Function.identity()));
+    }
+
+    @Override
+    @Transactional
+    public IngredientDto updateCategory(UUID id, IngredientCategory category) {
+        Ingredient ingredient = ingredientRepository.findByIdOptional(id)
+            .orElseThrow(() -> new NotFoundException("Zutat nicht gefunden: " + id));
+        ingredient.setCategory(category);
+        return IngredientDto.from(ingredient);
     }
 
     @Override

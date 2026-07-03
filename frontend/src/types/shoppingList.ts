@@ -1,9 +1,11 @@
 import type { Unit } from './units'
+import type { IngredientCategory } from './ingredient'
 
 export interface ShoppingListItemDto {
   id: string
   ingredientId: string
   ingredientName: string
+  category: IngredientCategory
   amount: number
   unit: Unit
   checked: boolean

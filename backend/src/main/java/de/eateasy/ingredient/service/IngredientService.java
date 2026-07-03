@@ -2,6 +2,7 @@ package de.eateasy.ingredient.service;
 
 import de.eateasy.common.units.Unit;
 import de.eateasy.ingredient.dto.IngredientDto;
+import de.eateasy.ingredient.entity.IngredientCategory;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +28,12 @@ public interface IngredientService {
      * Recipe-Zutaten in einer Query zu laden statt n+1.
      */
     Map<UUID, IngredientDto> getByIds(Collection<UUID> ids);
+
+    /**
+     * Setzt die Supermarkt-Kategorie einer Zutat (Phase 16). Zutaten sind ein
+     * global geteilter Pool — die Kategorie gilt damit fuer alle Haushalte.
+     */
+    IngredientDto updateCategory(UUID id, IngredientCategory category);
 
     /**
      * Loest eine Zutat anhand von (optionaler) ID oder Name auf. Ist {@code id}

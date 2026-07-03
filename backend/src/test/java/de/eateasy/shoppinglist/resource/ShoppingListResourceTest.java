@@ -103,6 +103,7 @@ class ShoppingListResourceTest {
                 .statusCode(200)
                 .body("items", hasSize(1))
                 .body("items[0].ingredientName", equalTo("Salz"))
+                .body("items[0].category", equalTo("SONSTIGES"))
                 .body("items[0].checked", is(false));
     }
 

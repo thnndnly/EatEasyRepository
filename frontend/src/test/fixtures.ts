@@ -56,6 +56,7 @@ export const TEST_INGREDIENT: IngredientDto = {
   id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
   name: 'Tomate',
   defaultUnit: 'PIECE',
+  category: 'OBST_GEMUESE',
 }
 
 export const TEST_RECIPE_MINI: RecipeMiniDto = {
@@ -118,6 +119,7 @@ export const TEST_SHOPPING_LIST: ShoppingListDto = {
       id: 'item-1',
       ingredientId: TEST_INGREDIENT.id,
       ingredientName: TEST_INGREDIENT.name,
+      category: TEST_INGREDIENT.category,
       amount: 6,
       unit: 'PIECE',
       checked: false,
@@ -126,6 +128,7 @@ export const TEST_SHOPPING_LIST: ShoppingListDto = {
       id: 'item-2',
       ingredientId: 'cccccccc-cccc-cccc-cccc-cccccccccccd',
       ingredientName: 'Zwiebel',
+      category: 'SONSTIGES',
       amount: 2,
       unit: 'PIECE',
       checked: true,
