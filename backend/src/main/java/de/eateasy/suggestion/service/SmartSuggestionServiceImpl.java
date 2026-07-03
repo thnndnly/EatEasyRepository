@@ -70,7 +70,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
         householdService.assertMember(userId, householdId);
 
         List<RecipeDto> recipes = recipeService.list(
-            userId, new RecipeFilter(null, List.of(), null));
+            userId, new RecipeFilter(null, List.of(), null, false));
         if (recipes.isEmpty()) {
             return List.of();
         }

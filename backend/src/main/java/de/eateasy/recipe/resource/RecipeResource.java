@@ -3,6 +3,7 @@ package de.eateasy.recipe.resource;
 import de.eateasy.common.security.CurrentUser;
 import de.eateasy.integration.dto.RecipeImportRequest;
 import de.eateasy.integration.service.RecipeImportService;
+import de.eateasy.recipe.dto.FavoriteRequest;
 import de.eateasy.recipe.dto.RecipeCreateRequest;
 import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
@@ -15,6 +16,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -60,9 +62,10 @@ public class RecipeResource {
     public List<RecipeDto> list(
             @Parameter(description = "Freitext-Suche (Titel, Zutaten).") @QueryParam("q") String query,
             @Parameter(description = "Diät-Tags kommasepariert, z. B. 'vegan,glutenfrei'.") @QueryParam("dietTags") String dietTags,
-            @Parameter(description = "Auf Haushalt einschränken.") @QueryParam("householdId") UUID householdId) {
+            @Parameter(description = "Auf Haushalt einschränken.") @QueryParam("householdId") UUID householdId,
+            @Parameter(description = "Nur Favoriten des eingeloggten Users.") @QueryParam("favorite") boolean favorite) {
         List<String> tags = parseDietTags(dietTags);
-        RecipeFilter filter = new RecipeFilter(query, tags, householdId);
+        RecipeFilter filter = new RecipeFilter(query, tags, householdId, favorite);
         return recipeService.list(currentUser.id(), filter);
     }
 
@@ -102,6 +105,17 @@ public class RecipeResource {
     public RecipeDto update(@Parameter(description = "Rezept-UUID.") @PathParam("id") UUID id,
                             @Valid RecipeUpdateRequest request) {
         return recipeService.update(currentUser.id(), id, request);
+    }
+
+    @PUT
+    @Path("/{id}/favorite")
+    @Operation(summary = "Rezept als Favorit markieren oder Markierung entfernen.")
+    @APIResponse(responseCode = "204", description = "Favoriten-Status gesetzt (idempotent).")
+    @APIResponse(responseCode = "404", description = "Rezept nicht vorhanden oder kein Zugriff.")
+    public Response setFavorite(@Parameter(description = "Rezept-UUID.") @PathParam("id") UUID id,
+                                @Valid FavoriteRequest request) {
+        recipeService.setFavorite(currentUser.id(), id, request.favoriteValue());
+        return Response.noContent().build();
     }
 
     @DELETE

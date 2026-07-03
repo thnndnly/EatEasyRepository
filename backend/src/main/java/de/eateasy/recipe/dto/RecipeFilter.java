@@ -10,6 +10,7 @@ import java.util.UUID;
 public record RecipeFilter(
     String query,
     List<String> dietTags,
-    UUID householdId
+    UUID householdId,
+    boolean favoritesOnly
 ) {
 }

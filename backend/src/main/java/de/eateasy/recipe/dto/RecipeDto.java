@@ -18,11 +18,13 @@ public record RecipeDto(
     List<String> dietTags,
     String sourceUrl,
     String externalSource,
+    boolean favorite,
     List<RecipeIngredientDto> ingredients,
     Instant createdAt,
     Instant updatedAt
 ) {
-    public static RecipeDto from(Recipe recipe, List<RecipeIngredientDto> ingredients) {
+    public static RecipeDto from(Recipe recipe, List<RecipeIngredientDto> ingredients,
+                                 boolean favorite) {
         return new RecipeDto(
             recipe.getId(),
             recipe.getOwnerId(),
@@ -35,6 +37,7 @@ public record RecipeDto(
             List.of(recipe.getDietTags()),
             recipe.getSourceUrl(),
             recipe.getExternalSource(),
+            favorite,
             ingredients,
             recipe.getCreatedAt(),
             recipe.getUpdatedAt());

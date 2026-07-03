@@ -16,7 +16,9 @@ import de.eateasy.recipe.dto.RecipeIngredientView;
 import de.eateasy.recipe.dto.RecipeMiniDto;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
 import de.eateasy.recipe.entity.Recipe;
+import de.eateasy.recipe.entity.RecipeFavorite;
 import de.eateasy.recipe.entity.RecipeIngredient;
+import de.eateasy.recipe.repository.RecipeFavoriteRepository;
 import de.eateasy.recipe.repository.RecipeRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -35,13 +37,16 @@ import java.util.stream.Collectors;
 public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final RecipeFavoriteRepository favoriteRepository;
     private final IngredientService ingredientService;
     private final HouseholdService householdService;
 
     public RecipeServiceImpl(RecipeRepository recipeRepository,
+                             RecipeFavoriteRepository favoriteRepository,
                              IngredientService ingredientService,
                              HouseholdService householdService) {
         this.recipeRepository = recipeRepository;
+        this.favoriteRepository = favoriteRepository;
         this.ingredientService = ingredientService;
         this.householdService = householdService;
     }
@@ -62,10 +67,15 @@ public class RecipeServiceImpl implements RecipeService {
             filter.dietTags(),
             filter.householdId());
 
+        Set<UUID> favoriteIds = favoriteRepository.findRecipeIdsByUser(userId);
+        if (filter.favoritesOnly()) {
+            recipes = recipes.stream().filter(r -> favoriteIds.contains(r.getId())).toList();
+        }
+
         Map<UUID, IngredientDto> ingredientNames = loadIngredientNames(recipes);
         List<RecipeDto> result = new ArrayList<>(recipes.size());
         for (Recipe recipe : recipes) {
-            result.add(toDto(recipe, ingredientNames));
+            result.add(toDto(recipe, ingredientNames, favoriteIds.contains(recipe.getId())));
         }
         return result;
     }
@@ -75,7 +85,8 @@ public class RecipeServiceImpl implements RecipeService {
     public RecipeDto get(UUID userId, UUID recipeId) {
         Recipe recipe = loadRecipe(recipeId);
         assertCanRead(userId, recipe);
-        return toDto(recipe, loadIngredientNames(List.of(recipe)));
+        boolean favorite = favoriteRepository.findByUserAndRecipe(userId, recipeId).isPresent();
+        return toDto(recipe, loadIngredientNames(List.of(recipe)), favorite);
     }
 
     @Override
@@ -101,7 +112,8 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.replaceIngredients(buildIngredients(request.ingredients()));
         recipeRepository.persist(recipe);
 
-        return toDto(recipe, loadIngredientNames(List.of(recipe)));
+        // Frisch angelegt — kann noch kein Favorit sein.
+        return toDto(recipe, loadIngredientNames(List.of(recipe)), false);
     }
 
     @Override
@@ -124,7 +136,8 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setHouseholdId(request.householdId());
         recipe.replaceIngredients(buildIngredients(request.ingredients()));
 
-        return toDto(recipe, loadIngredientNames(List.of(recipe)));
+        boolean favorite = favoriteRepository.findByUserAndRecipe(userId, recipeId).isPresent();
+        return toDto(recipe, loadIngredientNames(List.of(recipe)), favorite);
     }
 
     @Override
@@ -133,6 +146,21 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = loadRecipe(recipeId);
         assertOwner(userId, recipe);
         recipeRepository.delete(recipe);
+    }
+
+    @Override
+    @Transactional
+    public void setFavorite(UUID userId, UUID recipeId, boolean favorite) {
+        Recipe recipe = loadRecipe(recipeId);
+        assertCanRead(userId, recipe);
+
+        var existing = favoriteRepository.findByUserAndRecipe(userId, recipeId);
+        if (favorite && existing.isEmpty()) {
+            favoriteRepository.persist(new RecipeFavorite(userId, recipeId));
+        } else if (!favorite && existing.isPresent()) {
+            favoriteRepository.delete(existing.get());
+        }
+        // Sonst: gewuenschter Zustand besteht bereits — idempotent, kein Fehler.
     }
 
     @Override
@@ -216,13 +244,14 @@ public class RecipeServiceImpl implements RecipeService {
         return ingredientService.getByIds(ids);
     }
 
-    private static RecipeDto toDto(Recipe recipe, Map<UUID, IngredientDto> ingredientNames) {
+    private static RecipeDto toDto(Recipe recipe, Map<UUID, IngredientDto> ingredientNames,
+                                   boolean favorite) {
         List<RecipeIngredientDto> ingredientDtos = new ArrayList<>(recipe.getIngredients().size());
         for (RecipeIngredient ri : recipe.getIngredients()) {
             IngredientDto ing = ingredientNames.get(ri.getIngredientId());
             String name = ing != null ? ing.name() : "(unbekannt)";
             ingredientDtos.add(RecipeIngredientDto.from(ri, name));
         }
-        return RecipeDto.from(recipe, ingredientDtos);
+        return RecipeDto.from(recipe, ingredientDtos, favorite);
     }
 }

@@ -19,6 +19,9 @@ function buildQuery(filter: RecipeFilter): string {
   if (filter.householdId) {
     params.set('householdId', filter.householdId)
   }
+  if (filter.favorite) {
+    params.set('favorite', 'true')
+  }
   const qs = params.toString()
   return qs ? `?${qs}` : ''
 }
@@ -45,4 +48,16 @@ export function updateRecipe(
 
 export function deleteRecipe(token: string, id: string): Promise<void> {
   return apiFetch<void>(`${BASE}/${id}`, { method: 'DELETE', token })
+}
+
+export function setRecipeFavorite(
+  token: string,
+  id: string,
+  favorite: boolean,
+): Promise<void> {
+  return apiFetch<void>(`${BASE}/${id}/favorite`, {
+    method: 'PUT',
+    body: { favorite },
+    token,
+  })
 }

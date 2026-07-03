@@ -19,6 +19,7 @@ const toastStore = useToastStore()
 const query = ref('')
 const tags = ref<DietTag[]>([])
 const householdFilter = ref<string>('')
+const favoritesOnly = ref(false)
 const importOpen = ref(false)
 
 async function onImported(recipe: RecipeDto): Promise<void> {
@@ -34,7 +35,24 @@ function applyFilter(): void {
     query: query.value.trim() || undefined,
     dietTags: tags.value.length > 0 ? tags.value : undefined,
     householdId: householdFilter.value || undefined,
+    favorite: favoritesOnly.value || undefined,
   })
+}
+
+async function onToggleFavorite(id: string): Promise<void> {
+  const recipe = recipeStore.recipes.find((r) => r.id === id)
+  await recipeStore.toggleFavorite(id)
+  if (!recipeStore.error && recipe) {
+    toastStore.success(
+      recipe.favorite
+        ? `"${recipe.title}" aus Favoriten entfernt`
+        : `"${recipe.title}" zu Favoriten hinzugefuegt`,
+    )
+  }
+  // Bei aktivem Favoriten-Filter fliegt ein entfernter Favorit aus der Liste.
+  if (favoritesOnly.value) {
+    applyFilter()
+  }
 }
 
 function onQueryInput(): void {
@@ -46,12 +64,14 @@ function onQueryInput(): void {
 
 watch(tags, applyFilter, { deep: true })
 watch(householdFilter, applyFilter)
+watch(favoritesOnly, applyFilter)
 
 onMounted(async () => {
   await householdStore.load()
   query.value = recipeStore.filter.query ?? ''
   tags.value = (recipeStore.filter.dietTags ?? []) as DietTag[]
   householdFilter.value = recipeStore.filter.householdId ?? ''
+  favoritesOnly.value = recipeStore.filter.favorite ?? false
   await recipeStore.load()
 })
 
@@ -100,6 +120,15 @@ const recipes = computed(() => recipeStore.recipes)
           <DietTagSelector v-model="tags" />
         </div>
 
+        <label class="flex cursor-pointer items-center gap-2 text-sm font-medium">
+          <input
+            v-model="favoritesOnly"
+            type="checkbox"
+            class="h-4 w-4 cursor-pointer rounded accent-peach-500"
+          />
+          ❤️ Nur Favoriten
+        </label>
+
         <div v-if="householdStore.households.length > 0" class="space-y-1">
           <label for="recipe-hh" class="block text-sm font-medium">Haushalt</label>
           <select id="recipe-hh" v-model="householdFilter" class="w-full">
@@ -128,7 +157,7 @@ const recipes = computed(() => recipeStore.recipes)
             :key="recipe.id"
             @click="router.push({ name: 'recipe-detail', params: { id: recipe.id } })"
           >
-            <RecipeCard :recipe="recipe" />
+            <RecipeCard :recipe="recipe" @toggle-favorite="onToggleFavorite" />
           </li>
         </ul>
 
