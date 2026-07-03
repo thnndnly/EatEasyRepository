@@ -361,3 +361,17 @@ body {
     @apply rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none;
   }
 }
+
+/*
+ * Print-Styles (Phase 15, PDF-Export der Einkaufsliste): App-Chrome wird
+ * per Tailwind `print:hidden` in den Templates ausgeblendet — hier stehen
+ * nur die Regeln, die sich nicht sinnvoll als Utility ausdruecken lassen.
+ */
+@media print {
+  body {
+    background: white;
+  }
+  li {
+    break-inside: avoid;
+  }
+}

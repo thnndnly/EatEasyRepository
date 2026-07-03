@@ -69,7 +69,7 @@ async function onLogout(): Promise<void> {
 
 <template>
   <div class="min-h-screen text-ink-900">
-    <header class="sticky top-0 z-10 border-b border-cream-200 bg-cream-50/85 backdrop-blur-md">
+    <header class="sticky top-0 z-10 border-b border-cream-200 bg-cream-50/85 backdrop-blur-md print:hidden">
       <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-3">
         <div class="flex items-center gap-6">
           <RouterLink
@@ -110,7 +110,7 @@ async function onLogout(): Promise<void> {
       </div>
     </header>
 
-    <main class="mx-auto max-w-5xl px-6 py-10">
+    <main class="mx-auto max-w-5xl px-6 py-10 print:max-w-none print:p-0">
       <RouterView />
     </main>
 
@@ -118,7 +118,7 @@ async function onLogout(): Promise<void> {
 
     <footer
       v-if="isDev"
-      class="border-t border-dashed border-butter-300 bg-butter-100/80 px-6 py-2 text-center text-xs text-butter-700"
+      class="border-t border-dashed border-butter-300 bg-butter-100/80 px-6 py-2 text-center text-xs text-butter-700 print:hidden"
     >
       Dev-Modus &mdash;
       <a
