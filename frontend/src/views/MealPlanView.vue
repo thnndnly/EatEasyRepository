@@ -72,6 +72,29 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
   }
   await mealPlanStore.removeEntry(day, mealType)
 }
+
+// Portionen-Stepper (Phase 15): setEntry ueberschreibt den Slot idempotent,
+// die Einkaufsliste skaliert beim naechsten Neuberechnen automatisch mit.
+async function onChangeServings(
+  day: DayOfWeek,
+  mealType: MealType,
+  servings: number,
+): Promise<void> {
+  const entry = entryAt(day, mealType)
+  if (!entry?.recipe) {
+    return
+  }
+  try {
+    await mealPlanStore.setEntry({
+      dayOfWeek: day,
+      mealType,
+      recipeId: entry.recipe.id,
+      servings,
+    })
+  } catch {
+    // Fehler ist im Store gesetzt und wird im Template angezeigt.
+  }
+}
 </script>
 
 <template>
@@ -119,6 +142,7 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
       :entry-at="entryAt"
       @select="(day, mealType, entry) => openPicker(day, mealType, entry)"
       @remove="(day, mealType) => onRemove(day, mealType)"
+      @change-servings="(day, mealType, servings) => onChangeServings(day, mealType, servings)"
     />
 
     <RecipePickerModal

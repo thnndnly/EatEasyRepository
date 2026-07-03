@@ -18,6 +18,7 @@ defineProps<Props>()
 const emit = defineEmits<{
   select: [day: DayOfWeek, mealType: MealType, entry: MealPlanEntryDto | null]
   remove: [day: DayOfWeek, mealType: MealType]
+  changeServings: [day: DayOfWeek, mealType: MealType, servings: number]
 }>()
 </script>
 
@@ -50,6 +51,7 @@ const emit = defineEmits<{
               :entry="entryAt(day, mealType)"
               @select="emit('select', day, mealType, entryAt(day, mealType))"
               @remove="emit('remove', day, mealType)"
+              @change-servings="(servings) => emit('changeServings', day, mealType, servings)"
             />
           </td>
         </tr>
