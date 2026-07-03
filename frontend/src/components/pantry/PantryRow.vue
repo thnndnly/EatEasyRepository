@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { UNIT_ABBREV } from '@/types/units'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { mhdStatusFor, type MhdStatus } from '@/utils/mhd'
 import type { PantryItemDto } from '@/types/pantry'
 
 interface Props {
@@ -22,59 +23,9 @@ const editing = ref(false)
 const draftAmount = ref<number>(props.item.amount)
 const draftBestBefore = ref<string>(props.item.bestBefore ?? '')
 
-const MS_PER_DAY = 1000 * 60 * 60 * 24
-
-function daysUntil(isoDate: string): number {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const target = new Date(isoDate)
-  target.setHours(0, 0, 0, 0)
-  return Math.round((target.getTime() - today.getTime()) / MS_PER_DAY)
-}
-
-interface MhdStatus {
-  level: 'expired' | 'urgent' | 'soon' | 'ok'
-  label: string
-  rowClass: string
-  chipClass: string
-}
-
-const mhdStatus = computed<MhdStatus | null>(() => {
-  if (!props.item.bestBefore) {
-    return null
-  }
-  const days = daysUntil(props.item.bestBefore)
-  if (days < 0) {
-    return {
-      level: 'expired',
-      label: days === -1 ? 'gestern abgelaufen' : `vor ${-days} Tagen abgelaufen`,
-      rowClass: 'bg-rose-50',
-      chipClass: 'ee-chip-rose',
-    }
-  }
-  if (days <= 3) {
-    return {
-      level: 'urgent',
-      label: days === 0 ? 'heute' : days === 1 ? 'morgen' : `in ${days} Tagen`,
-      rowClass: 'bg-rose-50',
-      chipClass: 'ee-chip-rose',
-    }
-  }
-  if (days <= 7) {
-    return {
-      level: 'soon',
-      label: `in ${days} Tagen`,
-      rowClass: 'bg-butter-100/60',
-      chipClass: 'ee-chip-butter',
-    }
-  }
-  return {
-    level: 'ok',
-    label: `in ${days} Tagen`,
-    rowClass: '',
-    chipClass: 'ee-chip-neutral',
-  }
-})
+const mhdStatus = computed<MhdStatus | null>(() =>
+  props.item.bestBefore ? mhdStatusFor(props.item.bestBefore) : null,
+)
 
 watch(
   () => props.item,

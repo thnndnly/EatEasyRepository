@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchHealth } from '@/services/healthService'
 import { useAuthStore } from '@/stores/authStore'
 import { useHouseholdStore } from '@/stores/householdStore'
+import { usePantryStore } from '@/stores/pantryStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useSuggestionStore } from '@/stores/suggestionStore'
 import { DIET_TAG_LABELS, type DietTag } from '@/types/dietTags'
 import type { SuggestionDto } from '@/types/suggestion'
 import AddToMealPlanDialog from '@/components/suggestion/AddToMealPlanDialog.vue'
+import ExpiringSoonWidget from '@/components/pantry/ExpiringSoonWidget.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const householdStore = useHouseholdStore()
+const pantryStore = usePantryStore()
 const toastStore = useToastStore()
 const suggestionStore = useSuggestionStore()
 
@@ -71,6 +74,20 @@ onMounted(async () => {
   // spart eine Round-Trip-Wartezeit beim Dashboard-Mount.
   await Promise.all([refresh(), householdStore.load()])
 })
+
+// Vorrat fuer das MHD-Widget nachladen, sobald ein Haushalt feststeht
+// (initial und beim Wechsel ueber die Topbar).
+watch(
+  () => selected.value?.id,
+  async (id) => {
+    if (id) {
+      await pantryStore.load(id)
+    } else {
+      pantryStore.reset()
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -177,6 +194,9 @@ onMounted(async () => {
       @close="planTarget = null"
       @saved="onPlanSaved"
     />
+
+    <!-- MHD-Widget: demnaechst ablaufender Vorrat -->
+    <ExpiringSoonWidget v-if="selected" />
 
     <!-- Backend-Status (Health-Check) -->
     <div class="ee-card">
