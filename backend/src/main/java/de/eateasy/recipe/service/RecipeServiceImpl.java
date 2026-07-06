@@ -16,7 +16,6 @@ import de.eateasy.recipe.dto.RecipeIngredientView;
 import de.eateasy.recipe.dto.RecipeMiniDto;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
 import de.eateasy.recipe.entity.Recipe;
-import de.eateasy.recipe.entity.RecipeFavorite;
 import de.eateasy.recipe.entity.RecipeIngredient;
 import de.eateasy.recipe.repository.RecipeFavoriteRepository;
 import de.eateasy.recipe.repository.RecipeRepository;
@@ -154,13 +153,15 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = loadRecipe(recipeId);
         assertCanRead(userId, recipe);
 
-        var existing = favoriteRepository.findByUserAndRecipe(userId, recipeId);
-        if (favorite && existing.isEmpty()) {
-            favoriteRepository.persist(new RecipeFavorite(userId, recipeId));
-        } else if (!favorite && existing.isPresent()) {
-            favoriteRepository.delete(existing.get());
+        if (favorite) {
+            // Idempotenter Upsert (ON CONFLICT DO NOTHING) statt check-then-act:
+            // atomar auf DB-Ebene, damit parallele Requests keinen Unique-Constraint-500 ausloesen.
+            favoriteRepository.insertIfAbsent(userId, recipeId);
+        } else {
+            favoriteRepository.findByUserAndRecipe(userId, recipeId)
+                .ifPresent(favoriteRepository::delete);
         }
-        // Sonst: gewuenschter Zustand besteht bereits — idempotent, kein Fehler.
+        // Gewuenschter Zustand besteht danach in jedem Fall — idempotent, kein Fehler.
     }
 
     @Override

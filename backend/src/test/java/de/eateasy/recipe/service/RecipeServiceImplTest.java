@@ -23,6 +23,7 @@ import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
 import de.eateasy.recipe.dto.RecipeIngredientRequest;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
+import de.eateasy.recipe.repository.RecipeFavoriteRepository;
 import de.eateasy.recipe.repository.RecipeRepository;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -56,6 +57,9 @@ class RecipeServiceImplTest {
 
     @Inject
     RecipeRepository recipeRepository;
+
+    @Inject
+    RecipeFavoriteRepository favoriteRepository;
 
     @Inject
     IngredientRepository ingredientRepository;
@@ -285,6 +289,25 @@ class RecipeServiceImplTest {
         recipeService.setFavorite(alice, created.id(), false);
         recipeService.setFavorite(alice, created.id(), false);
         assertThat(recipeService.get(alice, created.id()).favorite()).isFalse();
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("insertIfAbsent ist gegen die Unique-Constraint-Race idempotent (kein 500)")
+    void insertIfAbsentIsIdempotentAgainstUniqueConstraint() {
+        UUID alice = registerUser("alice@example.com", "Alice");
+        RecipeDto created = recipeService.create(alice, recipe("Rezept", null));
+
+        // Simuliert die TOCTOU-Race: zwei parallele Requests sehen beide "kein Favorit"
+        // und inserten. Der Upsert (ON CONFLICT DO NOTHING) darf beim zweiten Aufruf
+        // NICHT die Unique-Constraint verletzen (sonst unbehandelter 500).
+        boolean firstInserted = favoriteRepository.insertIfAbsent(alice, created.id());
+        boolean secondInserted = favoriteRepository.insertIfAbsent(alice, created.id());
+
+        assertThat(firstInserted).isTrue();
+        assertThat(secondInserted).isFalse();
+        assertThat(favoriteRepository.findRecipeIdsByUser(alice)).containsExactly(created.id());
+        assertThat(recipeService.get(alice, created.id()).favorite()).isTrue();
     }
 
     @Test

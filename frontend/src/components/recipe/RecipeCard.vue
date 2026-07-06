@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { DIET_TAG_LABELS, type DietTag } from '@/types/dietTags'
 import type { RecipeDto } from '@/types/recipe'
 
@@ -6,8 +7,29 @@ interface Props {
   recipe: RecipeDto
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const emit = defineEmits<{ toggleFavorite: [id: string] }>()
+
+// Sperrt den Herz-Button, solange der Toggle-Request laeuft — verhindert
+// schnelle Doppelklicks, die parallele PUT .../favorite ausloesen wuerden.
+const favoritePending = ref(false)
+
+function onToggleFavorite(): void {
+  if (favoritePending.value) {
+    return
+  }
+  favoritePending.value = true
+  emit('toggleFavorite', props.recipe.id)
+}
+
+// Der Store flippt recipe.favorite nach Abschluss des Requests — dann Button
+// wieder freigeben. Reagiert auch auf Fehlerfall via Prop-Neuzuweisung der Liste.
+watch(
+  () => props.recipe.favorite,
+  () => {
+    favoritePending.value = false
+  },
+)
 </script>
 
 <template>
@@ -24,12 +46,13 @@ const emit = defineEmits<{ toggleFavorite: [id: string] }>()
         </span>
         <button
           type="button"
-          class="text-lg leading-none transition-transform hover:scale-125"
+          class="text-lg leading-none transition-transform hover:scale-125 disabled:cursor-not-allowed disabled:opacity-50"
           :class="recipe.favorite ? '' : 'opacity-40 grayscale hover:opacity-100 hover:grayscale-0'"
           :title="recipe.favorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufuegen'"
           :aria-pressed="recipe.favorite"
+          :disabled="favoritePending"
           aria-label="Favorit umschalten"
-          @click.stop="emit('toggleFavorite', recipe.id)"
+          @click.stop="onToggleFavorite"
         >
           ❤️
         </button>
