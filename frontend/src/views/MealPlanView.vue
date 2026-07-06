@@ -85,7 +85,7 @@ async function onChangeServings(
   servings: number,
 ): Promise<void> {
   const entry = entryAt(day, mealType)
-  if (!entry?.recipe || savingSlot.value) {
+  if (!entry?.recipe || savingSlot.value === `${day}:${mealType}`) {
     return
   }
   savingSlot.value = `${day}:${mealType}`
