@@ -9,14 +9,21 @@ import { TEST_RECIPE_MINI } from '@/test/fixtures'
  * zugreifen wie der Test-Body.
  */
 const mocks = vi.hoisted(() => ({
-  setEntry: vi.fn(),
-  entryAt: vi.fn(),
-  load: vi.fn(),
-  reset: vi.fn(),
-  gotoWeek: vi.fn(),
-  gotoToday: vi.fn(),
-  householdLoad: vi.fn(),
-  routerPush: vi.fn(),
+  setEntry: vi.fn<
+    (request: {
+      dayOfWeek: DayOfWeek
+      mealType: MealType
+      recipeId: string
+      servings: number
+    }) => Promise<MealPlanEntryDto>
+  >(),
+  entryAt: vi.fn<(day: DayOfWeek, mealType: MealType) => MealPlanEntryDto | null>(),
+  load: vi.fn<(householdId: string) => Promise<void>>(),
+  reset: vi.fn<() => void>(),
+  gotoWeek: vi.fn<(weekStart: string) => void>(),
+  gotoToday: vi.fn<() => void>(),
+  householdLoad: vi.fn<(householdId: string) => Promise<void>>(),
+  routerPush: vi.fn<() => void>(),
 }))
 
 vi.mock('vue-router', () => ({
@@ -108,7 +115,7 @@ describe('MealPlanView onChangeServings — Cross-Slot-Guard', () => {
 
   it('blockt einen zweiten Klick auf denselben Slot waehrend der Request laeuft', async () => {
     // Request bleibt in-flight (Promise loest nie auf) → savingSlot bleibt gesetzt.
-    mocks.setEntry.mockReturnValue(new Promise(() => {}))
+    mocks.setEntry.mockReturnValue(new Promise<MealPlanEntryDto>(() => {}))
     const wrapper = await mountView()
     const grid = wrapper.findComponent(MealPlanGrid)
 
@@ -127,7 +134,7 @@ describe('MealPlanView onChangeServings — Cross-Slot-Guard', () => {
 
   it('erlaubt parallele Edits UNTERSCHIEDLICHER Slots (Klick auf B bleibt wirksam)', async () => {
     // Slot A laeuft noch, wenn B geklickt wird.
-    mocks.setEntry.mockReturnValue(new Promise(() => {}))
+    mocks.setEntry.mockReturnValue(new Promise<MealPlanEntryDto>(() => {}))
     const wrapper = await mountView()
     const grid = wrapper.findComponent(MealPlanGrid)
 
