@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/householdStore'
 import { usePantryStore } from '@/stores/pantryStore'
 import { useToastStore } from '@/stores/toastStore'
+import { FEATURE_RECEIPT } from '@/config/features'
 import AddPantryItemForm from '@/components/pantry/AddPantryItemForm.vue'
 import PantryRow from '@/components/pantry/PantryRow.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -14,6 +15,9 @@ import EmptyState from '@/components/common/EmptyState.vue'
 const BarcodeScanner = defineAsyncComponent(
   () => import('@/components/pantry/BarcodeScanner.vue'),
 )
+const ReceiptScanModal = defineAsyncComponent(
+  () => import('@/components/pantry/ReceiptScanModal.vue'),
+)
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
@@ -21,6 +25,7 @@ const pantryStore = usePantryStore()
 const toastStore = useToastStore()
 
 const scannerOpen = ref(false)
+const receiptOpen = ref(false)
 
 async function ensureLoaded(): Promise<void> {
   await householdStore.load()
@@ -84,6 +89,11 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
   scannerOpen.value = false
   toastStore.success(`"${item.ingredientName}" in den Vorrat uebernommen`)
 }
+
+function onReceiptAdded(count: number): void {
+  receiptOpen.value = false
+  toastStore.success(`${count} Posten in den Vorrat uebernommen`)
+}
 </script>
 
 <template>
@@ -95,9 +105,14 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
           {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
         </p>
       </div>
-      <button v-if="householdStore.selected" type="button" class="ee-btn-secondary" @click="scannerOpen = true">
-        📷 Barcode scannen
-      </button>
+      <div v-if="householdStore.selected" class="flex flex-wrap gap-2">
+        <button v-if="FEATURE_RECEIPT" type="button" class="ee-btn-secondary" @click="receiptOpen = true">
+          🧾 Beleg scannen
+        </button>
+        <button type="button" class="ee-btn-secondary" @click="scannerOpen = true">
+          📷 Barcode scannen
+        </button>
+      </div>
     </div>
 
     <BarcodeScanner
@@ -106,6 +121,14 @@ function onBarcodeAdded(item: { ingredientName: string }): void {
       :household-id="householdStore.selected.id"
       @close="scannerOpen = false"
       @added="onBarcodeAdded"
+    />
+
+    <ReceiptScanModal
+      v-if="FEATURE_RECEIPT && householdStore.selected"
+      :open="receiptOpen"
+      :household-id="householdStore.selected.id"
+      @close="receiptOpen = false"
+      @added="onReceiptAdded"
     />
 
     <EmptyState v-if="!householdStore.selected">

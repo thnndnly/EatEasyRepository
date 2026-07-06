@@ -40,6 +40,11 @@ services:
       # Eintrag blockt Quarkus jeden Request mit 403 (Default ist nur localhost).
       - key: QUARKUS_HTTP_CORS_ORIGINS
         value: https://eateasy-web.onrender.com,http://localhost:5173
+      # Beleg-Scanner aus: der Free-Tier hat weder Tesseract- noch
+      # Ollama-Container — Endpoint antwortet 404, Frontend blendet den
+      # Button via VITE_FEATURE_RECEIPT aus.
+      - key: EATEASY_RECEIPT_ENABLED
+        value: "false"
       - key: DB_HOST
         fromDatabase: { name: eateasy-db, property: host }
       - key: DB_PORT
@@ -57,6 +62,10 @@ services:
     runtime: static
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
+    envVars:
+      # Beleg-Scanner-Button ausblenden (Backend-Feature auf Render deaktiviert).
+      - key: VITE_FEATURE_RECEIPT
+        value: "false"
     # Reihenfolge zaehlt: spezifische Proxy-Regeln zuerst, SPA-Fallback zuletzt.
     # Render wendet eine Rewrite-Regel nur an, wenn an dem Pfad KEINE statische
     # Datei liegt — Assets (js/css) werden also direkt ausgeliefert.
