@@ -371,6 +371,18 @@ body {
   body {
     background: white;
   }
+  /*
+   * Die Einkaufsliste wird nach dem Merge mit den Kategorien (PR #10) als
+   * <section><h2>Kategorie</h2><ul>...</ul></section> gerendert. Ohne diese
+   * Regeln kann ein Kategorie-Header allein am Seitenende landen. Die ganze
+   * Sektion zusammenhalten und nach dem Header keinen Umbruch erzwingen.
+   */
+  section {
+    break-inside: avoid;
+  }
+  h2 {
+    break-after: avoid;
+  }
   li {
     break-inside: avoid;
   }
