@@ -113,10 +113,9 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
 
     private List<ReceiptItemDto> parseItems(String body) {
         try {
-            JsonNode root = objectMapper.readTree(extractJson(body));
-            JsonNode array = root.isArray() ? root : findFirstArray(root);
-            if (array == null || !array.isArray()) {
-                LOG.warnf("Ollama-Antwort enthaelt kein Array: %s", body);
+            JsonNode array = findItemsArray(body);
+            if (array == null) {
+                LOG.warnf("Ollama-Antwort enthaelt kein Item-Array: %s", body);
                 return List.of();
             }
 
@@ -152,10 +151,14 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
         }
 
         String unitToken = node.hasNonNull("unit") ? node.get("unit").asText() : null;
-        Unit unit = UnitParser.parse(unitToken, Unit.PIECE).unit();
+        UnitParser.UnitParseResult unitResult = UnitParser.parse(unitToken, Unit.PIECE);
+        if (unitResult.multiplier() != 1.0) {
+            amount = amount.multiply(BigDecimal.valueOf(unitResult.multiplier()))
+                .setScale(AMOUNT_SCALE, RoundingMode.HALF_UP);
+        }
 
         UUID ingredientId = matchIngredient(name);
-        return new ReceiptItemDto(name, amount, unit, ingredientId);
+        return new ReceiptItemDto(name, amount, unitResult.unit(), ingredientId);
     }
 
     /** Exakter (case-insensitiver) Match gegen den globalen Zutaten-Pool. */
@@ -174,14 +177,33 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
 
     // --- JSON-Toleranz-Helpers (gleiche Formen wie beim Suggestion-Parser) --
 
-    /** Schneidet Prosa vor/nach dem JSON ab, falls das Modell doch erklaert. */
-    private static String extractJson(String body) {
-        int arrayStart = body.indexOf('[');
-        int arrayEnd = body.lastIndexOf(']');
-        if (arrayStart >= 0 && arrayEnd > arrayStart) {
-            return body.substring(arrayStart, arrayEnd + 1);
+    /**
+     * Sucht das Item-Array in der LLM-Antwort: erst die ganze Antwort parsen
+     * (direktes Array oder Objekt-Wrapper wie {@code {"items":[...]}}),
+     * danach jeden {@code '['}-Kandidaten einzeln. Naives Slicen vom ersten
+     * {@code '['} bis zum letzten {@code ']'} reicht nicht — Prosa um das
+     * JSON kann selbst eckige Klammern enthalten ("Hinweis [OCR]: ...").
+     */
+    private JsonNode findItemsArray(String body) {
+        JsonNode array = tryParseItemsArray(body);
+        for (int i = body.indexOf('['); array == null && i >= 0; i = body.indexOf('[', i + 1)) {
+            array = tryParseItemsArray(body.substring(i));
         }
-        return body;
+        return array;
+    }
+
+    /** Liefert das Array nur, wenn der Text parsebar ist und Objekte enthaelt. */
+    private JsonNode tryParseItemsArray(String text) {
+        try {
+            JsonNode root = objectMapper.readTree(text);
+            JsonNode array = root.isArray() ? root : findFirstArray(root);
+            if (array == null || (!array.isEmpty() && !array.get(0).isObject())) {
+                return null;
+            }
+            return array;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private static JsonNode findFirstArray(JsonNode node) {

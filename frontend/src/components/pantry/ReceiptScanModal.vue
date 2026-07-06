@@ -16,6 +16,10 @@ interface EditableItem {
   amount: number
   unit: Unit
   ingredientId: string | null
+  // Scan-Match merken: aendert der User den Namen, gilt die ID nicht mehr —
+  // das Backend loest sonst per ingredientId auf und verwirft den Edit.
+  matchedName: string
+  matchedIngredientId: string | null
 }
 
 const props = defineProps<Props>()
@@ -27,6 +31,7 @@ const pantryStore = usePantryStore()
 const fileInput = ref<HTMLInputElement | null>(null)
 const editableItems = ref<EditableItem[]>([])
 const saving = ref(false)
+const saveError = ref<string | null>(null)
 const rawTextVisible = ref(false)
 
 // Scan-Ergebnis in editierbare Zeilen uebernehmen; alle vorselektiert.
@@ -39,7 +44,10 @@ watch(
       amount: item.amount,
       unit: item.unit,
       ingredientId: item.ingredientId,
+      matchedName: item.name,
+      matchedIngredientId: item.ingredientId,
     }))
+    saveError.value = null
   },
 )
 
@@ -49,6 +57,7 @@ watch(
     if (!isOpen) {
       receiptStore.reset()
       editableItems.value = []
+      saveError.value = null
       rawTextVisible.value = false
     }
   },
@@ -73,6 +82,17 @@ function updateItem(index: number, patch: Partial<EditableItem>): void {
   )
 }
 
+function updateName(index: number, name: string): void {
+  const item = editableItems.value[index]
+  if (!item) {
+    return
+  }
+  // Namensaenderung invalidiert den Scan-Match (Chip wechselt auf "neu");
+  // tippt der User den Original-Namen wieder ein, lebt der Match wieder auf.
+  const keepsMatch = name.trim().toLowerCase() === item.matchedName.trim().toLowerCase()
+  updateItem(index, { name, ingredientId: keepsMatch ? item.matchedIngredientId : null })
+}
+
 async function onConfirm(): Promise<void> {
   const toAdd = editableItems.value.filter(
     (i) => i.selected && i.name.trim() !== '' && i.amount > 0,
@@ -80,6 +100,7 @@ async function onConfirm(): Promise<void> {
   if (toAdd.length === 0) {
     return
   }
+  saveError.value = null
   saving.value = true
   try {
     // Sequenziell statt parallel: PantryService aggregiert gleiche Zutaten —
@@ -92,10 +113,16 @@ async function onConfirm(): Promise<void> {
         unit: item.unit,
         bestBefore: null,
       })
+      // Uebernommene Zeile sofort entfernen: schlaegt ein spaeterer Request
+      // fehl, wuerde ein erneutes Bestaetigen sie sonst doppelt buchen
+      // (der Server aggregiert gleiche Zutaten).
+      editableItems.value = editableItems.value.filter((i) => i !== item)
     }
     emit('added', toAdd.length)
   } catch {
-    // pantryStore.error ist gesetzt und wird in der View angezeigt.
+    saveError.value =
+      pantryStore.error ??
+      'Uebernahme fehlgeschlagen — die verbliebenen Posten sind weiter ausgewaehlt.'
   } finally {
     saving.value = false
   }
@@ -164,7 +191,7 @@ async function onConfirm(): Promise<void> {
               :value="item.name"
               type="text"
               class="ee-input min-w-0 flex-1 text-sm"
-              @input="updateItem(index, { name: ($event.target as HTMLInputElement).value })"
+              @input="updateName(index, ($event.target as HTMLInputElement).value)"
             />
             <input
               :value="item.amount"
@@ -203,6 +230,13 @@ async function onConfirm(): Promise<void> {
           v-if="rawTextVisible"
           class="max-h-40 overflow-auto rounded-2xl bg-cream-50 p-3 text-xs text-ink-700"
         >{{ receiptStore.result.rawText }}</pre>
+
+        <p
+          v-if="saveError"
+          class="rounded-2xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700"
+        >
+          {{ saveError }}
+        </p>
 
         <div class="flex items-center justify-between gap-3">
           <button type="button" class="ee-btn-secondary" :disabled="saving" @click="receiptStore.reset()">

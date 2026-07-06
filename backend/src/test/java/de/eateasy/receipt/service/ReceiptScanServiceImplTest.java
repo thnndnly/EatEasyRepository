@@ -134,6 +134,68 @@ class ReceiptScanServiceImplTest {
 
     @Test
     @TestTransaction
+    @DisplayName("scan: kg/l-Einheiten werden inkl. Multiplikator auf GRAM/ML normalisiert")
+    void scanAppliesUnitMultiplier() {
+        UUID user = registerUser("alice@example.com");
+        UUID household = createHousehold(user);
+
+        when(ocrClient.extractText(any(), anyString())).thenReturn("Bon-Text");
+        when(ollamaClient.generate(any())).thenReturn(new OllamaGenerateResponse(
+            "llama3",
+            "[{\"name\":\"Kartoffeln\",\"amount\":2,\"unit\":\"kg\"},"
+                + "{\"name\":\"Milch\",\"amount\":1.5,\"unit\":\"l\"}]",
+            true));
+
+        ReceiptScanResponse result = receiptScanService.scan(user, household, IMAGE, "bon.jpg");
+
+        assertThat(result.items()).hasSize(2);
+        assertThat(result.items().get(0).amount()).isEqualByComparingTo(new BigDecimal("2000"));
+        assertThat(result.items().get(0).unit()).isEqualTo(Unit.GRAM);
+        assertThat(result.items().get(1).amount()).isEqualByComparingTo(new BigDecimal("1500"));
+        assertThat(result.items().get(1).unit()).isEqualTo(Unit.ML);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("scan: Prosa mit eigenen eckigen Klammern vor dem JSON wird toleriert")
+    void scanTolleratesBracketsInProse() {
+        UUID user = registerUser("alice@example.com");
+        UUID household = createHousehold(user);
+
+        when(ocrClient.extractText(any(), anyString())).thenReturn("Bon-Text");
+        when(ollamaClient.generate(any())).thenReturn(new OllamaGenerateResponse(
+            "llama3",
+            "Hinweis [OCR-Fehler moeglich]: "
+                + "[{\"name\":\"Milch\",\"amount\":1000,\"unit\":\"ML\"}] Viel Spass!",
+            true));
+
+        ReceiptScanResponse result = receiptScanService.scan(user, household, IMAGE, "bon.jpg");
+
+        assertThat(result.items()).hasSize(1);
+        assertThat(result.items().get(0).name()).isEqualTo("Milch");
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("scan: Objekt-Wrapper um das Array ({\"items\":[...]}) wird toleriert")
+    void scanTolleratesObjectWrapper() {
+        UUID user = registerUser("alice@example.com");
+        UUID household = createHousehold(user);
+
+        when(ocrClient.extractText(any(), anyString())).thenReturn("Bon-Text");
+        when(ollamaClient.generate(any())).thenReturn(new OllamaGenerateResponse(
+            "llama3",
+            "{\"items\":[{\"name\":\"Reis\",\"amount\":500,\"unit\":\"GRAM\"}]}",
+            true));
+
+        ReceiptScanResponse result = receiptScanService.scan(user, household, IMAGE, "bon.jpg");
+
+        assertThat(result.items()).hasSize(1);
+        assertThat(result.items().get(0).name()).isEqualTo("Reis");
+    }
+
+    @Test
+    @TestTransaction
     @DisplayName("scan: Ollama-Fehler -> Rohtext mit leerer Item-Liste statt Exception")
     void scanFallsBackOnOllamaFailure() {
         UUID user = registerUser("alice@example.com");
