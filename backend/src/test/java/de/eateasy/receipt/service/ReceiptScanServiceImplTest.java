@@ -6,6 +6,7 @@ import de.eateasy.auth.repository.UserRepository;
 import de.eateasy.auth.service.AuthService;
 import de.eateasy.common.exception.BadRequestException;
 import de.eateasy.common.exception.ForbiddenException;
+import de.eateasy.common.exception.ServiceUnavailableException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.household.dto.HouseholdCreateRequest;
 import de.eateasy.household.repository.HouseholdInvitationRepository;
@@ -221,6 +222,23 @@ class ReceiptScanServiceImplTest {
 
         assertThatThrownBy(() -> receiptScanService.scan(user, household, IMAGE, "bon.jpg"))
             .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("scan: OCR-Ausfall -> ServiceUnavailable (503) statt unbehandelter 500")
+    void scanTranslatesOcrFailureToServiceUnavailable() {
+        UUID user = registerUser("alice@example.com");
+        UUID household = createHousehold(user);
+
+        when(ocrClient.extractText(any(), anyString()))
+            .thenThrow(new RuntimeException("Tesseract-Call fehlgeschlagen: Connection refused"));
+
+        assertThatThrownBy(() -> receiptScanService.scan(user, household, IMAGE, "bon.jpg"))
+            .isInstanceOf(ServiceUnavailableException.class)
+            // generische Nachricht, keine internen Details wie "Connection refused"
+            .hasMessageNotContaining("Connection refused")
+            .hasMessageNotContaining("Tesseract");
     }
 
     @Test

@@ -122,6 +122,19 @@ class ReceiptResourceTest {
             .then().statusCode(400);
     }
 
+    @Test
+    @DisplayName("POST /receipts/scan mit Nicht-Bild-Datei liefert 400 (OCR wird nicht aufgerufen)")
+    void scanRejectsNonImageContentType() {
+        String token = registerUser("alice@example.com");
+        String householdId = createHousehold(token);
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .multiPart("file", "schadcode.pdf", new byte[] {1, 2, 3}, "application/pdf")
+            .when().post("/api/v1/households/" + householdId + "/receipts/scan")
+            .then().statusCode(400);
+    }
+
     // --- Helpers ---------------------------------------------------------
 
     private static String registerUser(String email) {

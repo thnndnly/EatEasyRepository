@@ -3,6 +3,7 @@ package de.eateasy.receipt.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.eateasy.common.exception.BadRequestException;
+import de.eateasy.common.exception.ServiceUnavailableException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.common.units.UnitParser;
 import de.eateasy.household.service.HouseholdService;
@@ -38,6 +39,15 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
     private static final int MAX_ITEMS = 40;
     private static final int AMOUNT_SCALE = 2;
 
+    /**
+     * Obergrenze fuer den OCR-Text, der in den Ollama-Prompt eingebettet wird.
+     * Ein dichtes/adversariales Bild koennte sonst einen riesigen Prompt
+     * erzeugen und die geteilte, sequentielle Ollama-Instanz (auch von der
+     * Smart-Suggestion genutzt) blockieren. Ein realer Kassenbon liegt weit
+     * darunter.
+     */
+    private static final int MAX_PROMPT_TEXT_CHARS = 8_000;
+
     private final OcrClient ocrClient;
     private final OllamaClient ollamaClient;
     private final IngredientService ingredientService;
@@ -66,7 +76,7 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
                                     byte[] imageBytes, String filename) {
         householdService.assertMember(userId, householdId);
 
-        String rawText = ocrClient.extractText(imageBytes, filename);
+        String rawText = extractText(imageBytes, filename);
         if (rawText == null || rawText.isBlank()) {
             throw new BadRequestException(
                 "Auf dem Bild wurde kein Text erkannt — bitte schaerfer fotografieren");
@@ -74,6 +84,26 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
 
         List<ReceiptItemDto> items = structureWithOllama(rawText);
         return new ReceiptScanResponse(rawText, items);
+    }
+
+    // --- OCR ---------------------------------------------------------------
+
+    /**
+     * Kapselt den OCR-Aufruf. Faellt der Tesseract-Dienst aus (Timeout,
+     * Connection refused, non-2xx), wirft {@link OcrClient} eine
+     * {@link RuntimeException} — die wird hier gefangen, serverseitig mit
+     * Detail geloggt und als {@link ServiceUnavailableException} (HTTP 503,
+     * generische Nachricht) uebersetzt, statt als unbehandelte 500 mit
+     * internen Details beim Client zu landen.
+     */
+    private String extractText(byte[] imageBytes, String filename) {
+        try {
+            return ocrClient.extractText(imageBytes, filename);
+        } catch (RuntimeException ex) {
+            LOG.errorf(ex, "OCR-Aufruf fehlgeschlagen fuer Datei '%s'", filename);
+            throw new ServiceUnavailableException(
+                "Texterkennung ist gerade nicht verfuegbar — bitte spaeter erneut versuchen");
+        }
     }
 
     // --- LLM-Strukturierung ------------------------------------------------
@@ -94,6 +124,12 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
     }
 
     private static String buildPrompt(String rawText) {
+        // Rohtext vor dem Einbetten kappen: ein dichtes/adversariales Bild
+        // koennte sonst einen riesigen Prompt erzeugen und die geteilte,
+        // sequentielle Ollama-Instanz blockieren.
+        String promptText = rawText.length() > MAX_PROMPT_TEXT_CHARS
+            ? rawText.substring(0, MAX_PROMPT_TEXT_CHARS)
+            : rawText;
         // replace statt String.formatted: der Bon-Text (und der Prompt selbst,
         // "3,5%") enthaelt literale %-Zeichen, die formatted als
         // Format-Spezifizierer interpretieren wuerde.
@@ -108,7 +144,7 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
             Antworte AUSSCHLIESSLICH mit JSON im Format: \
             [{"name":"<Zutat>","amount":<Zahl>,"unit":"GRAM|ML|PIECE"}]. \
             Keine Erklaerungen ausserhalb des JSON.
-            """.replace("{BON_TEXT}", rawText);
+            """.replace("{BON_TEXT}", promptText);
     }
 
     private List<ReceiptItemDto> parseItems(String body) {
