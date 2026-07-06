@@ -34,12 +34,10 @@ describe('mhd utils', () => {
 })
 
 describe('daysUntil ist zeitzonen-robust', () => {
-  const originalTz = process.env.TZ
-
   afterEach(() => {
     vi.useRealTimers()
-    // Node ruft tzset() bei Zuweisung von process.env.TZ auf.
-    process.env.TZ = originalTz
+    // vi.stubEnv setzt process.env.TZ; Node ruft dabei tzset() auf.
+    vi.unstubAllEnvs()
   })
 
   // Das heutige *lokale* Datum muss immer 0 Tage ergeben — unabhaengig von der
@@ -49,7 +47,7 @@ describe('daysUntil ist zeitzonen-robust', () => {
   it.each(['UTC', 'America/Los_Angeles', 'Pacific/Kiritimati'])(
     'liefert 0 fuer das heutige lokale Datum in TZ %s',
     (tz) => {
-      process.env.TZ = tz
+      vi.stubEnv('TZ', tz)
       vi.useFakeTimers()
       vi.setSystemTime(new Date('2026-07-01T12:00:00Z'))
 

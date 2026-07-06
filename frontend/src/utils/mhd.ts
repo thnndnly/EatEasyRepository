@@ -8,7 +8,10 @@ export function daysUntil(isoDate: string): number {
   // ISO-String wird sonst als UTC-Mitternacht interpretiert, und ein
   // anschliessendes setHours(0,0,0,0) in lokaler Zeitzone (westlich von UTC)
   // verschiebt das Datum um einen Tag — was den expiringSoon-Filter verfaelscht.
-  const [year, month, day] = isoDate.slice(0, 10).split('-').map(Number)
+  const parts = isoDate.slice(0, 10).split('-')
+  const year = Number(parts[0])
+  const month = Number(parts[1])
+  const day = Number(parts[2])
   const target = new Date(year, month - 1, day)
   return Math.round((target.getTime() - today.getTime()) / MS_PER_DAY)
 }
