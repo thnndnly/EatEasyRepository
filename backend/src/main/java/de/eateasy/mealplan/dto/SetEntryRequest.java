@@ -1,6 +1,7 @@
 package de.eateasy.mealplan.dto;
 
 import de.eateasy.mealplan.entity.MealType;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -15,6 +16,7 @@ public record SetEntryRequest(
     @NotNull DayOfWeek dayOfWeek,
     @NotNull MealType mealType,
     @NotNull UUID recipeId,
-    @Min(value = 1, message = "Portionen muss mindestens 1 sein") int servings
+    @Min(value = 1, message = "Portionen muss mindestens 1 sein")
+    @Max(value = 50, message = "Portionen darf hoechstens 50 sein") int servings
 ) {
 }
