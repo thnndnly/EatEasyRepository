@@ -12,6 +12,8 @@ import {
 
 interface Props {
   entryAt: (day: DayOfWeek, mealType: MealType) => MealPlanEntryDto | null
+  /** Slot-Key `${day}:${mealType}`, dessen Portionen-Update gerade laeuft. */
+  savingSlot?: string | null
 }
 
 defineProps<Props>()
@@ -49,6 +51,7 @@ const emit = defineEmits<{
           >
             <MealSlot
               :entry="entryAt(day, mealType)"
+              :saving="savingSlot === `${day}:${mealType}`"
               @select="emit('select', day, mealType, entryAt(day, mealType))"
               @remove="emit('remove', day, mealType)"
               @change-servings="(servings) => emit('changeServings', day, mealType, servings)"
