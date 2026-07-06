@@ -35,7 +35,21 @@ const hiddenCount = computed(() => pantryStore.expiringSoon.length - visible.val
     </div>
 
     <p
-      v-if="pantryStore.expiringSoon.length === 0"
+      v-if="pantryStore.loading"
+      class="mt-4 rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-4 py-3 text-sm text-ink-500"
+    >
+      Vorrat wird geladen …
+    </p>
+
+    <p
+      v-else-if="pantryStore.error"
+      class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+    >
+      Vorrat konnte nicht geladen werden — bitte spaeter erneut versuchen.
+    </p>
+
+    <p
+      v-else-if="pantryStore.expiringSoon.length === 0"
       class="mt-4 rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-4 py-3 text-sm text-ink-500"
     >
       Nichts laeuft demnaechst ab. 🎉

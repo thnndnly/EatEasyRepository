@@ -4,8 +4,12 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24
 export function daysUntil(isoDate: string): number {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const target = new Date(isoDate)
-  target.setHours(0, 0, 0, 0)
+  // Datumsteile direkt parsen statt `new Date(isoDate)`: ein date-only
+  // ISO-String wird sonst als UTC-Mitternacht interpretiert, und ein
+  // anschliessendes setHours(0,0,0,0) in lokaler Zeitzone (westlich von UTC)
+  // verschiebt das Datum um einen Tag — was den expiringSoon-Filter verfaelscht.
+  const [year, month, day] = isoDate.slice(0, 10).split('-').map(Number)
+  const target = new Date(year, month - 1, day)
   return Math.round((target.getTime() - today.getTime()) / MS_PER_DAY)
 }
 
