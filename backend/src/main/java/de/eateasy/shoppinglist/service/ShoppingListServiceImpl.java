@@ -5,6 +5,7 @@ import de.eateasy.common.units.Unit;
 import de.eateasy.common.units.UnitConverter;
 import de.eateasy.household.service.HouseholdService;
 import de.eateasy.ingredient.dto.IngredientDto;
+import de.eateasy.ingredient.entity.IngredientCategory;
 import de.eateasy.ingredient.service.IngredientService;
 import de.eateasy.mealplan.dto.MealPlanDto;
 import de.eateasy.mealplan.dto.MealPlanEntryDto;
@@ -112,7 +113,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         IngredientDto ingredient = ingredientService.getById(item.getIngredientId());
-        return ShoppingListItemDto.from(item, ingredient.name());
+        return ShoppingListItemDto.from(item, ingredient.name(), ingredient.category());
     }
 
     // --- Berechnung -----------------------------------------------------
@@ -237,7 +238,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (ShoppingListItem item : list.getItems()) {
             IngredientDto ing = ingredients.get(item.getIngredientId());
             String name = ing != null ? ing.name() : "(unbekannt)";
-            dtos.add(ShoppingListItemDto.from(item, name));
+            IngredientCategory category = ing != null ? ing.category() : IngredientCategory.SONSTIGES;
+            dtos.add(ShoppingListItemDto.from(item, name, category));
         }
         // Sortierung im Frontend egal — aber alphabetisch nach Name ist intuitiv.
         dtos.sort((a, b) -> a.ingredientName().compareToIgnoreCase(b.ingredientName()));

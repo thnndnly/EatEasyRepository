@@ -28,6 +28,10 @@ public class Ingredient {
     @Column(name = "default_unit", nullable = false, length = 20)
     private Unit defaultUnit;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false, length = 30)
+    private IngredientCategory category = IngredientCategory.SONSTIGES;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -71,6 +75,14 @@ public class Ingredient {
 
     public void setDefaultUnit(Unit defaultUnit) {
         this.defaultUnit = defaultUnit;
+    }
+
+    public IngredientCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(IngredientCategory category) {
+        this.category = category;
     }
 
     public Instant getCreatedAt() {

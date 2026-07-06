@@ -1,5 +1,9 @@
 import { apiFetch } from './apiClient'
-import type { IngredientCreateRequest, IngredientDto } from '@/types/ingredient'
+import type {
+  IngredientCategory,
+  IngredientCreateRequest,
+  IngredientDto,
+} from '@/types/ingredient'
 
 const BASE = '/api/v1/ingredients'
 
@@ -25,4 +29,16 @@ export function createIngredient(
   request: IngredientCreateRequest,
 ): Promise<IngredientDto> {
   return apiFetch<IngredientDto>(BASE, { method: 'POST', body: request, token })
+}
+
+export function updateIngredientCategory(
+  token: string,
+  id: string,
+  category: IngredientCategory,
+): Promise<IngredientDto> {
+  return apiFetch<IngredientDto>(`${BASE}/${id}`, {
+    method: 'PATCH',
+    body: { category },
+    token,
+  })
 }

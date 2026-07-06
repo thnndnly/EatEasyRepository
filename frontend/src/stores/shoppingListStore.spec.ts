@@ -90,6 +90,66 @@ describe('shoppingListStore', () => {
     expect(store.sortedItems).toEqual([])
   })
 
+  it('groupedItems gruppiert nach Kategorie in Supermarkt-Reihenfolge', async () => {
+    server.use(
+      http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>
+        HttpResponse.json(TEST_SHOPPING_LIST),
+      ),
+    )
+    const store = useShoppingListStore()
+    await store.load(TEST_MEAL_PLAN.id)
+
+    const groups = store.groupedItems
+    // Fixture: Tomate = OBST_GEMUESE (vorne), Zwiebel = SONSTIGES (hinten)
+    expect(groups.map((g) => g.category)).toEqual(['OBST_GEMUESE', 'SONSTIGES'])
+    expect(groups[0]!.items.map((i) => i.ingredientName)).toEqual(['Tomate'])
+    expect(groups[1]!.items.map((i) => i.ingredientName)).toEqual(['Zwiebel'])
+  })
+
+  it('changeCategory PATCHt die Zutat und verschiebt alle ihre Items', async () => {
+    const ingredientId = TEST_SHOPPING_LIST.items[0]!.ingredientId
+    server.use(
+      http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>
+        HttpResponse.json(TEST_SHOPPING_LIST),
+      ),
+      http.patch(`/api/v1/ingredients/${ingredientId}`, () =>
+        HttpResponse.json({
+          id: ingredientId,
+          name: 'Tomate',
+          defaultUnit: 'PIECE',
+          category: 'VORRAT',
+        }),
+      ),
+    )
+    const store = useShoppingListStore()
+    await store.load(TEST_MEAL_PLAN.id)
+
+    await store.changeCategory(ingredientId, 'VORRAT')
+
+    expect(store.error).toBeNull()
+    expect(store.list?.items[0]!.category).toBe('VORRAT')
+    expect(store.groupedItems.map((g) => g.category)).toEqual(['VORRAT', 'SONSTIGES'])
+  })
+
+  it('changeCategory setzt error bei Server-Fehler und laesst Items unveraendert', async () => {
+    const ingredientId = TEST_SHOPPING_LIST.items[0]!.ingredientId
+    server.use(
+      http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>
+        HttpResponse.json(TEST_SHOPPING_LIST),
+      ),
+      http.patch(`/api/v1/ingredients/${ingredientId}`, () =>
+        HttpResponse.json({ message: 'kaputt' }, { status: 500 }),
+      ),
+    )
+    const store = useShoppingListStore()
+    await store.load(TEST_MEAL_PLAN.id)
+
+    await store.changeCategory(ingredientId, 'VORRAT')
+
+    expect(store.error).not.toBeNull()
+    expect(store.list?.items[0]!.category).toBe('OBST_GEMUESE')
+  })
+
   it('reset leert list, mealPlanId, error', async () => {
     server.use(
       http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>

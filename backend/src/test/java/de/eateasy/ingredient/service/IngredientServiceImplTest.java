@@ -1,7 +1,9 @@
 package de.eateasy.ingredient.service;
 
+import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.ingredient.dto.IngredientDto;
+import de.eateasy.ingredient.entity.IngredientCategory;
 import de.eateasy.ingredient.repository.IngredientRepository;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -16,6 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @QuarkusTest
 class IngredientServiceImplTest {
@@ -67,6 +70,38 @@ class IngredientServiceImplTest {
 
         assertThat(hits).extracting(IngredientDto::name)
             .containsExactlyInAnyOrder("Tomate", "Tomatenmark");
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("findOrCreate legt Zutat mit Default-Kategorie SONSTIGES an")
+    void findOrCreateDefaultsToSonstiges() {
+        IngredientDto dto = ingredientService.findOrCreate("Tomate", Unit.PIECE);
+
+        assertThat(dto.category()).isEqualTo(IngredientCategory.SONSTIGES);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("updateCategory setzt die Kategorie")
+    void updateCategorySetsCategory() {
+        IngredientDto created = ingredientService.findOrCreate("Tomate", Unit.PIECE);
+
+        IngredientDto updated = ingredientService.updateCategory(
+            created.id(), IngredientCategory.OBST_GEMUESE);
+
+        assertThat(updated.category()).isEqualTo(IngredientCategory.OBST_GEMUESE);
+        assertThat(ingredientService.getById(created.id()).category())
+            .isEqualTo(IngredientCategory.OBST_GEMUESE);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("updateCategory mit unbekannter ID wirft NotFoundException")
+    void updateCategoryUnknownIdThrows() {
+        assertThatThrownBy(() ->
+            ingredientService.updateCategory(UUID.randomUUID(), IngredientCategory.VORRAT))
+            .isInstanceOf(NotFoundException.class);
     }
 
     @Test

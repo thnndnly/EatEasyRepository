@@ -893,9 +893,12 @@ Nach Phase 10 ist die Pflichtabgabe **fertig**. Weitere Slices nach Kapazität:
 - Favoritenliste
 - PDF-Export der Einkaufsliste (Quarkus-Erweiterung oder browserseitig)
 
-### Phase 16: Sortierung Einkaufsliste
+### Phase 16: Sortierung Einkaufsliste ✅ (umgesetzt 07/2026)
 - Neues Feld `category` auf Ingredient (Obst/Gemüse, Milch, TK, etc.)
 - Einkaufsliste gruppiert + sortiert für effizienten Gang durch den Supermarkt
+- Umsetzung: Enum `IngredientCategory` (9 Kategorien), Migration `V8__ingredient_category.sql`
+  (inkl. Namens-Heuristik für Bestandsdaten), `PATCH /api/v1/ingredients/{id}` zum
+  Umkategorisieren, Kategorie-Dropdown direkt auf jedem Einkaufslisten-Item
 
 ---
 
