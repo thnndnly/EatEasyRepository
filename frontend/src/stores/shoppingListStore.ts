@@ -77,6 +77,7 @@ export const useShoppingListStore = defineStore('shoppingList', () => {
     if (!list.value) {
       return
     }
+    error.value = null
     try {
       await updateIngredientCategory(requireToken(), ingredientId, category)
       // Kategorie gilt pro Zutat — alle Items dieser Zutat mitziehen.
@@ -88,6 +89,17 @@ export const useShoppingListStore = defineStore('shoppingList', () => {
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : 'Kategorie aendern fehlgeschlagen'
+      // Fehlerfall: Kategorie bleibt unveraendert, aber die betroffenen Items
+      // werden neu referenziert. Dadurch reagiert die UI (das native <select>)
+      // und springt auf den tatsaechlichen, gespeicherten Zustand zurueck.
+      if (list.value) {
+        list.value = {
+          ...list.value,
+          items: list.value.items.map((i) =>
+            i.ingredientId === ingredientId ? { ...i } : i,
+          ),
+        }
+      }
     }
   }
 

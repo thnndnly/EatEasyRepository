@@ -150,6 +150,32 @@ describe('shoppingListStore', () => {
     expect(store.list?.items[0]!.category).toBe('OBST_GEMUESE')
   })
 
+  it('changeCategory re-referenziert betroffene Items im Fehlerfall (fuer UI-Reset)', async () => {
+    const ingredientId = TEST_SHOPPING_LIST.items[0]!.ingredientId
+    server.use(
+      http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>
+        HttpResponse.json(TEST_SHOPPING_LIST),
+      ),
+      http.patch(`/api/v1/ingredients/${ingredientId}`, () =>
+        HttpResponse.json({ message: 'kaputt' }, { status: 500 }),
+      ),
+    )
+    const store = useShoppingListStore()
+    await store.load(TEST_MEAL_PLAN.id)
+    const before = store.list!.items[0]!
+    const otherBefore = store.list!.items.find((i) => i.ingredientId !== ingredientId)!
+
+    await store.changeCategory(ingredientId, 'VORRAT')
+
+    // Betroffenes Item ist eine neue Referenz (damit das <select> in der UI
+    // per :key-Watch zuruecksetzt), Kategorie aber unveraendert.
+    expect(store.list!.items[0]).not.toBe(before)
+    expect(store.list!.items[0]!.category).toBe('OBST_GEMUESE')
+    // Nicht betroffene Items behalten ihre Referenz.
+    const otherAfter = store.list!.items.find((i) => i.ingredientId !== ingredientId)!
+    expect(otherAfter).toBe(otherBefore)
+  })
+
   it('reset leert list, mealPlanId, error', async () => {
     server.use(
       http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>
