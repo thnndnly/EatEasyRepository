@@ -5,10 +5,16 @@
 ALTER TABLE ingredient
     ADD COLUMN category VARCHAR(30) NOT NULL DEFAULT 'SONSTIGES';
 
+-- "tomate"/"tomato"/"paprika" wuerden als Substring auch verarbeitete Wuerz-
+-- Produkte fangen: Tomatenmark/Tomato paste und Paprikapulver gehoeren aber zu
+-- GEWUERZE_SAUCEN (spaeterer UPDATE). Hier explizit ausschliessen, damit die
+-- Reihenfolge der UPDATEs egal bleibt (analog zur "ei"-Sonderbehandlung unten).
 UPDATE ingredient SET category = 'OBST_GEMUESE'
 WHERE category = 'SONSTIGES' AND (
     LOWER(name) SIMILAR TO '%(apfel|apple|banane|banana|tomate|tomato|zwiebel|onion|knoblauch|garlic|kartoffel|potato|salat|lettuce|paprika|karotte|carrot|zitrone|lemon|gurke|cucumber|spinat|spinach|pilz|mushroom|zucchini|brokkoli|broccoli|lauch|leek|ingwer|ginger|aubergine|eggplant)%'
-);
+) AND LOWER(name) NOT LIKE '%tomatenmark%'
+  AND LOWER(name) NOT LIKE '%tomato paste%'
+  AND LOWER(name) NOT LIKE '%paprikapulver%';
 
 -- "ei" nur als exakter Name bzw. "eier"/"egg" — das blosse Substring "ei"
 -- wuerde z. B. "Schweinefilet" oder "Eisbergsalat" falsch einsortieren.
