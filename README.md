@@ -112,8 +112,8 @@ npm run test:e2e               # Playwright Smoke (mocked Backend)
 ```
 
 Aktueller Test-Stand:
-- Backend: 213 Tests in 30 Klassen (JUnit 5 + REST Assured + Testcontainers)
-- Frontend Unit: 79 Tests, 80%+ Coverage auf Stores + Services
+- Backend: 214 Tests in 31 Klassen (JUnit 5 + REST Assured + Testcontainers)
+- Frontend Unit: 118 Tests in 17 Dateien (Vitest + Vue Test Utils), 80%+ Coverage auf Stores + Services
 - Frontend E2E: 3 Smoke-Tests (Login + Redirect)
 
 **End-to-End-Smoke-Test** (Backend + Maildev + Ollama muessen laufen):
@@ -236,5 +236,12 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | 9     | Smart-Suggestion (Ollama)      | done   |
 | 10    | E-Mail-Notifications           | done   |
 | 11    | Beleg-Scanner (Stretch)        | done   |
+| 12    | Google OAuth (Stretch)         | offen  |
+| 13    | MHD-Tracking (Stretch)         | done   |
+| 14    | Auto-Nachbuchen (Stretch)      | offen  |
+| 15    | Polish: Portionen-Stepper, Favoriten, PDF-Export (Stretch) | done   |
+| 16    | Sortierung Einkaufsliste nach Kategorien (Stretch)         | done   |
 
-Definitions of Done je Phase und Stretch-Goals stehen in `IMPLEMENTATION.md`.
+Die Pflichtabgabe ist mit Phase 10 abgeschlossen; 11–16 sind umgesetzte
+Stretch-Goals (12 und 14 bewusst offen gelassen). Definitions of Done je Phase
+und Stretch-Goals stehen in `IMPLEMENTATION.md`.
