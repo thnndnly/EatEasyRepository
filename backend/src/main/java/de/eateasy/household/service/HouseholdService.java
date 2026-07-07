@@ -51,6 +51,13 @@ public interface HouseholdService {
     List<UUID> listHouseholdIdsForUser(UUID userId);
 
     /**
+     * Ob fuer den Haushalt das Auto-Nachbuchen aktiv ist. Ohne Auth-Check —
+     * der Aufrufer (z. B. {@code ShoppingListService.toggleChecked}) sichert den
+     * Kontext selbst ab, analog zu {@code PantryService.getInventory}.
+     */
+    boolean isAutoRestockEnabled(UUID householdId);
+
+    /**
      * Hartes Guard: wirft {@link ForbiddenException}, wenn der User nicht
      * Mitglied des angegebenen Haushalts ist. Vereinheitlicht das Pattern, das
      * sonst in jeder fremden Komponente per Hand wiederholt wuerde.

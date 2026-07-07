@@ -24,6 +24,7 @@ const loadError = ref<string | null>(null)
 
 const editName = ref('')
 const editTags = ref<DietTag[]>([])
+const editAutoRestock = ref(true)
 const saving = ref(false)
 const saveError = ref<string | null>(null)
 
@@ -53,6 +54,7 @@ watch(
     if (next) {
       editName.value = next.name
       editTags.value = [...next.defaultDietTags]
+      editAutoRestock.value = next.autoRestockEnabled
     }
   },
   { immediate: true },
@@ -75,6 +77,7 @@ async function onSave(): Promise<void> {
     await householdStore.update(householdId.value, {
       name: editName.value.trim(),
       defaultDietTags: editTags.value,
+      autoRestockEnabled: editAutoRestock.value,
     })
   } catch (err: unknown) {
     saveError.value = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
@@ -139,6 +142,21 @@ function back(): void {
           <span class="block text-sm font-medium text-ink-700">Standard-Diaeten</span>
           <DietTagSelector v-model="editTags" />
         </div>
+
+        <label class="flex items-start gap-3">
+          <input
+            id="hh-edit-auto-restock"
+            v-model="editAutoRestock"
+            type="checkbox"
+            class="mt-1 h-4 w-4 rounded border-cream-300 text-peach-600"
+          />
+          <span class="text-sm">
+            <span class="block font-medium text-ink-700">Auto-Nachbuchen</span>
+            <span class="block text-ink-500">
+              Abgehakte Einkaufslisten-Artikel automatisch in den Vorrat uebernehmen.
+            </span>
+          </span>
+        </label>
 
         <ErrorMessage :message="saveError ?? ''" />
 

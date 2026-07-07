@@ -71,7 +71,33 @@ class HouseholdResourceTest {
                 .body("id", notNullValue())
                 .body("name", equalTo("Familie"))
                 .body("role", equalTo("OWNER"))
-                .body("defaultDietTags", hasItem("vegetarian"));
+                .body("defaultDietTags", hasItem("vegetarian"))
+                // Auto-Nachbuchen ist bei neuen Haushalten standardmaessig an.
+                .body("autoRestockEnabled", equalTo(true));
+    }
+
+    @Test
+    @DisplayName("PATCH /households/{id} als Owner schaltet Auto-Nachbuchen ab (persistiert)")
+    void patchDisablesAutoRestock() {
+        String ownerToken = registerUser("owner@example.com", "Owner");
+        String householdId = createHousehold(ownerToken, "Test");
+
+        given()
+            .header("Authorization", "Bearer " + ownerToken)
+            .contentType(ContentType.JSON)
+            .body(Map.of("autoRestockEnabled", false))
+            .when().patch("/api/v1/households/" + householdId)
+            .then()
+                .statusCode(200)
+                .body("autoRestockEnabled", equalTo(false));
+
+        // Persistiert: erneutes GET liefert weiterhin false.
+        given()
+            .header("Authorization", "Bearer " + ownerToken)
+            .when().get("/api/v1/households/" + householdId)
+            .then()
+                .statusCode(200)
+                .body("autoRestockEnabled", equalTo(false));
     }
 
     @Test

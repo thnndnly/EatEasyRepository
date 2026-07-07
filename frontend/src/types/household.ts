@@ -6,6 +6,7 @@ export interface HouseholdDto {
   id: string
   name: string
   defaultDietTags: DietTag[]
+  autoRestockEnabled: boolean
   role: MembershipRole
   createdAt: string
 }
@@ -36,6 +37,7 @@ export interface HouseholdCreateRequest {
 export interface HouseholdUpdateRequest {
   name?: string
   defaultDietTags?: DietTag[]
+  autoRestockEnabled?: boolean
 }
 
 export interface InvitationCreateRequest {

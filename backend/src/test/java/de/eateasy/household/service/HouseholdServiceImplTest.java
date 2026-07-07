@@ -124,10 +124,12 @@ class HouseholdServiceImplTest {
             new HouseholdCreateRequest("Alt", null)).id();
 
         HouseholdDto updated = householdService.update(ownerId, householdId,
-            new HouseholdUpdateRequest("Neu", List.of(DietTag.VEGAN, DietTag.GLUTEN_FREE)));
+            new HouseholdUpdateRequest("Neu", List.of(DietTag.VEGAN, DietTag.GLUTEN_FREE), false));
 
         assertThat(updated.name()).isEqualTo("Neu");
         assertThat(updated.defaultDietTags()).containsExactlyInAnyOrder(DietTag.VEGAN, DietTag.GLUTEN_FREE);
+        // Auto-Nachbuchen laesst sich per Update abschalten (Phase 14).
+        assertThat(updated.autoRestockEnabled()).isFalse();
     }
 
     @Test
@@ -143,7 +145,7 @@ class HouseholdServiceImplTest {
         householdService.acceptInvitation(memberId, invitation.token());
 
         assertThatThrownBy(() -> householdService.update(memberId, householdId,
-            new HouseholdUpdateRequest("Hijack", null)))
+            new HouseholdUpdateRequest("Hijack", null, null)))
             .isInstanceOf(ForbiddenException.class);
     }
 
