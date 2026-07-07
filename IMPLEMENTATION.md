@@ -868,11 +868,12 @@ quarkus.mailer.from=noreply@eateasy.local
 
 Nach Phase 10 ist die Pflichtabgabe **fertig**. Weitere Slices nach Kapazität:
 
-### Phase 11: Beleg-Scanner (höchste Priorität unter Stretch)
-- Neue Komponente `receipt/`
-- Tesseract als 5. Container im docker-compose
-- Pipeline: Foto-Upload → Tesseract OCR → Ollama-Strukturierung → Vorschau-Liste → Bestätigung → PantryItems
-- Realistisch: 3–5 Tage Entwicklung, fragile, gut für Demo wenn's klappt
+### Phase 11: Beleg-Scanner ✅ (umgesetzt 07/2026)
+- Neue Komponente `receipt/` (`OcrClient`/`TesseractHttpClient`, `ReceiptScanService`, `ReceiptResource`)
+- Tesseract als zusätzlicher Container im `docker-compose.dev.yml`
+- Pipeline: Foto-Upload → Tesseract OCR → Ollama-Strukturierung → Vorschau-Liste → Bestätigung → PantryItems (Übernahme über die bestehende Pantry-API, der Scanner persistiert selbst nichts)
+- Endpoint `POST /api/v1/households/{id}/receipts/scan`, Feature-Flag `eateasy.receipt.enabled` (404 wenn aus — für Demo-Deployments ohne Tesseract/Ollama)
+- Fehlertoleranz: OCR-Ausfall → 503 (generische Meldung), Ollama-Ausfall → Rohtext mit leerer Item-Liste; Upload gegen Foto-Content-Type-Allowlist + 10-MB-Limit geprüft
 
 ### Phase 12: Google OAuth
 - `quarkus-oidc` Extension
@@ -890,10 +891,10 @@ Nach Phase 10 ist die Pflichtabgabe **fertig**. Weitere Slices nach Kapazität:
 - Beim Abhaken eines ShoppingList-Items: Item landet automatisch im Pantry
 - Toggle in Settings
 
-### Phase 15: Polish
-- Portionen-Slider auf Wochenplan-Entry
-- Favoritenliste
-- PDF-Export der Einkaufsliste (Quarkus-Erweiterung oder browserseitig)
+### Phase 15: Polish ✅ (umgesetzt 07/2026)
+- **Portionen-Stepper** auf Wochenplan-Slots: +/–-Stepper direkt am Slot, 1–20 clientseitig, serverseitige Obergrenze `@Max(50)`, Cross-Slot-Guard (paralleles Editieren verschiedener Slots erlaubt, kein verschluckter Klick)
+- **Favoritenliste**: Herz-Button auf `RecipeCard`, per-User-Favoriten (`RecipeFavorite`, Migration `V9`, `PUT /api/v1/recipes/{id}/favorite`), Filter „nur Favoriten"; idempotent via `INSERT … ON CONFLICT DO NOTHING`
+- **PDF-Export der Einkaufsliste**: browserseitig via `window.print()` + Print-CSS-Media-Queries (kein Server-Rendering, keine Template-Injection)
 
 ### Phase 16: Sortierung Einkaufsliste ✅ (umgesetzt 07/2026)
 - Neues Feld `category` auf Ingredient (Obst/Gemüse, Milch, TK, etc.)
