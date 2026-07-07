@@ -4,9 +4,15 @@
 Fokus: wenig Text, viel Grafik — Struktur, Datenmodell, Technologien.
 Direkt via reportlab gezeichnet (LibreOffice-Konvertierung hier nicht verfuegbar).
 """
+import os
+
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor
 from reportlab.pdfgen import canvas
+
+# Repo-Wurzel relativ zum Skript (scripts/..) — plattformunabhaengig statt
+# hartkodiertem Cloud-Pfad.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 W, H = 13.333 * inch, 7.5 * inch  # 960 x 540 pt
 
@@ -25,7 +31,7 @@ WHITE = HexColor("#FFFFFF")
 BORDER = HexColor("#CBD9CF")
 TOTAL = 4
 
-c = canvas.Canvas("/home/user/EatEasyRepository/EatEasy-Architektur.pdf", pagesize=(W, H))
+c = canvas.Canvas(os.path.join(ROOT, "EatEasy-Architektur.pdf"), pagesize=(W, H))
 
 F = "Helvetica"
 FB = "Helvetica-Bold"
@@ -105,8 +111,8 @@ def slide_title():
     c.setStrokeColor(SECONDARY); c.setLineWidth(0.8)
     c.line(65, 112, W - 65, 112)
     rows = [("Stack", "Vue 3 · Quarkus · PostgreSQL · Docker"),
-            ("Architektur", "Modularer Monolith · 11 Komponenten"),
-            ("Stand", "Phasen 0–10 umgesetzt · Issues #3–#8 offen")]
+            ("Architektur", "Modularer Monolith · 12 Komponenten"),
+            ("Stand", "Phasen 0–10 komplett · Stretch: Beleg-Scanner, MHD, Favoriten, Druck")]
     yy = 86
     for label, val in rows:
         text(65, yy, label, 12, F, KICKER)
@@ -131,8 +137,8 @@ def slide_structure():
     text(70, 338, "Backend — Quarkus", 13, FB, PRIMARY)
     text(70, 322, "Modularer Monolith · Komponenten via Service-Interfaces (CDI)", 8.5, F, MUTED)
     comps = ["auth", "household", "recipe", "ingredient", "mealplan",
-             "pantry", "shoppinglist", "suggestion", "integration",
-             "notification", "common"]
+             "pantry", "shoppinglist", "receipt", "suggestion",
+             "integration", "notification", "common"]
     cx0, cy0, cw, ch, gx, gy = 70, 270, 168, 30, 8, 10
     for i, name in enumerate(comps):
         col, row = i % 3, i // 3
@@ -308,7 +314,7 @@ def slide_tech():
         ("Frontend", ["Vue 3", "Vite", "Pinia", "Vue Router", "TypeScript", "Tailwind", "VueUse"]),
         ("Backend", ["Quarkus", "Java 21", "RESTEasy Reactive", "Hibernate Panache", "SmallRye JWT", "Mailer", "REST Client"]),
         ("Datenbank", ["PostgreSQL 16", "Flyway", "UUID v4"]),
-        ("LLM (self-hosted)", ["Ollama", "Llama 3", "Mistral"]),
+        ("LLM & OCR (self-hosted)", ["Ollama", "Llama 3", "Mistral", "Tesseract (OCR)"]),
         ("Externe APIs", ["TheMealDB", "OpenFoodFacts"]),
         ("Testing", ["JUnit 5", "REST Assured", "Vitest", "MSW", "Playwright E2E"]),
         ("Qualität / CI", ["Checkstyle", "ESLint", "Prettier", "GitHub Actions"]),

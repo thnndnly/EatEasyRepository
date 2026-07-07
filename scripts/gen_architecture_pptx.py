@@ -8,15 +8,17 @@ PDF, ohne auf die (in dieser Umgebung defekte) LibreOffice-Konvertierung zu
 setzen.
 """
 import os
+import tempfile
+
 import fitz  # PyMuPDF
 from pptx import Presentation
 from pptx.util import Inches
 
-ROOT = "/home/user/EatEasyRepository"
+# Repo-Wurzel relativ zum Skript (scripts/..) — plattformunabhaengig.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PDF = os.path.join(ROOT, "EatEasy-Architektur.pdf")
 OUT = os.path.join(ROOT, "EatEasy-Architektur.pptx")
-TMP = "/tmp/eateasy_slides"
-os.makedirs(TMP, exist_ok=True)
+TMP = tempfile.mkdtemp(prefix="eateasy_slides_")
 
 doc = fitz.open(PDF)
 prs = Presentation()
