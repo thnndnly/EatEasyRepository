@@ -887,9 +887,13 @@ Nach Phase 10 ist die Pflichtabgabe **fertig**. Weitere Slices nach Kapazität:
   zeigt max. 5 Items (MHD ≤ 7 Tage inkl. abgelaufener, aufsteigend), Ampel-Logik
   geteilt mit PantryRow via `utils/mhd.ts`
 
-### Phase 14: Auto-Nachbuchen
-- Beim Abhaken eines ShoppingList-Items: Item landet automatisch im Pantry
-- Toggle in Settings
+### Phase 14: Auto-Nachbuchen ✅ (umgesetzt 07/2026)
+- Beim Abhaken eines ShoppingList-Items landet der Posten automatisch im Vorrat
+  (`ShoppingListService.toggleChecked` → `PantryService.add`, nur beim Übergang
+  ungecheckt→gecheckt).
+- Pro Haushalt an-/abschaltbar: `Household.autoRestockEnabled` (Migration `V10`,
+  Default `true`), OWNER-Toggle in der Haushalt-Detailseite; der Guard prüft
+  `HouseholdService.isAutoRestockEnabled(...)`.
 
 ### Phase 15: Polish ✅ (umgesetzt 07/2026)
 - **Portionen-Stepper** auf Wochenplan-Slots: +/–-Stepper direkt am Slot, 1–20 clientseitig, serverseitige Obergrenze `@Max(50)`, Cross-Slot-Guard (paralleles Editieren verschiedener Slots erlaubt, kein verschluckter Klick)
