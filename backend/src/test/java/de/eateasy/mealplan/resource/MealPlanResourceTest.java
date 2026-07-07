@@ -196,6 +196,68 @@ class MealPlanResourceTest {
                 .statusCode(403);
     }
 
+    @Test
+    @DisplayName("PUT /mealplans/{id}/entries mit servings > 50 liefert 400")
+    void putRejectsServingsAboveMax() {
+        String token = registerUser("alice@example.com");
+        String householdId = createHousehold(token, "Test");
+        String recipeId = createRecipe(token, householdId, "Suppe");
+        String planId = getMealPlan(token, householdId);
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                "dayOfWeek", "MONDAY",
+                "mealType", "LUNCH",
+                "recipeId", recipeId,
+                "servings", 51))
+            .when().put("/api/v1/mealplans/" + planId + "/entries")
+            .then().statusCode(400);
+    }
+
+    @Test
+    @DisplayName("PUT /mealplans/{id}/entries mit servings < 1 liefert 400")
+    void putRejectsServingsBelowMin() {
+        String token = registerUser("alice@example.com");
+        String householdId = createHousehold(token, "Test");
+        String recipeId = createRecipe(token, householdId, "Suppe");
+        String planId = getMealPlan(token, householdId);
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                "dayOfWeek", "MONDAY",
+                "mealType", "LUNCH",
+                "recipeId", recipeId,
+                "servings", 0))
+            .when().put("/api/v1/mealplans/" + planId + "/entries")
+            .then().statusCode(400);
+    }
+
+    @Test
+    @DisplayName("PUT /mealplans/{id}/entries mit servings == 50 wird akzeptiert")
+    void putAcceptsServingsAtMax() {
+        String token = registerUser("alice@example.com");
+        String householdId = createHousehold(token, "Test");
+        String recipeId = createRecipe(token, householdId, "Suppe");
+        String planId = getMealPlan(token, householdId);
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                "dayOfWeek", "MONDAY",
+                "mealType", "LUNCH",
+                "recipeId", recipeId,
+                "servings", 50))
+            .when().put("/api/v1/mealplans/" + planId + "/entries")
+            .then()
+                .statusCode(200)
+                .body("servings", equalTo(50));
+    }
+
     // --- Helpers ---------------------------------------------------------
 
     private static String registerUser(String email) {

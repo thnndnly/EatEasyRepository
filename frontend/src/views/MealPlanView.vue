@@ -72,6 +72,36 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
   }
   await mealPlanStore.removeEntry(day, mealType)
 }
+
+// Portionen-Stepper (Phase 15): setEntry ueberschreibt den Slot idempotent,
+// die Einkaufsliste skaliert beim naechsten Neuberechnen automatisch mit.
+// savingSlot deaktiviert den Stepper, solange der Request laeuft — sonst
+// rechnen schnelle Klicks mit dem alten Wert und Inkremente gehen verloren.
+const savingSlot = ref<string | null>(null)
+
+async function onChangeServings(
+  day: DayOfWeek,
+  mealType: MealType,
+  servings: number,
+): Promise<void> {
+  const entry = entryAt(day, mealType)
+  if (!entry?.recipe || savingSlot.value === `${day}:${mealType}`) {
+    return
+  }
+  savingSlot.value = `${day}:${mealType}`
+  try {
+    await mealPlanStore.setEntry({
+      dayOfWeek: day,
+      mealType,
+      recipeId: entry.recipe.id,
+      servings,
+    })
+  } catch {
+    // Fehler ist im Store gesetzt und wird im Template angezeigt.
+  } finally {
+    savingSlot.value = null
+  }
+}
 </script>
 
 <template>
@@ -117,8 +147,10 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
     <MealPlanGrid
       v-else-if="mealPlanStore.plan"
       :entry-at="entryAt"
+      :saving-slot="savingSlot"
       @select="(day, mealType, entry) => openPicker(day, mealType, entry)"
       @remove="(day, mealType) => onRemove(day, mealType)"
+      @change-servings="(day, mealType, servings) => onChangeServings(day, mealType, servings)"
     />
 
     <RecipePickerModal
