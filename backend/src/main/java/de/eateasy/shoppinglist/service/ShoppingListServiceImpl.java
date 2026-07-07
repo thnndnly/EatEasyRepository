@@ -98,12 +98,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         boolean wasChecked = item.isChecked();
         item.setChecked(checked);
 
-        // Auto-Nachbuchen: false→true bedeutet "gekauft" → landet im Vorrat.
-        // Mehrfaches Toggeln wuerde sonst Duplikate erzeugen, daher nur beim
-        // echten Uebergang. PantryService.add aggregiert ohnehin gleiche
-        // (Zutat, Unit)-Eintraege, also doppelt-aufrufen waere nur unschoen,
-        // nicht falsch — wir vermeiden es trotzdem.
-        if (checked && !wasChecked) {
+        // Auto-Nachbuchen: false→true bedeutet "gekauft" → landet im Vorrat,
+        // sofern der Haushalt das Feature aktiviert hat (Phase 14). Nur beim
+        // echten Uebergang, sonst wuerde mehrfaches Toggeln Duplikate erzeugen
+        // (PantryService.add aggregiert zwar gleiche (Zutat, Unit)-Eintraege,
+        // doppelt-aufrufen waere aber unschoen).
+        if (checked && !wasChecked && householdService.isAutoRestockEnabled(householdId)) {
             pantryService.add(userId, householdId, new AddPantryItemRequest(
                 item.getIngredientId(),
                 null,

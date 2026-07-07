@@ -31,6 +31,14 @@ public class Household {
     @Column(name = "default_diet_tags", nullable = false)
     private String[] defaultDietTags;
 
+    /**
+     * Steuert das Auto-Nachbuchen: abgehakte Einkaufslisten-Posten landen nur
+     * dann automatisch im Vorrat, wenn dies aktiv ist. Default true erhaelt das
+     * bisherige Verhalten (Field-Initializer + Migration-Default V10).
+     */
+    @Column(name = "auto_restock_enabled", nullable = false)
+    private boolean autoRestockEnabled = true;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -81,6 +89,14 @@ public class Household {
 
     public void setDefaultDietTags(String[] defaultDietTags) {
         this.defaultDietTags = defaultDietTags == null ? new String[0] : defaultDietTags.clone();
+    }
+
+    public boolean isAutoRestockEnabled() {
+        return autoRestockEnabled;
+    }
+
+    public void setAutoRestockEnabled(boolean autoRestockEnabled) {
+        this.autoRestockEnabled = autoRestockEnabled;
     }
 
     public Instant getCreatedAt() {

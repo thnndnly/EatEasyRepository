@@ -5,11 +5,12 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 /**
- * Patch-Request fuer einen Haushalt. Beide Felder sind optional —
- * nur gesetzte Felder werden uebernommen.
+ * Patch-Request fuer einen Haushalt. Alle Felder sind optional —
+ * nur gesetzte (non-null) Felder werden uebernommen.
  */
 public record HouseholdUpdateRequest(
     @Size(max = 100) String name,
-    List<String> defaultDietTags
+    List<String> defaultDietTags,
+    Boolean autoRestockEnabled
 ) {
 }

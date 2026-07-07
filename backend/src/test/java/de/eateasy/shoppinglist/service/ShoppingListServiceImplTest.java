@@ -7,6 +7,7 @@ import de.eateasy.auth.service.AuthService;
 import de.eateasy.common.exception.ForbiddenException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.household.dto.HouseholdCreateRequest;
+import de.eateasy.household.dto.HouseholdUpdateRequest;
 import de.eateasy.household.repository.HouseholdInvitationRepository;
 import de.eateasy.household.repository.HouseholdMembershipRepository;
 import de.eateasy.household.repository.HouseholdRepository;
@@ -437,6 +438,31 @@ class ShoppingListServiceImplTest {
         assertThat(pantry).hasSize(1);
         // Menge bleibt 5 g — kein Doppel-Add.
         assertThat(pantry.get(0).amount()).isEqualByComparingTo("5.00");
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("toggleChecked(true) bucht NICHT nach, wenn Auto-Nachbuchen deaktiviert ist")
+    void toggleCheckedSkipsPantryWhenAutoRestockDisabled() {
+        UUID userId = registerUser("alice@example.com");
+        UUID householdId = householdService.create(userId,
+            new HouseholdCreateRequest("Test", null)).id();
+        // Auto-Nachbuchen fuer diesen Haushalt abschalten (Phase 14).
+        householdService.update(userId, householdId,
+            new HouseholdUpdateRequest(null, null, false));
+        RecipeDto recipe = recipeService.create(userId, new RecipeCreateRequest(
+            "Suppe", null, "Steps", 2, null, null, householdId,
+            List.of(new RecipeIngredientRequest(null, "Salz", new BigDecimal("5"), Unit.GRAM, null))));
+        MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
+        mealPlanService.setEntry(userId, plan.id(),
+            new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 2));
+        ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
+        ShoppingListItemDto saltItem = byName(list, "Salz");
+
+        shoppingListService.toggleChecked(userId, saltItem.id(), true);
+
+        // Deaktiviert → der Vorrat bleibt leer, obwohl das Item abgehakt wurde.
+        assertThat(pantryService.list(userId, householdId)).isEmpty();
     }
 
     @Test

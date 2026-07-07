@@ -126,6 +126,9 @@ public class HouseholdServiceImpl implements HouseholdService {
         if (request.defaultDietTags() != null) {
             household.setDefaultDietTags(DietTag.validate(request.defaultDietTags()));
         }
+        if (request.autoRestockEnabled() != null) {
+            household.setAutoRestockEnabled(request.autoRestockEnabled());
+        }
 
         return HouseholdDto.from(household, MembershipRole.OWNER);
     }
@@ -251,6 +254,12 @@ public class HouseholdServiceImpl implements HouseholdService {
         return membershipRepository.findByUser(userId).stream()
             .map(HouseholdMembership::getHouseholdId)
             .toList();
+    }
+
+    @Override
+    @Transactional
+    public boolean isAutoRestockEnabled(UUID householdId) {
+        return loadHousehold(householdId).isAutoRestockEnabled();
     }
 
     // --- Helpers ---------------------------------------------------------

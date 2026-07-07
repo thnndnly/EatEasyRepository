@@ -30,6 +30,7 @@ export const TEST_HOUSEHOLD: HouseholdDto = {
   id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
   name: 'Test-Haushalt',
   defaultDietTags: [],
+  autoRestockEnabled: true,
   role: 'OWNER',
   createdAt: '2026-01-01T00:00:00Z',
 }

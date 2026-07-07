@@ -103,6 +103,25 @@ describe('householdStore', () => {
     expect(store.selectedId).toBe(TEST_HOUSEHOLD.id)
   })
 
+  it('update sendet autoRestockEnabled und uebernimmt das Ergebnis', async () => {
+    const disabled = { ...TEST_HOUSEHOLD, autoRestockEnabled: false }
+    let receivedBody: unknown = null
+    server.use(
+      http.patch(`/api/v1/households/${TEST_HOUSEHOLD.id}`, async ({ request }) => {
+        receivedBody = await request.json()
+        return HttpResponse.json(disabled)
+      }),
+    )
+    const store = useHouseholdStore()
+    store.households = [TEST_HOUSEHOLD]
+
+    const result = await store.update(TEST_HOUSEHOLD.id, { autoRestockEnabled: false })
+
+    expect(receivedBody).toMatchObject({ autoRestockEnabled: false })
+    expect(result.autoRestockEnabled).toBe(false)
+    expect(store.households[0]?.autoRestockEnabled).toBe(false)
+  })
+
   it('loadMembers cached pro householdId', async () => {
     server.use(
       http.get(`/api/v1/households/${TEST_HOUSEHOLD.id}/members`, () =>

@@ -16,6 +16,7 @@ public record HouseholdDto(
     UUID id,
     String name,
     List<String> defaultDietTags,
+    boolean autoRestockEnabled,
     MembershipRole role,
     Instant createdAt
 ) {
@@ -24,6 +25,7 @@ public record HouseholdDto(
             household.getId(),
             household.getName(),
             List.of(household.getDefaultDietTags()),
+            household.isAutoRestockEnabled(),
             role,
             household.getCreatedAt());
     }
