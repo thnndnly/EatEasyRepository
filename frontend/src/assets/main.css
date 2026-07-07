@@ -361,3 +361,29 @@ body {
     @apply rounded border border-cream-300 px-3 py-2 focus:border-peach-400 focus:outline-none;
   }
 }
+
+/*
+ * Print-Styles (Phase 15, PDF-Export der Einkaufsliste): App-Chrome wird
+ * per Tailwind `print:hidden` in den Templates ausgeblendet — hier stehen
+ * nur die Regeln, die sich nicht sinnvoll als Utility ausdruecken lassen.
+ */
+@media print {
+  body {
+    background: white;
+  }
+  /*
+   * Die Einkaufsliste wird nach dem Merge mit den Kategorien (PR #10) als
+   * <section><h2>Kategorie</h2><ul>...</ul></section> gerendert. Ohne diese
+   * Regeln kann ein Kategorie-Header allein am Seitenende landen. Die ganze
+   * Sektion zusammenhalten und nach dem Header keinen Umbruch erzwingen.
+   */
+  section {
+    break-inside: avoid;
+  }
+  h2 {
+    break-after: avoid;
+  }
+  li {
+    break-inside: avoid;
+  }
+}

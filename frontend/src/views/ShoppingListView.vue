@@ -84,6 +84,14 @@ async function onToggle(id: string, checked: boolean): Promise<void> {
   }
 }
 
+// Browserseitiger PDF-Export: der Print-Dialog bietet "Als PDF speichern".
+// Die print:*-Klassen blenden App-Chrome und Bedienelemente aus.
+function printList(): void {
+  window.print()
+}
+
+const printDate = new Date().toLocaleDateString('de-DE')
+
 async function onChangeCategory(
   ingredientId: string,
   category: IngredientCategory,
@@ -104,9 +112,12 @@ async function onChangeCategory(
           {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
           <span v-if="mealPlanStore.plan"> · Woche {{ mealPlanStore.weekRangeLabel }}</span>
         </p>
+        <p class="mt-1 hidden text-xs text-ink-500 print:block">
+          Stand: {{ printDate }} · erstellt mit EatEasy
+        </p>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 print:hidden">
         <button type="button" class="ee-btn-secondary" @click="changeWeek(-7)">
           ‹ Vorherige
         </button>
@@ -129,23 +140,33 @@ async function onChangeCategory(
     <template v-else>
       <p
         v-if="shoppingListStore.error"
-        class="rounded-2xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700"
+        class="rounded-2xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700 print:hidden"
       >
         {{ shoppingListStore.error }}
       </p>
 
-      <div class="flex items-center justify-between rounded-2xl border border-cream-200 bg-white px-5 py-3 text-sm">
+      <div class="flex items-center justify-between rounded-2xl border border-cream-200 bg-white px-5 py-3 text-sm print:hidden">
         <span class="font-medium text-ink-700">
           <span class="text-peach-600">{{ totals.checked }}</span> von {{ totals.total }} abgehakt
         </span>
-        <button
-          type="button"
-          class="ee-btn-secondary"
-          :disabled="shoppingListStore.loading"
-          @click="onRegenerate"
-        >
-          🔄 Neu berechnen
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="ee-btn-secondary"
+            :disabled="shoppingListStore.loading || totals.total === 0"
+            @click="printList"
+          >
+            🖨️ Drucken / PDF
+          </button>
+          <button
+            type="button"
+            class="ee-btn-secondary"
+            :disabled="shoppingListStore.loading"
+            @click="onRegenerate"
+          >
+            🔄 Neu berechnen
+          </button>
+        </div>
       </div>
 
       <p v-if="shoppingListStore.loading" class="text-ink-500">Lade Einkaufsliste ...</p>
