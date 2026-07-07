@@ -18,6 +18,7 @@ public class DomainExceptionMapper implements ExceptionMapper<DomainException> {
             case InvalidCredentialsException ignored -> Response.Status.UNAUTHORIZED;
             case NotFoundException ignored -> Response.Status.NOT_FOUND;
             case ForbiddenException ignored -> Response.Status.FORBIDDEN;
+            case ServiceUnavailableException ignored -> Response.Status.SERVICE_UNAVAILABLE;
             case BadRequestException ignored -> Response.Status.BAD_REQUEST;
             default -> Response.Status.BAD_REQUEST;
         };

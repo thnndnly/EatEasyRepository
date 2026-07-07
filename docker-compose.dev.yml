@@ -42,6 +42,15 @@ services:
       - "1080:1080"  # Webview
       - "1025:1025"  # SMTP
 
+  # OCR fuer den Beleg-Scanner (Phase 11, Stretch). HTTP-Wrapper um Tesseract:
+  # POST /tesseract (multipart: options-JSON + file) -> {"data":{"stdout":...}}
+  tesseract:
+    image: hertzg/tesseract-server:latest
+    container_name: eateasy-tesseract
+    restart: unless-stopped
+    ports:
+      - "8884:8884"
+
 volumes:
   postgres_data:
   ollama_data:

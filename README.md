@@ -47,7 +47,7 @@ bash scripts/gen-jwt-keys.sh
 # 2) Optional: lokale Konfig anlegen
 cp .env.example .env
 
-# 3) Infrastruktur hochfahren (Postgres, Ollama, Maildev)
+# 3) Infrastruktur hochfahren (Postgres, Ollama, Maildev, Tesseract)
 docker compose -f docker-compose.dev.yml up -d
 
 # 4) Backend starten (Hot-Reload)
@@ -112,8 +112,8 @@ npm run test:e2e               # Playwright Smoke (mocked Backend)
 ```
 
 Aktueller Test-Stand:
-- Backend: 248 Tests in 28 Klassen (JUnit 5 + REST Assured + Testcontainers)
-- Frontend Unit: 75 Tests, 80%+ Coverage auf Stores + Services
+- Backend: 213 Tests in 30 Klassen (JUnit 5 + REST Assured + Testcontainers)
+- Frontend Unit: 79 Tests, 80%+ Coverage auf Stores + Services
 - Frontend E2E: 3 Smoke-Tests (Login + Redirect)
 
 **End-to-End-Smoke-Test** (Backend + Maildev + Ollama muessen laufen):
@@ -174,6 +174,33 @@ Standard-Modell ist ueber `OLLAMA_MODEL` (Default: `llama3`) konfigurierbar.
 
 ---
 
+## Beleg-Scanner (OCR, Phase 11 / Stretch)
+
+Kassenbon fotografieren → Tesseract-OCR → Ollama extrahiert die Lebensmittel →
+Vorschau bestaetigen → Posten landen im Vorrat. Die OCR laeuft ueber den
+`tesseract`-Container aus `docker-compose.dev.yml`
+([hertzg/tesseract-server](https://github.com/hertzg/tesseract-server),
+HTTP-Wrapper auf Port `8884`).
+
+```bash
+# Test-Aufruf (Bild gegen die OCR werfen)
+curl -F 'options={"languages":["deu"]}' -F file=@bon.jpg \
+  http://localhost:8884/tesseract
+```
+
+Konfiguration (Env-Vars, Defaults fuer lokale Entwicklung):
+
+| Variable                   | Default                  | Zweck                                          |
+| -------------------------- | ------------------------ | ---------------------------------------------- |
+| `EATEASY_RECEIPT_ENABLED`  | `true`                   | Backend-Feature-Flag; `false` → Endpoint 404   |
+| `TESSERACT_URL`            | `http://localhost:8884`  | URL des Tesseract-HTTP-Wrappers                |
+| `VITE_FEATURE_RECEIPT`     | `true` (alles ≠ `false`) | Frontend-Flag; `false` blendet den Button aus  |
+
+Auf der Render-Demo ist das Feature deaktiviert (kein Tesseract/Ollama im
+Free-Tier) — beide Flags stehen dort auf `false` (siehe `render.yaml`).
+
+---
+
 ## Projekt-Layout
 
 ```
@@ -181,7 +208,7 @@ compprojekt/
 ├── backend/                # Quarkus-Anwendung (Java 21)
 ├── frontend/               # Vue-3-Anwendung (Vite + TS)
 ├── scripts/                # Helper-Skripte (z. B. JWT-Keys)
-├── docker-compose.dev.yml  # Lokale Infrastruktur (Postgres, Ollama, Maildev)
+├── docker-compose.dev.yml  # Lokale Infrastruktur (Postgres, Ollama, Maildev, Tesseract)
 ├── .env.example            # Environment-Variablen-Vorlage
 ├── CLAUDE.md               # Konventionen + Quick-Reference
 ├── IMPLEMENTATION.md       # Phasen-Plan, Datenmodell, API-Spec
@@ -208,5 +235,6 @@ mit den Schichten `entity/`, `repository/`, `service/`, `resource/`, `dto/`.
 | 8     | Barcode-Scan                   | done   |
 | 9     | Smart-Suggestion (Ollama)      | done   |
 | 10    | E-Mail-Notifications           | done   |
+| 11    | Beleg-Scanner (Stretch)        | done   |
 
 Definitions of Done je Phase und Stretch-Goals stehen in `IMPLEMENTATION.md`.
