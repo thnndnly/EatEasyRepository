@@ -880,9 +880,11 @@ Nach Phase 10 ist die Pflichtabgabe **fertig**. Weitere Slices nach Kapazität:
 - Account-Linking-Logik (User mit Email + User über Google → was passiert wenn beide gleiche Email haben?)
 - Realistisch: 2–3 Tage
 
-### Phase 13: MHD-Tracking
-- Pantry-Items mit MHD < 7 Tage werden hervorgehoben
-- Dashboard-Widget „Demnächst ablaufend"
+### Phase 13: MHD-Tracking ✅ (umgesetzt 07/2026)
+- Pantry-Items mit MHD < 7 Tage werden hervorgehoben *(war schon seit 05/2026 drin)*
+- Dashboard-Widget „Demnächst ablaufend": `ExpiringSoonWidget` auf dem Dashboard,
+  zeigt max. 5 Items (MHD ≤ 7 Tage inkl. abgelaufener, aufsteigend), Ampel-Logik
+  geteilt mit PantryRow via `utils/mhd.ts`
 
 ### Phase 14: Auto-Nachbuchen
 - Beim Abhaken eines ShoppingList-Items: Item landet automatisch im Pantry

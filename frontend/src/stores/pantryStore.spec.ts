@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { http, HttpResponse } from 'msw'
 import { server } from '@/test/mocks/server'
@@ -39,6 +39,36 @@ describe('pantryStore', () => {
 
     expect(store.items).toEqual([])
     expect(store.error).toBe('kein Zugriff')
+  })
+
+  describe('expiringSoon', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('liefert nur Items mit MHD ≤ 7 Tage, aufsteigend sortiert', async () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-07-01T12:00:00Z'))
+
+      const inTwoDays = { ...TEST_PANTRY_ITEM, id: 'p-1', bestBefore: '2026-07-03' }
+      const expired = { ...TEST_PANTRY_ITEM, id: 'p-2', bestBefore: '2026-06-29' }
+      const farAway = { ...TEST_PANTRY_ITEM, id: 'p-3', bestBefore: '2026-08-01' }
+      const noMhd = { ...TEST_PANTRY_ITEM, id: 'p-4', bestBefore: null }
+      server.use(
+        http.get(`/api/v1/households/${TEST_HOUSEHOLD.id}/pantry`, () =>
+          HttpResponse.json([inTwoDays, expired, farAway, noMhd]),
+        ),
+      )
+      const store = usePantryStore()
+      await store.load(TEST_HOUSEHOLD.id)
+
+      expect(store.expiringSoon.map((i) => i.id)).toEqual(['p-2', 'p-1'])
+    })
+
+    it('ist leer ohne geladene Items', () => {
+      const store = usePantryStore()
+      expect(store.expiringSoon).toEqual([])
+    })
   })
 
   it('addItem wirft ohne ausgewaehlten Haushalt', async () => {

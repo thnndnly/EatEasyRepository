@@ -1,12 +1,15 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import * as pantryService from '@/services/pantryService'
 import { useRequireToken } from '@/composables/useRequireToken'
+import { daysUntil } from '@/utils/mhd'
 import type {
   AddPantryItemRequest,
   PantryItemDto,
   UpdatePantryItemRequest,
 } from '@/types/pantry'
+
+const EXPIRING_SOON_DAYS = 7
 
 export const usePantryStore = defineStore('pantry', () => {
   const items = ref<PantryItemDto[]>([])
@@ -85,5 +88,25 @@ export const usePantryStore = defineStore('pantry', () => {
     error.value = null
   }
 
-  return { items, householdId, loading, error, load, addItem, updateItem, removeItem, reset }
+  // Items mit MHD in den naechsten 7 Tagen (inkl. bereits abgelaufener),
+  // aufsteigend sortiert — Datengrundlage fuer das Dashboard-Widget.
+  const expiringSoon = computed<PantryItemDto[]>(() =>
+    items.value
+      .filter((i) => i.bestBefore !== null && daysUntil(i.bestBefore) <= EXPIRING_SOON_DAYS)
+      .slice()
+      .sort((a, b) => (a.bestBefore ?? '').localeCompare(b.bestBefore ?? '')),
+  )
+
+  return {
+    items,
+    householdId,
+    loading,
+    error,
+    expiringSoon,
+    load,
+    addItem,
+    updateItem,
+    removeItem,
+    reset,
+  }
 })
