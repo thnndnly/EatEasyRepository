@@ -229,6 +229,58 @@ class RecipeResourceTest {
                 .body("ingredients[0].ingredientName", equalTo("Mehl"));
     }
 
+    @Test
+    @DisplayName("PUT /recipes/{id}/favorite setzt Flag, GET ?favorite=true filtert")
+    void favoriteRoundtrip() {
+        String token = registerUser("alice@example.com", "Alice");
+        String favId = createRecipe(token, "Lieblingsessen");
+        createRecipe(token, "Anderes Rezept");
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .contentType(ContentType.JSON)
+            .body(Map.of("favorite", true))
+            .when().put("/api/v1/recipes/" + favId + "/favorite")
+            .then().statusCode(204);
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .when().get("/api/v1/recipes/" + favId)
+            .then()
+                .statusCode(200)
+                .body("favorite", equalTo(true));
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .queryParam("favorite", true)
+            .when().get("/api/v1/recipes")
+            .then()
+                .statusCode(200)
+                .body("size()", equalTo(1))
+                .body("[0].title", equalTo("Lieblingsessen"));
+    }
+
+    @Test
+    @DisplayName("PUT /favorite auf fremdes Rezept liefert 403, ohne Token 401")
+    void favoriteAuthRules() {
+        String aliceToken = registerUser("alice@example.com", "Alice");
+        String bobToken = registerUser("bob@example.com", "Bob");
+        String recipeId = createRecipe(aliceToken, "Privat");
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("favorite", true))
+            .when().put("/api/v1/recipes/" + recipeId + "/favorite")
+            .then().statusCode(401);
+
+        given()
+            .header("Authorization", "Bearer " + bobToken)
+            .contentType(ContentType.JSON)
+            .body(Map.of("favorite", true))
+            .when().put("/api/v1/recipes/" + recipeId + "/favorite")
+            .then().statusCode(403);
+    }
+
     // --- Helpers ---------------------------------------------------------
 
     private static String registerUser(String email, String displayName) {

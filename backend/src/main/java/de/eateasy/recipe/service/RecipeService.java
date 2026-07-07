@@ -30,6 +30,13 @@ public interface RecipeService {
     void delete(UUID userId, UUID recipeId);
 
     /**
+     * Markiert ein Rezept als (Nicht-)Favorit des Users. Idempotent: doppeltes
+     * Setzen/Entfernen ist kein Fehler. Sichtbarkeits-Check wie bei
+     * {@link #get(UUID, UUID)} — nur lesbare Rezepte koennen favorisiert werden.
+     */
+    void setFavorite(UUID userId, UUID recipeId, boolean favorite);
+
+    /**
      * Aktualisiert die externen Metadaten ({@code sourceUrl}, {@code externalSource})
      * eines bestehenden Rezepts. Wird vom Recipe-Import nach erfolgreichem
      * {@link #create(UUID, RecipeCreateRequest)} aufgerufen, ohne dass der Aufrufer

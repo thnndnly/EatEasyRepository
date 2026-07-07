@@ -79,6 +79,7 @@ export const TEST_RECIPE: RecipeDto = {
   dietTags: [],
   sourceUrl: null,
   externalSource: null,
+  favorite: false,
   ingredients: [
     {
       id: 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',

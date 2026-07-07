@@ -112,6 +112,43 @@ describe('recipeStore', () => {
     expect(store.current).toBeNull()
   })
 
+  it('toggleFavorite PUTtet und flippt das Flag in Liste und current', async () => {
+    server.use(
+      http.get('/api/v1/recipes', () => HttpResponse.json([TEST_RECIPE])),
+      http.get(`/api/v1/recipes/${TEST_RECIPE.id}`, () => HttpResponse.json(TEST_RECIPE)),
+      http.put(`/api/v1/recipes/${TEST_RECIPE.id}/favorite`, async ({ request }) => {
+        const body = (await request.json()) as { favorite: boolean }
+        expect(body.favorite).toBe(true)
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+    const store = useRecipeStore()
+    await store.load()
+    await store.fetchById(TEST_RECIPE.id)
+
+    await store.toggleFavorite(TEST_RECIPE.id)
+
+    expect(store.error).toBeNull()
+    expect(store.recipes[0]!.favorite).toBe(true)
+    expect(store.current?.favorite).toBe(true)
+  })
+
+  it('toggleFavorite setzt error bei Server-Fehler und laesst Flag unveraendert', async () => {
+    server.use(
+      http.get('/api/v1/recipes', () => HttpResponse.json([TEST_RECIPE])),
+      http.put(`/api/v1/recipes/${TEST_RECIPE.id}/favorite`, () =>
+        HttpResponse.json({ message: 'boom' }, { status: 500 }),
+      ),
+    )
+    const store = useRecipeStore()
+    await store.load()
+
+    await store.toggleFavorite(TEST_RECIPE.id)
+
+    expect(store.error).not.toBeNull()
+    expect(store.recipes[0]!.favorite).toBe(false)
+  })
+
   it('reset leert alles und entfernt den Filter', async () => {
     server.use(http.get('/api/v1/recipes', () => HttpResponse.json([TEST_RECIPE])))
     const store = useRecipeStore()

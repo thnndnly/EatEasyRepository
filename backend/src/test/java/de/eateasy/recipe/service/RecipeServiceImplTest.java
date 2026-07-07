@@ -23,6 +23,7 @@ import de.eateasy.recipe.dto.RecipeDto;
 import de.eateasy.recipe.dto.RecipeFilter;
 import de.eateasy.recipe.dto.RecipeIngredientRequest;
 import de.eateasy.recipe.dto.RecipeUpdateRequest;
+import de.eateasy.recipe.repository.RecipeFavoriteRepository;
 import de.eateasy.recipe.repository.RecipeRepository;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -56,6 +57,9 @@ class RecipeServiceImplTest {
 
     @Inject
     RecipeRepository recipeRepository;
+
+    @Inject
+    RecipeFavoriteRepository favoriteRepository;
 
     @Inject
     IngredientRepository ingredientRepository;
@@ -157,7 +161,7 @@ class RecipeServiceImplTest {
         // Bob: privat (Alice darf NICHT sehen)
         recipeService.create(bob, recipe("Privat-Bob", null));
 
-        List<RecipeDto> aliceList = recipeService.list(alice, new RecipeFilter(null, null, null));
+        List<RecipeDto> aliceList = recipeService.list(alice, new RecipeFilter(null, null, null, false));
 
         assertThat(aliceList).extracting(RecipeDto::title)
             .containsExactlyInAnyOrder("Privat-Alice", "Haus-Alice");
@@ -174,7 +178,7 @@ class RecipeServiceImplTest {
         recipeService.create(alice, recipeWithTags("Plain-Recipe", List.of()));
 
         List<RecipeDto> hits = recipeService.list(alice,
-            new RecipeFilter(null, List.of(DietTag.VEGAN), null));
+            new RecipeFilter(null, List.of(DietTag.VEGAN), null, false));
 
         assertThat(hits).extracting(RecipeDto::title).containsExactly("Vegan-Recipe");
     }
@@ -188,7 +192,7 @@ class RecipeServiceImplTest {
         recipeService.create(alice, recipe("Linsensuppe", null));
         recipeService.create(alice, recipe("Pizza", null));
 
-        List<RecipeDto> hits = recipeService.list(alice, new RecipeFilter("suppe", null, null));
+        List<RecipeDto> hits = recipeService.list(alice, new RecipeFilter("suppe", null, null, false));
 
         assertThat(hits).extracting(RecipeDto::title)
             .containsExactlyInAnyOrder("Tomatensuppe", "Linsensuppe");
@@ -254,6 +258,91 @@ class RecipeServiceImplTest {
 
         assertThat(recipe.ingredients()).hasSize(1);
         assertThat(recipe.ingredients().get(0).ingredientId()).isEqualTo(existing.id());
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("setFavorite markiert Rezept; get und list tragen das Flag")
+    void setFavoriteMarksRecipe() {
+        UUID alice = registerUser("alice@example.com", "Alice");
+        RecipeDto created = recipeService.create(alice, recipe("Lieblingsrezept", null));
+        assertThat(created.favorite()).isFalse();
+
+        recipeService.setFavorite(alice, created.id(), true);
+
+        assertThat(recipeService.get(alice, created.id()).favorite()).isTrue();
+        List<RecipeDto> all = recipeService.list(alice, new RecipeFilter(null, null, null, false));
+        assertThat(all).extracting(RecipeDto::favorite).containsExactly(true);
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("setFavorite ist idempotent und laesst sich zuruecknehmen")
+    void setFavoriteIdempotentAndRemovable() {
+        UUID alice = registerUser("alice@example.com", "Alice");
+        RecipeDto created = recipeService.create(alice, recipe("Rezept", null));
+
+        recipeService.setFavorite(alice, created.id(), true);
+        recipeService.setFavorite(alice, created.id(), true);
+        assertThat(recipeService.get(alice, created.id()).favorite()).isTrue();
+
+        recipeService.setFavorite(alice, created.id(), false);
+        recipeService.setFavorite(alice, created.id(), false);
+        assertThat(recipeService.get(alice, created.id()).favorite()).isFalse();
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("insertIfAbsent ist gegen die Unique-Constraint-Race idempotent (kein 500)")
+    void insertIfAbsentIsIdempotentAgainstUniqueConstraint() {
+        UUID alice = registerUser("alice@example.com", "Alice");
+        RecipeDto created = recipeService.create(alice, recipe("Rezept", null));
+
+        // Simuliert die TOCTOU-Race: zwei parallele Requests sehen beide "kein Favorit"
+        // und inserten. Der Upsert (ON CONFLICT DO NOTHING) darf beim zweiten Aufruf
+        // NICHT die Unique-Constraint verletzen (sonst unbehandelter 500).
+        boolean firstInserted = favoriteRepository.insertIfAbsent(alice, created.id());
+        boolean secondInserted = favoriteRepository.insertIfAbsent(alice, created.id());
+
+        assertThat(firstInserted).isTrue();
+        assertThat(secondInserted).isFalse();
+        assertThat(favoriteRepository.findRecipeIdsByUser(alice)).containsExactly(created.id());
+        assertThat(recipeService.get(alice, created.id()).favorite()).isTrue();
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("list mit favoritesOnly liefert nur Favoriten; Favoriten sind pro User")
+    void listFavoritesOnlyPerUser() {
+        UUID alice = registerUser("alice@example.com", "Alice");
+        UUID bob = registerUser("bob@example.com", "Bob");
+        UUID house = householdService.create(alice, new HouseholdCreateRequest("Familie", null)).id();
+        InvitationDto invitation = householdService.invite(alice, house,
+            new InvitationCreateRequest("bob@example.com"));
+        householdService.acceptInvitation(bob, invitation.token());
+
+        RecipeDto fav = recipeService.create(alice, recipe("Favorit", house));
+        recipeService.create(alice, recipe("Kein Favorit", house));
+        recipeService.setFavorite(alice, fav.id(), true);
+
+        List<RecipeDto> aliceFavs = recipeService.list(alice, new RecipeFilter(null, null, null, true));
+        assertThat(aliceFavs).extracting(RecipeDto::title).containsExactly("Favorit");
+
+        // Bob sieht dasselbe Haushaltsrezept, hat aber selbst keinen Favoriten.
+        List<RecipeDto> bobFavs = recipeService.list(bob, new RecipeFilter(null, null, null, true));
+        assertThat(bobFavs).isEmpty();
+    }
+
+    @Test
+    @TestTransaction
+    @DisplayName("setFavorite auf fremdes privates Rezept wirft Forbidden")
+    void setFavoriteForbiddenForForeignRecipe() {
+        UUID alice = registerUser("alice@example.com", "Alice");
+        UUID bob = registerUser("bob@example.com", "Bob");
+        RecipeDto bobsPrivate = recipeService.create(bob, recipe("Privat-Bob", null));
+
+        assertThatThrownBy(() -> recipeService.setFavorite(alice, bobsPrivate.id(), true))
+            .isInstanceOf(ForbiddenException.class);
     }
 
     // --- Helpers ---------------------------------------------------------

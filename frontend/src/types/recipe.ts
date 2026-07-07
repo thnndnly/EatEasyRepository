@@ -35,6 +35,7 @@ export interface RecipeDto {
   dietTags: DietTag[]
   sourceUrl: string | null
   externalSource: string | null
+  favorite: boolean
   ingredients: RecipeIngredientDto[]
   createdAt: string
   updatedAt: string
@@ -65,4 +66,5 @@ export interface RecipeFilter {
   query?: string
   dietTags?: DietTag[]
   householdId?: string | null
+  favorite?: boolean
 }

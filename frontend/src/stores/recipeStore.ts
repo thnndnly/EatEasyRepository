@@ -79,6 +79,24 @@ export const useRecipeStore = defineStore('recipe', () => {
     }
   }
 
+  async function toggleFavorite(id: string): Promise<void> {
+    const target = recipes.value.find((r) => r.id === id) ?? current.value
+    if (!target || target.id !== id) {
+      return
+    }
+    const next = !target.favorite
+    error.value = null
+    try {
+      await recipeService.setRecipeFavorite(requireToken(), id, next)
+      recipes.value = recipes.value.map((r) => (r.id === id ? { ...r, favorite: next } : r))
+      if (current.value?.id === id) {
+        current.value = { ...current.value, favorite: next }
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Favorit aendern fehlgeschlagen'
+    }
+  }
+
   function reset(): void {
     recipes.value = []
     current.value = null
@@ -100,6 +118,7 @@ export const useRecipeStore = defineStore('recipe', () => {
     create,
     update,
     remove,
+    toggleFavorite,
     reset,
   }
 })
