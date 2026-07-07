@@ -8,6 +8,11 @@ import { useToastStore } from '@/stores/toastStore'
 import ShoppingListItem from '@/components/shoppinglist/ShoppingListItem.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import {
+  CATEGORY_ICONS,
+  CATEGORY_LABELS,
+  type IngredientCategory,
+} from '@/types/ingredient'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
@@ -78,6 +83,16 @@ async function onToggle(id: string, checked: boolean): Promise<void> {
     toastStore.success(`"${item.ingredientName}" in den Vorrat uebernommen`)
   }
 }
+
+async function onChangeCategory(
+  ingredientId: string,
+  category: IngredientCategory,
+): Promise<void> {
+  await shoppingListStore.changeCategory(ingredientId, category)
+  if (!shoppingListStore.error) {
+    toastStore.info(`Kategorie geaendert: ${CATEGORY_LABELS[category]}`)
+  }
+}
 </script>
 
 <template>
@@ -135,17 +150,32 @@ async function onToggle(id: string, checked: boolean): Promise<void> {
 
       <p v-if="shoppingListStore.loading" class="text-ink-500">Lade Einkaufsliste ...</p>
 
-      <ul
-        v-else-if="shoppingListStore.sortedItems.length > 0"
-        class="divide-y divide-cream-100 overflow-hidden rounded-2xl border border-cream-200 bg-white"
-      >
-        <ShoppingListItem
-          v-for="item in shoppingListStore.sortedItems"
-          :key="item.id"
-          :item="item"
-          @toggle="onToggle"
-        />
-      </ul>
+      <div v-else-if="shoppingListStore.sortedItems.length > 0" class="space-y-4">
+        <section
+          v-for="group in shoppingListStore.groupedItems"
+          :key="group.category"
+          class="overflow-hidden rounded-2xl border border-cream-200 bg-white"
+        >
+          <h2
+            class="flex items-center gap-2 border-b border-cream-100 bg-cream-50 px-5 py-2 text-xs font-bold uppercase tracking-wide text-ink-500"
+          >
+            <span aria-hidden="true">{{ CATEGORY_ICONS[group.category] }}</span>
+            {{ CATEGORY_LABELS[group.category] }}
+            <span class="ml-auto font-medium normal-case tracking-normal text-ink-400">
+              {{ group.items.length }}
+            </span>
+          </h2>
+          <ul class="divide-y divide-cream-100">
+            <ShoppingListItem
+              v-for="item in group.items"
+              :key="item.id"
+              :item="item"
+              @toggle="onToggle"
+              @change-category="onChangeCategory"
+            />
+          </ul>
+        </section>
+      </div>
 
       <EmptyState v-else>
         Liste ist leer — entweder gibt es keine Wochenplan-Eintraege oder der Vorrat deckt
