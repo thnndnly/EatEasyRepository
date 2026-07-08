@@ -35,6 +35,12 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = response.user
   }
 
+  async function loginWithGoogle(idToken: string): Promise<void> {
+    const response = await authService.loginWithGoogle(idToken)
+    token.value = response.token
+    user.value = response.user
+  }
+
   /**
    * Verifiziert ein bereits persistiertes Token per /auth/me.
    * Bei 401 oder anderem Fehler wird die Session geleert.
@@ -63,6 +69,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     register,
     login,
+    loginWithGoogle,
     logout: clear,
     restoreSession,
   }

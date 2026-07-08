@@ -21,11 +21,16 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
+    /** Null fuer reine Google-User (kein Passwort-Login). */
+    @Column(name = "password_hash", length = 255)
     private String passwordHash;
 
     @Column(name = "display_name", nullable = false, length = 100)
     private String displayName;
+
+    /** Google "subject"-ID; gesetzt sobald der Account mit Google verknuepft ist. */
+    @Column(name = "google_sub", unique = true, length = 255)
+    private String googleSub;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -41,6 +46,13 @@ public class User {
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
+    }
+
+    /** Legt einen reinen Google-User an (kein Passwort). */
+    public static User forGoogle(String email, String displayName, String googleSub) {
+        User user = new User(email, null, displayName);
+        user.googleSub = googleSub;
+        return user;
     }
 
     @PrePersist
@@ -79,6 +91,14 @@ public class User {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getGoogleSub() {
+        return googleSub;
+    }
+
+    public void setGoogleSub(String googleSub) {
+        this.googleSub = googleSub;
     }
 
     public Instant getCreatedAt() {

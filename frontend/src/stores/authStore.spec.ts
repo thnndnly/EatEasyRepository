@@ -33,6 +33,24 @@ describe('authStore', () => {
     expect(store.isAuthenticated).toBe(false)
   })
 
+  it('loginWithGoogle sendet das idToken und persistiert die Session', async () => {
+    let receivedBody: unknown = null
+    server.use(
+      http.post('/api/v1/auth/google', async ({ request }) => {
+        receivedBody = await request.json()
+        return HttpResponse.json({ token: TEST_TOKEN, user: TEST_USER })
+      }),
+    )
+    const store = useAuthStore()
+
+    await store.loginWithGoogle('google-id-token-xyz')
+
+    expect(receivedBody).toMatchObject({ idToken: 'google-id-token-xyz' })
+    expect(store.token).toBe(TEST_TOKEN)
+    expect(store.user?.email).toBe(TEST_USER.email)
+    expect(store.isAuthenticated).toBe(true)
+  })
+
   it('leert die Session, wenn /auth/me beim Restore 401 zurueckgibt', async () => {
     localStorage.setItem('eateasy.auth.token', 'stale.token')
     server.use(
