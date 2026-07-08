@@ -16,7 +16,7 @@ describe('suggestionStore', () => {
   it('fetch setzt suggestions und requested=true', async () => {
     server.use(
       http.post(`/api/v1/households/${TEST_HOUSEHOLD.id}/suggestions`, () =>
-        HttpResponse.json([TEST_SUGGESTION]),
+        HttpResponse.json({ aiAvailable: true, suggestions: [TEST_SUGGESTION] }),
       ),
     )
     const store = useSuggestionStore()
@@ -26,6 +26,21 @@ describe('suggestionStore', () => {
     expect(store.suggestions).toEqual([TEST_SUGGESTION])
     expect(store.requested).toBe(true)
     expect(store.error).toBeNull()
+    expect(store.aiAvailable).toBe(true)
+  })
+
+  it('setzt aiAvailable=false, wenn die KI laut Backend nicht verfuegbar war', async () => {
+    server.use(
+      http.post(`/api/v1/households/${TEST_HOUSEHOLD.id}/suggestions`, () =>
+        HttpResponse.json({ aiAvailable: false, suggestions: [TEST_SUGGESTION] }),
+      ),
+    )
+    const store = useSuggestionStore()
+
+    await store.fetch(TEST_HOUSEHOLD.id, { numSuggestions: 3 })
+
+    expect(store.aiAvailable).toBe(false)
+    expect(store.suggestions).toEqual([TEST_SUGGESTION])
   })
 
   it('Fehler setzt error, leert suggestions und propagiert', async () => {
@@ -48,7 +63,7 @@ describe('suggestionStore', () => {
   it('reset leert alles inklusive requested-Flag', async () => {
     server.use(
       http.post(`/api/v1/households/${TEST_HOUSEHOLD.id}/suggestions`, () =>
-        HttpResponse.json([TEST_SUGGESTION]),
+        HttpResponse.json({ aiAvailable: true, suggestions: [TEST_SUGGESTION] }),
       ),
     )
     const store = useSuggestionStore()

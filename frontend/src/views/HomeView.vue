@@ -137,6 +137,13 @@ watch(
         Keine passenden Rezepte gefunden. Mehr Vorrat anlegen oder Rezepte hinzufuegen.
       </p>
 
+      <p
+        v-if="suggestionStore.suggestions.length > 0 && !suggestionStore.aiAvailable"
+        class="mt-4 rounded-2xl border border-butter-200 bg-butter-100/60 px-4 py-3 text-sm text-ink-600"
+      >
+        ⚠️ KI-Begruendungen gerade nicht verfuegbar — sortiert nach Vorrats-Abdeckung.
+      </p>
+
       <ul v-if="suggestionStore.suggestions.length > 0" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <li
           v-for="s in suggestionStore.suggestions"
