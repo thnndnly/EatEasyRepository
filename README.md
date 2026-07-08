@@ -171,6 +171,22 @@ curl http://localhost:11434/api/generate \
 ```
 
 Standard-Modell ist ueber `OLLAMA_MODEL` (Default: `llama3`) konfigurierbar.
+Das Modell **muss installiert** sein (`ollama pull llama3`) — fehlt es, laufen
+die KI-Vorschlaege im Fallback (nur nach Vorrats-Abdeckung, `aiAvailable=false`).
+
+### Alternative: Groq (gehostete API, kein self-hosted Ollama noetig)
+
+Fuer Umgebungen ohne Ollama (z. B. die Render-Demo — kein RAM im Free-Tier)
+laesst sich statt Ollama Groqs OpenAI-kompatible API nutzen. Selbe Pipeline,
+nur ein anderer Client hinter dem `OllamaClient`-Interface:
+
+```bash
+AI_PROVIDER=groq
+GROQ_API_KEY=gsk_...                 # kostenlos: https://console.groq.com
+GROQ_MODEL=llama-3.3-70b-versatile   # Default; Free-Tier ~1.000 Requests/Tag
+```
+
+Lokal bleibt `AI_PROVIDER=ollama` (Default) — es aendert sich nichts.
 
 ---
 

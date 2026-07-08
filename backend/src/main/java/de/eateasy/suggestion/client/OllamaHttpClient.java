@@ -2,6 +2,7 @@ package de.eateasy.suggestion.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
 import jakarta.ws.rs.WebApplicationException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -17,6 +18,9 @@ import java.time.Duration;
  * einmal aufgeloest und steht. Timeouts werden explizit gesetzt; der
  * SmartSuggestionService faengt Exceptions ab und fa-llt auf Coverage zurueck.
  */
+// @Typed: nur als konkreter Typ injizierbar, nicht als OllamaClient — die
+// OllamaClient-Auswahl (Ollama vs. Groq) uebernimmt der LlmClientProducer.
+@Typed(OllamaHttpClient.class)
 @ApplicationScoped
 public class OllamaHttpClient implements OllamaClient {
 
