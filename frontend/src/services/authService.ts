@@ -11,6 +11,10 @@ export function login(request: LoginRequest): Promise<AuthResponse> {
   return apiFetch<AuthResponse>(`${BASE}/login`, { method: 'POST', body: request })
 }
 
+export function loginWithGoogle(idToken: string): Promise<AuthResponse> {
+  return apiFetch<AuthResponse>(`${BASE}/google`, { method: 'POST', body: { idToken } })
+}
+
 export function getMe(token: string): Promise<UserDto> {
   return apiFetch<UserDto>(`${BASE}/me`, { token })
 }

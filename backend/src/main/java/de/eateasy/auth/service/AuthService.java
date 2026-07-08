@@ -19,6 +19,13 @@ public interface AuthService {
     AuthResponse login(LoginRequest request);
 
     /**
+     * Login/Registrierung per Google-ID-Token: verifiziert das Token, verknuepft
+     * es per Email mit einem bestehenden Account oder legt einen neuen (passwort-
+     * losen) Google-User an, und gibt ein frisches JWT zurueck.
+     */
+    AuthResponse loginWithGoogle(String idToken);
+
+    /**
      * Lookup eines Users per ID. Wird von anderen Komponenten genutzt, die den
      * User nur als Foreign-Key kennen (z. B. Household-Mitglieder). Wirft
      * {@link de.eateasy.common.exception.NotFoundException} wenn der User nicht

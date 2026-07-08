@@ -104,6 +104,17 @@ class AuthResourceTest {
     }
 
     @Test
+    @DisplayName("POST /auth/google liefert 404, wenn Google-OAuth deaktiviert ist (Default)")
+    void googleLoginDisabledReturns404() {
+        given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("idToken", "irrelevant"))
+            .when().post("/api/v1/auth/google")
+            .then()
+                .statusCode(404);
+    }
+
+    @Test
     @DisplayName("GET /auth/me ohne Token liefert 401")
     void meUnauthenticated() {
         given()

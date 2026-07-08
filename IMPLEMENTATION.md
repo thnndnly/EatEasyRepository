@@ -875,11 +875,18 @@ Nach Phase 10 ist die Pflichtabgabe **fertig**. Weitere Slices nach Kapazität:
 - Endpoint `POST /api/v1/households/{id}/receipts/scan`, Feature-Flag `eateasy.receipt.enabled` (404 wenn aus — für Demo-Deployments ohne Tesseract/Ollama)
 - Fehlertoleranz: OCR-Ausfall → 503 (generische Meldung), Ollama-Ausfall → Rohtext mit leerer Item-Liste; Upload gegen Foto-Content-Type-Allowlist + 10-MB-Limit geprüft
 
-### Phase 12: Google OAuth
-- `quarkus-oidc` Extension
-- Neuer Login-Button im Frontend
-- Account-Linking-Logik (User mit Email + User über Google → was passiert wenn beide gleiche Email haben?)
-- Realistisch: 2–3 Tage
+### Phase 12: Google OAuth ✅ (umgesetzt 07/2026)
+- **Token-Verify-Ansatz** statt server-seitigem OIDC-Web-Flow (passt zur
+  stateless-JWT-SPA): Frontend holt per Google Identity Services ein ID-Token,
+  `POST /api/v1/auth/google` verifiziert es (Googles `tokeninfo`-Endpoint,
+  Audience-Check gegen die Client-ID) und stellt ein EatEasy-JWT aus.
+- **Account-Linking per Email:** existiert die Email bereits (z. B. Passwort-
+  Account), wird `google_sub` daran gesetzt — kein Duplikat; sonst wird ein
+  passwortloser Google-User angelegt (`password_hash` nullable, Migration `V11`).
+- **Feature-geflaggt** wie der Beleg-Scanner: `eateasy.google-oauth.enabled`
+  (Endpoint 404 wenn aus) + `GOOGLE_OAUTH_CLIENT_ID`/`VITE_GOOGLE_CLIENT_ID`.
+  Standardmäßig **aus** — Aktivierung erfordert eine Google-Cloud-OAuth-Client-ID.
+  Verifikation hinter `GoogleTokenVerifier`-Interface (in Tests gemockt).
 
 ### Phase 13: MHD-Tracking ✅ (umgesetzt 07/2026)
 - Pantry-Items mit MHD < 7 Tage werden hervorgehoben *(war schon seit 05/2026 drin)*

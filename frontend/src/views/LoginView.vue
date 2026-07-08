@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import AppLogo from '@/components/common/AppLogo.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -67,6 +68,8 @@ async function onSubmit(): Promise<void> {
       <button type="submit" :disabled="submitting" class="ee-btn-primary ee-btn-lg w-full">
         {{ submitting ? 'Logge ein ...' : 'Einloggen' }}
       </button>
+
+      <GoogleSignInButton />
     </form>
 
     <p class="text-center text-sm text-ink-500">
