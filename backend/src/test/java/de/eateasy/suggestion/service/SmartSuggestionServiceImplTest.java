@@ -25,6 +25,7 @@ import de.eateasy.suggestion.client.OllamaClient;
 import de.eateasy.suggestion.client.OllamaGenerateRequest;
 import de.eateasy.suggestion.client.OllamaGenerateResponse;
 import de.eateasy.suggestion.dto.SuggestionDto;
+import de.eateasy.suggestion.dto.SuggestionResponse;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -111,8 +112,10 @@ class SmartSuggestionServiceImplTest {
         when(ollamaClient.generate(ArgumentMatchers.any(OllamaGenerateRequest.class)))
             .thenReturn(new OllamaGenerateResponse("llama3", ollamaJson, true));
 
-        List<SuggestionDto> suggestions = suggestionService.suggest(userId, householdId, 3);
+        SuggestionResponse response = suggestionService.suggest(userId, householdId, 3);
+        List<SuggestionDto> suggestions = response.suggestions();
 
+        assertThat(response.aiAvailable()).isTrue();
         assertThat(suggestions).hasSize(1);
         assertThat(suggestions.get(0).recipe().title()).isEqualTo("Tomatensalat");
         assertThat(suggestions.get(0).reason()).isEqualTo("Alle Zutaten im Vorrat");
@@ -134,8 +137,10 @@ class SmartSuggestionServiceImplTest {
         when(ollamaClient.generate(ArgumentMatchers.any(OllamaGenerateRequest.class)))
             .thenReturn(new OllamaGenerateResponse("llama3", ollamaJson, true));
 
-        List<SuggestionDto> suggestions = suggestionService.suggest(userId, householdId, 3);
+        SuggestionResponse response = suggestionService.suggest(userId, householdId, 3);
+        List<SuggestionDto> suggestions = response.suggestions();
 
+        assertThat(response.aiAvailable()).isTrue();
         assertThat(suggestions).hasSize(1);
         assertThat(suggestions.get(0).reason()).isEqualTo("Tomate verfuegbar");
     }
@@ -153,8 +158,11 @@ class SmartSuggestionServiceImplTest {
         when(ollamaClient.generate(ArgumentMatchers.any(OllamaGenerateRequest.class)))
             .thenThrow(new RuntimeException("Ollama down"));
 
-        List<SuggestionDto> suggestions = suggestionService.suggest(userId, householdId, 3);
+        SuggestionResponse response = suggestionService.suggest(userId, householdId, 3);
+        List<SuggestionDto> suggestions = response.suggestions();
 
+        // Ollama-Fehler → aiAvailable=false signalisiert die stille Degradierung.
+        assertThat(response.aiAvailable()).isFalse();
         assertThat(suggestions).hasSize(1);
         assertThat(suggestions.get(0).recipe().title()).isEqualTo("Tomatensalat");
         assertThat(suggestions.get(0).reason()).isNull();
@@ -173,8 +181,10 @@ class SmartSuggestionServiceImplTest {
         when(ollamaClient.generate(ArgumentMatchers.any(OllamaGenerateRequest.class)))
             .thenReturn(new OllamaGenerateResponse("llama3", "ich bin kein json", true));
 
-        List<SuggestionDto> suggestions = suggestionService.suggest(userId, householdId, 3);
+        SuggestionResponse response = suggestionService.suggest(userId, householdId, 3);
+        List<SuggestionDto> suggestions = response.suggestions();
 
+        assertThat(response.aiAvailable()).isFalse();
         assertThat(suggestions).hasSize(1);
         assertThat(suggestions.get(0).reason()).isNull();
     }
@@ -191,7 +201,8 @@ class SmartSuggestionServiceImplTest {
 
         // Ollama wird nicht aufgerufen, weil keine Kandidaten → kein Mock-Setup noetig.
 
-        List<SuggestionDto> suggestions = suggestionService.suggest(userId, householdId, 3);
+        SuggestionResponse response = suggestionService.suggest(userId, householdId, 3);
+        List<SuggestionDto> suggestions = response.suggestions();
 
         assertThat(suggestions).isEmpty();
     }
@@ -203,7 +214,8 @@ class SmartSuggestionServiceImplTest {
         UUID householdId = createHousehold(userId, "WG").id();
         createRecipe(userId, householdId, "Foo", List.of("Tomate"));
 
-        List<SuggestionDto> suggestions = suggestionService.suggest(userId, householdId, 3);
+        SuggestionResponse response = suggestionService.suggest(userId, householdId, 3);
+        List<SuggestionDto> suggestions = response.suggestions();
 
         assertThat(suggestions).isEmpty();
     }

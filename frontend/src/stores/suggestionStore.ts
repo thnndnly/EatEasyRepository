@@ -14,6 +14,8 @@ export const useSuggestionStore = defineStore('suggestion', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const requested = ref(false)
+  /** false, wenn die KI (Ollama) nicht erreichbar war — Views zeigen dann einen Hinweis. */
+  const aiAvailable = ref(true)
 
   const requireToken = useRequireToken()
 
@@ -27,8 +29,9 @@ export const useSuggestionStore = defineStore('suggestion', () => {
         householdId,
         request,
       )
-      suggestions.value = result
-      return result
+      suggestions.value = result.suggestions
+      aiAvailable.value = result.aiAvailable
+      return result.suggestions
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : 'Vorschlaege konnten nicht geladen werden'
       suggestions.value = []
@@ -42,7 +45,8 @@ export const useSuggestionStore = defineStore('suggestion', () => {
     suggestions.value = []
     error.value = null
     requested.value = false
+    aiAvailable.value = true
   }
 
-  return { suggestions, loading, error, requested, fetch, reset }
+  return { suggestions, loading, error, requested, aiAvailable, fetch, reset }
 })

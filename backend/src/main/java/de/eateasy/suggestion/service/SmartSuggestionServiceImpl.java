@@ -16,6 +16,7 @@ import de.eateasy.suggestion.client.OllamaClient;
 import de.eateasy.suggestion.client.OllamaGenerateRequest;
 import de.eateasy.suggestion.client.OllamaGenerateResponse;
 import de.eateasy.suggestion.dto.SuggestionDto;
+import de.eateasy.suggestion.dto.SuggestionResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -66,18 +67,18 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
     }
 
     @Override
-    public List<SuggestionDto> suggest(UUID userId, UUID householdId, int numSuggestions) {
+    public SuggestionResponse suggest(UUID userId, UUID householdId, int numSuggestions) {
         householdService.assertMember(userId, householdId);
 
         List<RecipeDto> recipes = recipeService.list(
             userId, new RecipeFilter(null, List.of(), null, false));
         if (recipes.isEmpty()) {
-            return List.of();
+            return new SuggestionResponse(true, List.of());
         }
 
         Set<UUID> pantryIds = pantryService.getInventory(householdId).keySet();
         if (pantryIds.isEmpty()) {
-            return List.of();
+            return new SuggestionResponse(true, List.of());
         }
 
         Map<UUID, List<RecipeIngredientView>> ingredientsByRecipe =
@@ -94,18 +95,19 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
             .toList();
 
         if (candidates.isEmpty()) {
-            return List.of();
+            return new SuggestionResponse(true, List.of());
         }
 
-        Map<UUID, String> reasons = askOllama(candidates, pantryIds, ingredientsByRecipe);
+        OllamaOutcome outcome = askOllama(candidates, pantryIds, ingredientsByRecipe);
 
-        return candidates.stream()
+        List<SuggestionDto> suggestions = candidates.stream()
             .limit(numSuggestions)
             .map(c -> new SuggestionDto(
                 toMini(c.recipe),
-                reasons.get(c.recipe.id()),
+                outcome.reasons().get(c.recipe.id()),
                 c.coverage))
             .toList();
+        return new SuggestionResponse(outcome.aiAvailable(), suggestions);
     }
 
     private static RecipeMiniDto toMini(RecipeDto dto) {
@@ -119,7 +121,11 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
 
     // --- Ollama ----------------------------------------------------------
 
-    private Map<UUID, String> askOllama(
+    /** Ergebnis der KI-Stufe: ob Ollama erreichbar war + die Begruendungen. */
+    private record OllamaOutcome(boolean aiAvailable, Map<UUID, String> reasons) {
+    }
+
+    private OllamaOutcome askOllama(
         List<Candidate> candidates,
         Set<UUID> pantryIds,
         Map<UUID, List<RecipeIngredientView>> ingredientsByRecipe
@@ -131,18 +137,21 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
             OllamaGenerateResponse response = ollamaClient.generate(
                 OllamaGenerateRequest.of(ollamaModel, prompt));
             if (response == null || response.response() == null || response.response().isBlank()) {
-                LOG.warnf("Ollama lieferte leere Antwort");
-                return Map.of();
+                // Leere Antwort = KI faktisch nicht nutzbar (z. B. Modell fehlt).
+                LOG.errorf("Ollama lieferte leere Antwort — Modell '%s' verfuegbar?", ollamaModel);
+                return new OllamaOutcome(false, Map.of());
             }
             LOG.debugf("Ollama raw response: %s", response.response());
             Map<UUID, String> parsed = parseOllamaResponse(response.response());
             if (parsed.isEmpty()) {
                 LOG.warnf("Ollama-Antwort parsed zu leerer Map. Raw: %s", response.response());
+                return new OllamaOutcome(false, Map.of());
             }
-            return parsed;
+            // Ollama hat geantwortet und lieferte mind. eine Begruendung.
+            return new OllamaOutcome(true, parsed);
         } catch (Exception ex) {
-            LOG.warnf(ex, "Ollama-Aufruf fehlgeschlagen — falle zurueck auf Coverage-Reihenfolge");
-            return Map.of();
+            LOG.errorf(ex, "Ollama-Aufruf fehlgeschlagen — falle zurueck auf Coverage-Reihenfolge");
+            return new OllamaOutcome(false, Map.of());
         }
     }
 
@@ -190,12 +199,16 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
         }
 
         return """
-            Du hilfst bei der Rezeptauswahl. Verfuegbarer Vorrat:
+            Du hilfst bei der Rezeptauswahl. Alle unten gelisteten Rezepte sind \
+            BEREITS gut durch den Vorrat abgedeckt. Verfuegbarer Vorrat:
             %s
-            Verfuegbare Rezepte (waehle NUR aus dieser Liste):
+            Rezepte (verwende exakt die id aus der Liste):
             %s
-            Waehle die passendsten Rezepte. Antworte AUSSCHLIESSLICH mit JSON \
-            im Format: [{"recipeId":"<id>","reason":"<kurzer Grund auf Deutsch>"}]. \
+            Gib fuer JEDES Rezept GENAU EINEN Eintrag mit kurzer positiver \
+            Begruendung (auf Deutsch) zurueck, die die passenden VORHANDENEN \
+            Zutaten benennt — erfinde KEINE fehlenden Zutaten. Sortiere nach \
+            Passung zum Vorrat. Antworte AUSSCHLIESSLICH mit JSON im Format: \
+            [{"recipeId":"<id>","reason":"<kurzer Grund>"}]. \
             Keine Erklaerungen ausserhalb des JSON.
             """.formatted(pantryList, recipeList);
     }

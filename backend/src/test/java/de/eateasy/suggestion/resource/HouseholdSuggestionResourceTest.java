@@ -90,9 +90,10 @@ class HouseholdSuggestionResourceTest {
             .when().post("/api/v1/households/" + householdId + "/suggestions")
             .then()
                 .statusCode(200)
-                .body("$", hasSize(1))
-                .body("[0].recipe.title", equalTo("Tomatensalat"))
-                .body("[0].reason", equalTo("Alles da"));
+                .body("aiAvailable", equalTo(true))
+                .body("suggestions", hasSize(1))
+                .body("suggestions[0].recipe.title", equalTo("Tomatensalat"))
+                .body("suggestions[0].reason", equalTo("Alles da"));
     }
 
     @Test
@@ -108,7 +109,7 @@ class HouseholdSuggestionResourceTest {
             .when().post("/api/v1/households/" + householdId + "/suggestions")
             .then()
                 .statusCode(200)
-                .body("$", hasSize(0));
+                .body("suggestions", hasSize(0));
     }
 
     @Test

@@ -2,7 +2,7 @@ package de.eateasy.suggestion.resource;
 
 import de.eateasy.common.security.CurrentUser;
 import de.eateasy.suggestion.dto.SuggestRequest;
-import de.eateasy.suggestion.dto.SuggestionDto;
+import de.eateasy.suggestion.dto.SuggestionResponse;
 import de.eateasy.suggestion.service.SmartSuggestionService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -13,7 +13,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-import java.util.List;
 import java.util.UUID;
 
 @Path("/api/v1/households/{householdId}/suggestions")
@@ -32,8 +31,8 @@ public class HouseholdSuggestionResource {
     }
 
     @POST
-    public List<SuggestionDto> suggest(@PathParam("householdId") UUID householdId,
-                                       @Valid SuggestRequest request) {
+    public SuggestionResponse suggest(@PathParam("householdId") UUID householdId,
+                                      @Valid SuggestRequest request) {
         return suggestionService.suggest(currentUser.id(), householdId, request.numSuggestions());
     }
 }
