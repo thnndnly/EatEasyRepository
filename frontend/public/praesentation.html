@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Abschlusspräsentation EatEasy EE — Architektur, Live-Demo, Code-Walkthrough.">
+<title>EatEasy EE — Abschlusspräsentation</title>
+<style>
+  :root {
+    --ground: #faf9f4;
+    --surface: #ffffff;
+    --surface-2: #f2f3ec;
+    --ink: #1b231e;
+    --ink-soft: #3a453d;
+    --muted: #5f6c62;
+    --faint: #8a968c;
+    --accent: #2f7d5b;        /* Basilikum */
+    --accent-deep: #245f45;
+    --accent-soft: #e4f0e8;
+    --amber: #c96a2f;         /* Tomate/geröstet */
+    --amber-soft: #f6e6d8;
+    --border: #e2e5dc;
+    --border-strong: #cdd2c6;
+    --code-bg: #1c2620;
+    --code-ink: #dfe7df;
+    --code-line: #7f9686;
+    --code-kw: #7fc9a0;
+    --code-str: #d9a679;
+    --code-com: #6d8577;
+    --shadow: 0 1px 2px rgba(20,30,24,.06), 0 8px 30px rgba(20,30,24,.07);
+    --radius: 14px;
+    --maxw: 1040px;
+    --font-body: ui-sans-serif, "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Code", "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #10130f;
+      --surface: #191d17;
+      --surface-2: #20261f;
+      --ink: #eaefe6;
+      --ink-soft: #cdd6cb;
+      --muted: #9aa79d;
+      --faint: #71806f;
+      --accent: #63bb8d;
+      --accent-deep: #8fd3ad;
+      --accent-soft: #1c2a22;
+      --amber: #e0955c;
+      --amber-soft: #2c221a;
+      --border: #2a3128;
+      --border-strong: #3a4338;
+      --code-bg: #0c110d;
+      --code-ink: #d7e0d6;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 40px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #faf9f4; --surface: #ffffff; --surface-2: #f2f3ec;
+    --ink: #1b231e; --ink-soft: #3a453d; --muted: #5f6c62; --faint: #8a968c;
+    --accent: #2f7d5b; --accent-deep: #245f45; --accent-soft: #e4f0e8;
+    --amber: #c96a2f; --amber-soft: #f6e6d8;
+    --border: #e2e5dc; --border-strong: #cdd2c6;
+    --code-bg: #1c2620; --code-ink: #dfe7df;
+    --shadow: 0 1px 2px rgba(20,30,24,.06), 0 8px 30px rgba(20,30,24,.07);
+  }
+  :root[data-theme="dark"] {
+    --ground: #10130f; --surface: #191d17; --surface-2: #20261f;
+    --ink: #eaefe6; --ink-soft: #cdd6cb; --muted: #9aa79d; --faint: #71806f;
+    --accent: #63bb8d; --accent-deep: #8fd3ad; --accent-soft: #1c2a22;
+    --amber: #e0955c; --amber-soft: #2c221a;
+    --border: #2a3128; --border-strong: #3a4338;
+    --code-bg: #0c110d; --code-ink: #d7e0d6;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 40px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  #deck { height: 100vh; width: 100vw; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(28px, 5vh, 64px) clamp(32px, 7vw, 110px);
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .slide.active { display: flex; opacity: 1; }
+  .slide-inner { width: 100%; max-width: var(--maxw); margin: 0 auto; }
+
+  .eyebrow {
+    font-size: clamp(.68rem, 1.1vw, .8rem);
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700;
+    display: inline-flex; align-items: center; gap: .55em;
+    margin-bottom: 1.1rem;
+  }
+  .eyebrow::before {
+    content: ""; width: 1.8em; height: 2px; background: var(--accent); display: inline-block;
+  }
+
+  h1 { font-size: clamp(2.2rem, 6vw, 4.4rem); line-height: 1.02; letter-spacing: -.03em; margin: 0; font-weight: 800; text-wrap: balance; }
+  h2 { font-size: clamp(1.7rem, 4vw, 2.9rem); line-height: 1.06; letter-spacing: -.022em; margin: 0 0 1.4rem; font-weight: 800; text-wrap: balance; }
+  h3 { font-size: clamp(1rem, 1.8vw, 1.25rem); margin: 0 0 .5rem; font-weight: 700; letter-spacing: -.01em; }
+  p { line-height: 1.55; color: var(--ink-soft); }
+  .lead { font-size: clamp(1.05rem, 1.9vw, 1.4rem); color: var(--muted); max-width: 46ch; line-height: 1.5; }
+  strong { color: var(--ink); font-weight: 700; }
+  .accent { color: var(--accent); }
+  .amber { color: var(--amber); }
+
+  /* Title slide */
+  .title-mark {
+    display: inline-flex; align-items: center; gap: .6rem;
+    font-weight: 800; letter-spacing: -.02em; font-size: 1.15rem; color: var(--ink);
+    margin-bottom: 2.4rem;
+  }
+  .leaf {
+    width: 30px; height: 30px; border-radius: 50% 0 50% 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    transform: rotate(45deg); position: relative; flex: none;
+  }
+  .leaf::after { content:""; position:absolute; inset: 40% 8% 8% 40%; border-left: 2px solid rgba(255,255,255,.55); border-top-left-radius: 6px; }
+  .title-meta { margin-top: 2.6rem; display: flex; flex-wrap: wrap; gap: 1.6rem 2.6rem; color: var(--muted); font-size: 1rem; }
+  .title-meta b { color: var(--ink); font-weight: 700; }
+
+  /* Grids & cards */
+  .grid { display: grid; gap: 14px; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow);
+  }
+  .card h3 { color: var(--ink); }
+  .card p { margin: 0; font-size: .95rem; color: var(--muted); }
+  .card .k { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+
+  ul.clean { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .9rem; }
+  ul.clean li { position: relative; padding-left: 1.5rem; font-size: clamp(1rem, 1.6vw, 1.18rem); color: var(--ink-soft); line-height: 1.5; }
+  ul.clean li::before { content: ""; position: absolute; left: 0; top: .5em; width: 9px; height: 9px; border-radius: 3px; background: var(--accent); }
+  ul.clean li.amberdot::before { background: var(--amber); }
+  ul.clean b { color: var(--ink); }
+
+  .pill { display:inline-block; padding: .28em .7em; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .01em; }
+  .pill.green { background: var(--accent-soft); color: var(--accent-deep); }
+  .pill.amberp { background: var(--amber-soft); color: var(--amber); }
+
+  /* Flow (feature loop) */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; }
+  .flow .node {
+    flex: 1 1 0; min-width: 120px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 14px; text-align: center; box-shadow: var(--shadow);
+  }
+  .flow .node .ic { font-size: 1.5rem; display:block; margin-bottom: .4rem; }
+  .flow .node b { display:block; font-size: .98rem; color: var(--ink); }
+  .flow .node span { font-size: .78rem; color: var(--muted); }
+  .flow .arr { align-self: center; color: var(--accent); font-weight: 800; font-size: 1.3rem; }
+
+  /* Component map */
+  .maprow { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .lane { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; background: var(--surface); }
+  .lane .lane-h { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: .92rem; font-weight: 600; padding: .5em .85em; border-radius: 9px;
+    border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--ink);
+  }
+  .chip.dom { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); }
+  .chip.ext { border-color: var(--amber); background: var(--amber-soft); color: var(--amber); }
+  .chip small { display:block; font-size: .68rem; font-weight: 500; opacity: .75; letter-spacing: .01em; }
+
+  /* Layer stack */
+  .layers { display: flex; flex-direction: column; gap: 8px; }
+  .layer { display: flex; align-items: center; gap: 14px; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; background: var(--surface); }
+  .layer .ln { font-family: var(--font-mono); font-weight: 700; color: var(--accent); min-width: 118px; font-size: .98rem; }
+  .layer .ld { color: var(--muted); font-size: .95rem; }
+
+  /* Code */
+  .codewrap { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border-strong); box-shadow: var(--shadow); }
+  .codebar {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    background: var(--surface-2); padding: 9px 16px; border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: .82rem; color: var(--muted);
+  }
+  .codebar .path { color: var(--ink-soft); font-weight: 600; overflow-x: auto; white-space: nowrap; }
+  .codebar .ln { color: var(--accent); font-weight: 700; flex: none; }
+  code { font-family: var(--font-mono); font-size: .84em; background: var(--surface-2); color: var(--ink-soft); padding: .08em .38em; border-radius: 5px; }
+  pre { margin: 0; background: var(--code-bg); color: var(--code-ink); padding: 16px 18px; overflow-x: auto; }
+  pre code { font-family: var(--font-mono); font-size: clamp(.72rem, 1.15vw, .95rem); line-height: 1.6; white-space: pre; background: none; color: inherit; padding: 0; border-radius: 0; }
+  .cm { color: var(--code-com); font-style: italic; }
+  .kw { color: var(--code-kw); }
+  .st { color: var(--code-str); }
+  .note { margin-top: 14px; font-size: .95rem; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 12px; line-height: 1.5; }
+
+  /* Divider slides */
+  .slide.divider { justify-content: center; }
+  .slide.divider .slide-inner { text-align: left; }
+  .actnum { font-size: clamp(4rem, 16vw, 12rem); font-weight: 800; line-height: .85; letter-spacing: -.05em;
+    color: transparent; -webkit-text-stroke: 2px var(--accent); }
+  .divider h2 { font-size: clamp(2rem, 6vw, 4rem); margin: .2rem 0 .8rem; }
+  .divider .lead { font-size: clamp(1.05rem, 2.2vw, 1.5rem); }
+  .divider .tmark { margin-top: 1.6rem; }
+
+  .two { display: grid; grid-template-columns: 1.05fr .95fr; gap: 34px; align-items: center; }
+  .two.rev { grid-template-columns: .95fr 1.05fr; }
+  .two > * { min-width: 0; }
+  .grid > * { min-width: 0; }
+
+  .statrow { display: flex; flex-wrap: wrap; gap: 12px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; box-shadow: var(--shadow); flex: 1 1 150px; }
+  .stat .n { font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 800; letter-spacing: -.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+
+  .runbook { counter-reset: step; display: flex; flex-direction: column; gap: 10px; }
+  .step { display: flex; gap: 16px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 13px 18px; box-shadow: var(--shadow); }
+  .step::before { counter-increment: step; content: counter(step); flex: none; width: 30px; height: 30px; border-radius: 8px;
+    background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: .95rem; }
+  :root[data-theme="dark"] .step::before, @media (prefers-color-scheme: dark) { }
+  .step b { color: var(--ink); }
+  .step span { color: var(--muted); font-size: .92rem; }
+  .step .st-main { display: flex; flex-direction: column; gap: 1px; }
+
+  /* Chrome */
+  #progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0; z-index: 50; transition: width .3s ease; }
+  #chrome { position: fixed; bottom: 16px; right: 22px; display: flex; align-items: center; gap: 14px; z-index: 40; font-size: .82rem; color: var(--faint); }
+  #counter { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+  .navbtn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; font-size: 1rem; display: grid; place-items: center; }
+  .navbtn:hover { border-color: var(--accent); color: var(--accent); }
+  .navbtn:focus-visible, .slide a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #footer-brand { position: fixed; bottom: 18px; left: 24px; z-index: 40; font-size: .8rem; color: var(--faint); display: flex; align-items: center; gap: .5rem; }
+  #footer-brand .leaf { width: 16px; height: 16px; }
+
+  a { color: var(--accent); }
+
+  @media (max-width: 820px) {
+    .cols-2, .cols-3, .two, .two.rev { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; } .flow .arr { transform: rotate(90deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .slide, #progress { transition: none; } }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="deck">
+
+  <!-- 1 · TITLE -->
+  <section class="slide active">
+    <div class="slide-inner">
+      <div class="title-mark"><span class="leaf"></span> EatEasy&nbsp;EE</div>
+      <div class="eyebrow">Abschlusspräsentation · Web Frameworks</div>
+      <h1>Haushaltsweite Mahlzeiten&shy;planung —<br>vom Rezept zur Einkaufsliste.</h1>
+      <p class="lead" style="margin-top:1.4rem">Ein komponentenbasierter modularer Monolith: Vue 3 im Frontend, Quarkus im Backend, PostgreSQL &amp; ein self-hosted LLM.</p>
+      <div class="title-meta">
+        <div><b>Gruppe 5</b><br>Dimitrios Tsakos · Kardeena Kameran</div>
+        <div><b>Live-Demo</b><br>eateasy-web.onrender.com</div>
+        <div><b>Stand</b><br>Juli 2026 · Phasen 0–16 umgesetzt</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · AGENDA / ZEITPLAN -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Ablauf &amp; Zeitplan</div>
+      <h2>Drei Akte in ~25 Minuten</h2>
+      <div class="grid cols-3">
+        <div class="card">
+          <div class="k">Akt 1 · ~8 Min</div>
+          <h3>Architektur</h3>
+          <p>Modularer Monolith, Komponenten-Schnitt, Cross-Component-Regel, Auth &amp; Datenmodell.</p>
+        </div>
+        <div class="card">
+          <div class="k">Akt 2 · ~8 Min</div>
+          <h3>Live-Demo</h3>
+          <p>Der komplette Nutzer-Loop: Login → Rezept → Wochenplan → Vorrat → Einkaufsliste → KI-Vorschlag.</p>
+        </div>
+        <div class="card">
+          <div class="k">Akt 3 · ~8 Min</div>
+          <h3>Code-Walkthrough</h3>
+          <p>Vier zentrale Backend-Klassen: Autorisierung, Aggregation, KI mit Fallback, CDI-Producer.</p>
+        </div>
+      </div>
+      <p class="note">Danach: kurze Reflexion (Herausforderungen &amp; Learnings) und offene Fragerunde.</p>
+    </div>
+  </section>
+
+  <!-- 3 · PROBLEM & IDEE -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="two">
+        <div>
+          <div class="eyebrow">Problem &amp; Idee</div>
+          <h2>„Was kochen wir diese Woche — und was fehlt dafür?"</h2>
+          <p class="lead">Mahlzeitenplanung im Haushalt ist verteiltes Wissen: Rezepte im Kopf, Vorrat im Kühlschrank, Einkauf auf einem Zettel. EatEasy führt das an <strong>einem</strong> Ort zusammen.</p>
+        </div>
+        <div>
+          <ul class="clean">
+            <li><b>Gemeinsam statt einzeln</b> — ein Haushalt, mehrere Mitglieder, geteilte Rezepte &amp; Pläne.</li>
+            <li><b>Kein doppelter Einkauf</b> — die Liste entsteht automatisch aus Plan <em>minus</em> Vorrat.</li>
+            <li class="amberdot"><b>Weniger Denkarbeit</b> — die KI schlägt Gerichte vor, die der Vorrat schon fast hergibt.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · WAS IST EATEASY (FEATURE LOOP) -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Das Produkt in einem Kreislauf</div>
+      <h2>Ein zusammenhängender Nutzer-Loop</h2>
+      <div class="flow">
+        <div class="node"><span class="ic">📖</span><b>Rezepte</b><span>eigen, importiert, mit Diät-Tags</span></div>
+        <div class="arr">→</div>
+        <div class="node"><span class="ic">🗓️</span><b>Wochenplan</b><span>Rezept je Tag &amp; Mahlzeit</span></div>
+        <div class="arr">→</div>
+        <div class="node"><span class="ic">🥫</span><b>Vorrat</b><span>Barcode, Kassenbon, MHD</span></div>
+        <div class="arr">→</div>
+        <div class="node"><span class="ic">🛒</span><b>Einkaufsliste</b><span>Plan − Vorrat, automatisch</span></div>
+        <div class="arr">→</div>
+        <div class="node"><span class="ic">✨</span><b>KI-Vorschlag</b><span>passend zum Vorrat</span></div>
+      </div>
+      <p class="note">Jeder Schritt ist eine eigene fachliche Komponente — im Backend wie im Frontend. Genau dieser Loop ist gleich unsere Live-Demo.</p>
+    </div>
+  </section>
+
+  <!-- 5 · STACK -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Technologie-Stack</div>
+      <h2>Bewusst gewählt — jede Schicht typsicher</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="k">Frontend</div>
+          <h3>Vue 3 · TypeScript (strict)</h3>
+          <p>Composition API mit <code>&lt;script setup&gt;</code>, Pinia für State, Vue Router, Vite 8, Tailwind CSS 4, VueUse. Tests: Vitest + MSW, Playwright-Smoke.</p>
+        </div>
+        <div class="card">
+          <div class="k">Backend</div>
+          <h3>Quarkus 3.34 · Java 21</h3>
+          <p>RESTEasy Reactive, Hibernate ORM Panache, SmallRye JWT + OpenAPI. Tests: JUnit 5 + REST Assured + Testcontainers.</p>
+        </div>
+        <div class="card">
+          <div class="k">Daten &amp; KI</div>
+          <h3>PostgreSQL 16 · Ollama / Groq</h3>
+          <p>Flyway-Migrationen, UUID-Keys. LLM hinter einem Interface — lokal Ollama, Cloud-Demo über Groq.</p>
+        </div>
+        <div class="card">
+          <div class="k">Betrieb &amp; Doku</div>
+          <h3>Docker · GitHub Actions</h3>
+          <p>docker-compose für Dev-Infra, CI mit Backend- &amp; Frontend-Job, OpenAPI/Swagger-UI + VitePress-Doku.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · ACT 1 DIVIDER -->
+  <section class="slide divider">
+    <div class="slide-inner">
+      <div class="actnum">01</div>
+      <h2>Die Architektur</h2>
+      <p class="lead">Wie EatEasy geschnitten ist — und warum genau so.</p>
+      <div class="tmark"><span class="pill green">~8 Minuten</span></div>
+    </div>
+  </section>
+
+  <!-- 7 · MODULARER MONOLITH -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="two">
+        <div>
+          <div class="eyebrow">Grundentscheidung</div>
+          <h2>Modularer Monolith, kein Microservice-Zoo</h2>
+          <ul class="clean">
+            <li><b>Fachliche Module statt technischer Layer</b> — geschnitten nach Domäne, nicht nach „alle Controller / alle Services".</li>
+            <li><b>Ein Deploy, klare Grenzen</b> — die Trennschärfe von Services, ohne Netzwerk-, Latenz- und Betriebs-Overhead.</li>
+            <li><b>Mit der Lehrperson abgestimmt</b> — dokumentiert in <code>docs/architektur.md</code>.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card" style="background:var(--accent-soft); border-color:var(--accent)">
+            <div class="k">Leitregel</div>
+            <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.5">Komponenten reden über <strong>Service-Interfaces</strong> — nie über REST, nie über fremde Repositories.</p>
+          </div>
+          <div class="card" style="margin-top:12px">
+            <div class="k">Wäre der Schnitt nötig</div>
+            <p>Auth · Core · Smart-Suggestion wären die natürlichen Service-Splits. Der Code ist so strukturiert, dass das möglich bliebe.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · KOMPONENTEN-MAP -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Komponenten-Landkarte</div>
+      <h2>Zwölf Komponenten, drei Sorten</h2>
+      <div class="maprow">
+        <div class="lane">
+          <div class="lane-h">Fachlich · volle Schichtung (entity → repository → service → resource → dto)</div>
+          <div class="chips">
+            <span class="chip dom">auth</span>
+            <span class="chip dom">household</span>
+            <span class="chip dom">recipe</span>
+            <span class="chip dom">ingredient</span>
+            <span class="chip dom">mealplan</span>
+            <span class="chip dom">pantry</span>
+            <span class="chip dom">shoppinglist</span>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-h">Adapter zu externen Systemen · nur service / client (keine eigene DB-Entität)</div>
+          <div class="chips">
+            <span class="chip ext">suggestion<small>Ollama / Groq</small></span>
+            <span class="chip ext">integration<small>TheMealDB · OpenFoodFacts</small></span>
+            <span class="chip ext">receipt<small>Tesseract-OCR</small></span>
+            <span class="chip ext">notification<small>SMTP / Maildev</small></span>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-h">Querschnitt</div>
+          <div class="chips">
+            <span class="chip">common<small>Exceptions · security · units · diet · health</small></span>
+          </div>
+        </div>
+      </div>
+      <p class="note">142 Java-Dateien. Jede fachliche Komponente exponiert genau ein <code>Service</code>-Interface nach außen.</p>
+    </div>
+  </section>
+
+  <!-- 9 · SCHICHTEN -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Schichten innerhalb einer Komponente</div>
+      <h2>Immer dieselbe Ordnung — Beispiel <span class="accent">recipe</span></h2>
+      <div class="layers">
+        <div class="layer"><span class="ln">resource/</span><span class="ld">JAX-RS-Endpunkte unter <code>/api/v1/recipes</code> — dünn, delegiert sofort. <span class="pill green">@RolesAllowed("user")</span></span></div>
+        <div class="layer"><span class="ln">dto/</span><span class="ld">Request/Response als <b>Java Records</b> mit Bean-Validation — Entities lecken nie nach außen.</span></div>
+        <div class="layer"><span class="ln">service/</span><span class="ld"><code>RecipeService</code> (Interface) + <code>RecipeServiceImpl</code> — Business-Logik, <b>Autorisierung</b>, <code>@Transactional</code>.</span></div>
+        <div class="layer"><span class="ln">repository/</span><span class="ld">Panache-Repositories — <code>RecipeRepository</code>, kompakte Queries.</span></div>
+        <div class="layer"><span class="ln">entity/</span><span class="ld">JPA-Entitäten — <code>Recipe</code>, <code>RecipeIngredient</code>, <code>RecipeFavorite</code>.</span></div>
+      </div>
+      <p class="note">Andere Komponenten sehen nur das <code>Service</code>-Interface. Alles darunter ist privat.</p>
+    </div>
+  </section>
+
+  <!-- 10 · CROSS-COMPONENT -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Die wichtigste Regel</div>
+      <h2>Service-Interface rein, Repository bleibt privat</h2>
+      <div class="two">
+        <div>
+          <p class="lead">Braucht die Einkaufsliste den Vorrat, injiziert sie <code class="accent">PantryService</code> — niemals <code>PantryRepository</code>. So bleibt jede Komponente Herr über ihre eigenen Daten und Auth-Regeln.</p>
+          <div class="card" style="margin-top:16px; background:var(--amber-soft); border-color:var(--amber)">
+            <div class="k" style="color:var(--amber)">Konkret</div>
+            <p style="color:var(--ink-soft)"><code>ShoppingListServiceImpl</code> injiziert <b>fünf</b> fremde Service-Interfaces und <b>null</b> fremde Repositories.</p>
+          </div>
+        </div>
+        <div class="codewrap">
+          <div class="codebar"><span class="path">shoppinglist/service/ShoppingListServiceImpl.java</span><span class="ln">Z. 47–53</span></div>
+<pre><code><span class="kw">private final</span> ShoppingListRepository listRepository;
+<span class="kw">private final</span> ShoppingListItemRepository itemRepository;
+<span class="cm">// alle Fremddaten über Interfaces, nie Repositories:</span>
+<span class="kw">private final</span> MealPlanService   mealPlanService;
+<span class="kw">private final</span> RecipeService     recipeService;
+<span class="kw">private final</span> PantryService     pantryService;
+<span class="kw">private final</span> IngredientService ingredientService;
+<span class="kw">private final</span> HouseholdService  householdService;</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · AUTHORIZATION -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Sicherheit</div>
+      <h2>Autorisierung im Service-Layer — nicht nur per Annotation</h2>
+      <div class="two rev">
+        <div class="codewrap">
+          <div class="codebar"><span class="path">household/service/HouseholdService.java</span><span class="ln">Z. 65</span></div>
+<pre><code><span class="cm">// Default-Method im Interface: ein Guard,</span>
+<span class="cm">// den jede fremde Komponente wiederverwendet.</span>
+<span class="kw">default void</span> assertMember(
+        UUID userId, UUID householdId) {
+    <span class="kw">if</span> (!isMember(userId, householdId)) {
+        <span class="kw">throw new</span> ForbiddenException(
+            <span class="st">"Kein Zugriff auf diesen Haushalt"</span>);
+    }
+}</code></pre>
+        </div>
+        <div>
+          <ul class="clean">
+            <li><code>@RolesAllowed</code> heißt nur <b>eingeloggt</b> — nicht <b>berechtigt</b> für genau diese Ressource.</li>
+            <li>Jeder Service prüft zusätzlich: gehört die Ressource zu <b>meinem</b> Haushalt?</li>
+            <li>Ein Guard im Interface — <code>assertMember</code> / <code>assertOwner</code> —, den alle Komponenten teilen.</li>
+            <li class="amberdot">Auch fremde Komponenten starten damit: Smart-Suggestion &amp; Einkaufsliste rufen zuerst <code>assertMember</code>.</li>
+          </ul>
+          <p class="note">Zwei Wächter: Annotation (authentifiziert) <b>+</b> Service-Check (autorisiert).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · AUTH / JWT -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Authentifizierung</div>
+      <h2>Stateless JWT — vom Login bis zum Request</h2>
+      <div class="flow" style="margin-bottom:18px">
+        <div class="node"><b>Login / Register</b><span>E-Mail+Passwort oder Google</span></div>
+        <div class="arr">→</div>
+        <div class="node"><b>Backend signiert JWT</b><span>SmallRye · 8 h · Rolle „user"</span></div>
+        <div class="arr">→</div>
+        <div class="node"><b>Frontend persistiert</b><span>localStorage (VueUse useStorage)</span></div>
+        <div class="arr">→</div>
+        <div class="node"><b>Jeder Call</b><span>Authorization: Bearer …</span></div>
+      </div>
+      <div class="grid cols-3">
+        <div class="card"><div class="k">Passwörter</div><p>BCrypt-Hash, nie im Klartext. Google-User sind passwortlos (Account-Linking per E-Mail).</p></div>
+        <div class="card"><div class="k">Reload-fest</div><p>Router-Guard stellt die Session aus dem localStorage wieder her und verifiziert gegen <code>/auth/me</code>.</p></div>
+        <div class="card"><div class="k">Zwei Wächter</div><p>Annotation (authentifiziert) <b>+</b> Service-Check (autorisiert) — Defense in Depth.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 · FRONTEND MIRROR -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Frontend-Spiegelung</div>
+      <h2>Das Frontend spiegelt die Backend-Komponenten 1:1</h2>
+      <div class="two">
+        <div>
+          <ul class="clean">
+            <li><b>Ein Pinia-Store je Komponente</b> — <code>useRecipeStore</code>, <code>usePantryStore</code>, <code>useShoppingListStore</code> … Server-State lebt nur dort.</li>
+            <li><b>Klare Schichten</b> — View → Store (State + <code>loading/error</code>) → Service (<code>apiFetch</code>) → Backend.</li>
+            <li><b>Der Token wird durchgereicht</b>, nie im Service gehalten — zentrale <code>Bearer</code>-Injektion in einem Wrapper.</li>
+            <li class="amberdot"><b>Lazy-loaded Views</b>, deklarative Route-Guards (<code>requiresAuth</code> / <code>guestOnly</code>).</li>
+          </ul>
+        </div>
+        <div class="codewrap">
+          <div class="codebar"><span class="path">services/apiClient.ts</span><span class="ln">Token-Injektion</span></div>
+<pre><code><span class="kw">if</span> (token) {
+  finalHeaders[<span class="st">'Authorization'</span>] = <span class="st">`Bearer ${token}`</span>;
+}
+<span class="cm">// composables/useRequireToken.ts</span>
+<span class="kw">return</span> () =&gt; {
+  <span class="kw">if</span> (!auth.token) <span class="kw">throw new</span> Error(<span class="st">'Nicht eingeloggt'</span>);
+  <span class="kw">return</span> auth.token;
+};</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · DATENMODELL -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Datenmodell-Highlights</div>
+      <h2>Konventionen, die überall gelten</h2>
+      <div class="grid cols-2">
+        <div class="card"><div class="k">Identität</div><h3>UUID v4 auf jeder Tabelle</h3><p>Keine Auto-Increment-Integer — verteil- und mergebar, keine ID-Kollisionen.</p></div>
+        <div class="card"><div class="k">Historie</div><h3>created_at / updated_at überall</h3><p>Automatisch von Hibernate gepflegt — keine manuellen Timestamps.</p></div>
+        <div class="card"><div class="k">Löschen</div><h3>Soft-Delete nur wo fachlich nötig</h3><p>Rezepte ja (Referenzen im Plan), Wochenplan-Einträge nein.</p></div>
+        <div class="card"><div class="k">Schema-Evolution</div><h3>Flyway, Hibernate = <code>validate</code></h3><p>Jede Änderung als nummerierte Migration <code>V&lt;N&gt;__…​.sql</code>; Hibernate ändert nie selbst.</p></div>
+      </div>
+      <p class="note">Kernbeziehungen: User n:m Household · Recipe 1:n RecipeIngredient n:1 Ingredient · MealPlan 1:n Entry · ShoppingList 1:n Item.</p>
+    </div>
+  </section>
+
+  <!-- 15 · QUALITÄT -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Qualitätssicherung</div>
+      <h2>Nichts ohne Tests, nichts ohne CI</h2>
+      <div class="statrow" style="margin-bottom:16px">
+        <div class="stat"><div class="n">322</div><div class="l">Backend-Tests · 34 Klassen</div></div>
+        <div class="stat"><div class="n">111</div><div class="l">Frontend-Unit-Tests · 17 Dateien</div></div>
+        <div class="stat"><div class="n">80%+</div><div class="l">Coverage auf Stores &amp; Services</div></div>
+        <div class="stat"><div class="n">2</div><div class="l">CI-Jobs parallel je Push/PR</div></div>
+      </div>
+      <div class="grid cols-3">
+        <div class="card"><div class="k">Backend</div><p>JUnit 5 + REST Assured, echter Postgres via Testcontainers. Externe APIs &amp; LLM gemockt.</p></div>
+        <div class="card"><div class="k">Frontend</div><p>Vitest + MSW für Stores, Playwright-Smoke für Login-Flow. type-check + lint im CI.</p></div>
+        <div class="card"><div class="k">Doku</div><p>Auto-generierte OpenAPI/Swagger-UI, VitePress-Projektdoku, JavaDoc an Service-Interfaces.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 · ACT 2 DIVIDER -->
+  <section class="slide divider">
+    <div class="slide-inner">
+      <div class="actnum">02</div>
+      <h2>Die Live-Demo</h2>
+      <p class="lead">Der komplette Loop — live auf <a href="https://eateasy-web.onrender.com">eateasy-web.onrender.com</a>.</p>
+      <div class="tmark"><span class="pill green">~8 Minuten</span> <span class="pill amberp">Backend vorher aufgewärmt</span></div>
+    </div>
+  </section>
+
+  <!-- 17 · DEMO RUNBOOK -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Demo-Regieplan</div>
+      <h2>Der rote Faden durch die App</h2>
+      <div class="runbook">
+        <div class="step"><div class="st-main"><b>Anmelden &amp; Haushalt</b><span>Login → Haushalt „Demo-WG" mit Mitglied und Standard-Diät-Tags.</span></div></div>
+        <div class="step"><div class="st-main"><b>Rezept anlegen &amp; importieren</b><span>Eigenes Rezept mit Zutaten + Diät-Tag; dann ein Rezept aus TheMealDB importieren.</span></div></div>
+        <div class="step"><div class="st-main"><b>Wochenplan füllen</b><span>Rezepte auf Tage/Mahlzeiten legen, Portionen am Slot hoch-/runterstellen.</span></div></div>
+        <div class="step"><div class="st-main"><b>Vorrat pflegen</b><span>Zutat per Barcode (OpenFoodFacts) in den Vorrat, MHD-Ampel zeigen.</span></div></div>
+        <div class="step"><div class="st-main"><b>Einkaufsliste = Plan − Vorrat</b><span>Liste öffnet sich fertig aggregiert; abhaken → Posten wandert zurück in den Vorrat.</span></div></div>
+        <div class="step"><div class="st-main"><b>KI-Vorschlag</b><span>„Was kann ich kochen?" → 3 Vorschläge mit LLM-Begründung (Groq), passend zum Vorrat.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 · DEMO SAFETY -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="two">
+        <div>
+          <div class="eyebrow">Demo-Absicherung</div>
+          <h2>Für den Fall der Fälle vorbereitet</h2>
+          <ul class="clean">
+            <li><b>Backend aufgewecken</b> — Free-Tier schläft nach 15 Min; wir wärmen es vor Beginn auf (~1 Min Kaltstart).</li>
+            <li><b>Fallback-Screenshots</b> bereit, falls das Netz streikt.</li>
+            <li class="amberdot"><b>Bewusst deaktiviert auf der Demo</b>: Beleg-Scanner (kein OCR-RAM im Free-Tier) &amp; Mail-Versand (gemockt) — Einladung zeigt stattdessen den Beitritts-Link direkt.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card"><div class="k">Live-Ziel</div><p style="font-size:1.05rem"><a href="https://eateasy-web.onrender.com">eateasy-web.onrender.com</a></p></div>
+          <div class="card" style="margin-top:12px"><div class="k">Unter der Haube</div><p>Static Site proxyt <code>/api/*</code> → Quarkus-Backend (Docker) → Postgres 16. KI über Groq statt Ollama.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19 · ACT 3 DIVIDER -->
+  <section class="slide divider">
+    <div class="slide-inner">
+      <div class="actnum">03</div>
+      <h2>Code-Walkthrough</h2>
+      <p class="lead">Vier Klassen, die die Architekturentscheidungen greifbar machen.</p>
+      <div class="tmark"><span class="pill green">~8 Minuten</span></div>
+    </div>
+  </section>
+
+  <!-- 20 · WALKTHROUGH ROADMAP -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Fahrplan</div>
+      <h2>Vom Guard zur KI — vier Stationen</h2>
+      <div class="grid cols-2">
+        <div class="card"><div class="k">Station 1</div><h3>HouseholdService</h3><p>Autorisierung als wiederverwendbarer Guard im Interface.</p></div>
+        <div class="card"><div class="k">Station 2</div><h3>ShoppingListServiceImpl</h3><p>Cross-Component-Injection + Mengen-Aggregation mit Einheiten-Normalisierung.</p></div>
+        <div class="card"><div class="k">Station 3</div><h3>SmartSuggestionServiceImpl</h3><p>Deterministische Heuristik + LLM nur für die Begründung, mit sauberem Fallback.</p></div>
+        <div class="card"><div class="k">Station 4</div><h3>LlmClientProducer</h3><p>CDI wählt den LLM-Provider zur Laufzeit — Ollama oder Groq.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 · AGGREGATION -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Station 2 · Herzstück</div>
+      <h2>Einkaufsliste = Bedarf skalieren, normalisieren, aggregieren</h2>
+      <div class="codewrap">
+        <div class="codebar"><span class="path">shoppinglist/service/ShoppingListServiceImpl.java · aggregateNeeded()</span><span class="ln">Z. 169–178</span></div>
+<pre><code>BigDecimal scaling = BigDecimal.valueOf(entry.servings())
+    .divide(BigDecimal.valueOf(mini.servings()), SCALING_PRECISION, RoundingMode.HALF_UP);
+<span class="kw">for</span> (RecipeIngredientView ingredient : ingredients) {
+    BigDecimal scaled = ingredient.amount().multiply(scaling);
+    <span class="cm">// gleiche Zutat in verschiedenen Einheiten (TBSP vs ML) auf</span>
+    <span class="cm">// eine kanonische Einheit bringen, damit sie zusammenfällt:</span>
+    Unit canonicalUnit    = UnitConverter.canonical(ingredient.unit());
+    BigDecimal canonical  = UnitConverter.toCanonical(scaled, ingredient.unit());
+    needed.merge(<span class="kw">new</span> Key(ingredient.ingredientId(), canonicalUnit),
+                 canonical, BigDecimal::add);
+}</code></pre>
+      </div>
+      <p class="note"><code>BigDecimal</code> statt <code>double</code> (Geld/Mengen-Genauigkeit) · <code>merge</code> summiert pro <code>(Zutat, Einheit)</code> · danach wird der Vorrat mit derselben Kanonisierung abgezogen. Beim Neuberechnen bleibt der <code>checked</code>-Status je Zutat erhalten.</p>
+    </div>
+  </section>
+
+  <!-- 22 · SMART SUGGESTION -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Station 3 · KI mit Netz</div>
+      <h2>Erst rechnen, dann fragen — LLM nur für den Grund</h2>
+      <div class="two rev">
+        <div class="codewrap">
+          <div class="codebar"><span class="path">suggestion/…/SmartSuggestionServiceImpl.java</span><span class="ln">Z. 90–113</span></div>
+<pre><code><span class="cm">// 1) deterministisch: Vorrats-Abdeckung je Rezept</span>
+Map&lt;UUID,Double&gt; coverage =
+    CoverageCalculator.compute(ingredientsByRecipe, pantryIds);
+List&lt;Candidate&gt; candidates = recipes.stream()
+    .map(r -&gt; <span class="kw">new</span> Candidate(r, coverage.getOrDefault(r.id(),0.0)))
+    .filter(c -&gt; c.coverage &gt;= COVERAGE_THRESHOLD)   <span class="cm">// 0.5</span>
+    .sorted(comparingDouble(c -&gt; c.coverage).reversed())
+    .limit(CANDIDATE_LIMIT).toList();               <span class="cm">// max 10</span>
+
+<span class="cm">// 2) LLM begründet nur — fällt es aus, bleibt die Reihenfolge</span>
+OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
+<span class="kw">return new</span> SuggestionResponse(outcome.aiAvailable(), suggestions);</code></pre>
+        </div>
+        <div>
+          <ul class="clean">
+            <li><b>Heuristik trägt die Demo</b> — Ranking ist reproduzierbar, auch ohne KI.</li>
+            <li><b>Drei Ausfälle abgefangen</b> — leere Antwort, unparsbares JSON, Exception → alle geben <code>aiAvailable=false</code> zurück.</li>
+            <li class="amberdot"><b>Frontend zeigt den Modus</b> — echte Begründung vs. „aus Vorratsabdeckung berechnet".</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 23 · LLM PRODUCER -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Station 4 · CDI-Feinheit</div>
+      <h2>Ein Interface, zwei Provider — Auswahl per Config</h2>
+      <div class="two">
+        <div>
+          <p class="lead">Dieselbe Pipeline läuft lokal auf self-hosted <strong>Ollama</strong> und in der Cloud-Demo auf gehostetem <strong>Groq</strong>. Kein Code-Zweig im Service — CDI liefert die passende Implementierung.</p>
+          <div class="card" style="margin-top:14px"><div class="k">Warum es zählt</div><p>Render hat kein RAM für ein lokales LLM. Eine Env-Variable — <code>AI_PROVIDER=groq</code> — genügt.</p></div>
+        </div>
+        <div class="codewrap">
+          <div class="codebar"><span class="path">suggestion/client/LlmClientProducer.java</span><span class="ln">Z. 20–33</span></div>
+<pre><code><span class="kw">@Produces</span> <span class="kw">@ApplicationScoped</span>
+<span class="kw">public</span> OllamaClient llmClient(
+    <span class="kw">@ConfigProperty</span>(name=<span class="st">"ai.provider"</span>, defaultValue=<span class="st">"ollama"</span>) String provider,
+    OllamaHttpClient ollamaClient,
+    GroqClient groqClient) {
+  <span class="kw">if</span> (<span class="st">"groq"</span>.equalsIgnoreCase(provider.trim())) {
+      <span class="kw">return</span> groqClient;
+  }
+  <span class="kw">return</span> ollamaClient;
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 24 · CHALLENGES -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Reflexion</div>
+      <h2>Herausforderungen &amp; Learnings</h2>
+      <div class="grid cols-2">
+        <div class="card"><div class="k">Aggregation</div><h3>Einheiten sind tückisch</h3><p>TBSP, ML, Gramm, Stück — nur mit kanonischer Normalisierung und <code>BigDecimal</code> stimmt die Einkaufsliste wirklich.</p></div>
+        <div class="card"><div class="k">KI verlässlich machen</div><h3>LLMs halluzinieren</h3><p>Kleine Modelle liefern nicht immer valides JSON. Robustes Parsing + Coverage-Fallback statt Blind-Vertrauen.</p></div>
+        <div class="card"><div class="k">Komponenten-Disziplin</div><h3>Grenzen halten kostet Bewusstsein</h3><p>Der einfache Weg wäre der direkte Repository-Zugriff. Service-Interfaces + Batch-Methoden halten den Schnitt sauber.</p></div>
+        <div class="card"><div class="k">Betrieb im Free-Tier</div><h3>Demo ≠ Prod</h3><p>Kaltstart, kein OCR-RAM, gemockte Mails — Feature-Flags trennen Demo-Realität von voller lokaler Funktion.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 25 · FAZIT -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Fazit &amp; Ausblick</div>
+      <h2>Was steht — und was käme als Nächstes</h2>
+      <div class="two">
+        <div>
+          <h3 style="color:var(--accent); margin-bottom:.8rem">Erreicht</h3>
+          <ul class="clean">
+            <li>Alle Pflicht-Phasen 0–10 <b>plus</b> sechs Stretch-Goals (11–16) umgesetzt.</li>
+            <li>Sauberer modularer Monolith, durchgängig getestet, CI-abgesichert, live deploybar.</li>
+            <li class="amberdot">Vollständiger Nutzer-Loop vom Rezept bis zur KI-Empfehlung.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="color:var(--amber); margin-bottom:.8rem">Ausblick</h3>
+          <ul class="clean">
+            <li class="amberdot">Google-OAuth ist gebaut, aber feature-geflaggt — produktiv scharfschalten.</li>
+            <li class="amberdot">Kategorien-Sortierung der Liste weiter verfeinern (Supermarkt-Gang).</li>
+            <li class="amberdot">Beleg-Scanner in einer Umgebung mit OCR-Ressourcen live nehmen.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 26 · DANKE / Q&A -->
+  <section class="slide divider">
+    <div class="slide-inner">
+      <div class="title-mark"><span class="leaf"></span> EatEasy&nbsp;EE</div>
+      <h2 style="font-size:clamp(2.4rem,7vw,4.6rem)">Vielen Dank.</h2>
+      <p class="lead">Fragen? Gern jetzt — oder direkt live ausprobieren.</p>
+      <div class="title-meta">
+        <div><b>Live-Demo</b><br>eateasy-web.onrender.com</div>
+        <div><b>API-Doku</b><br>/q/swagger-ui</div>
+        <div><b>Gruppe 5</b><br>Dimitrios Tsakos · Kardeena Kameran</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="footer-brand"><span class="leaf"></span> EatEasy EE</div>
+<div id="chrome">
+  <button class="navbtn" id="prev" aria-label="Zurück">‹</button>
+  <span id="counter">1 / 26</span>
+  <button class="navbtn" id="next" aria-label="Weiter">›</button>
+</div>
+
+<script>
+  (function () {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const total = slides.length;
+    let i = 0;
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+
+    function show(n) {
+      i = Math.max(0, Math.min(total - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      counter.textContent = (i + 1) + ' / ' + total;
+      progress.style.width = ((i) / (total - 1) * 100) + '%';
+    }
+    function next() { show(i + 1); }
+    function prev() { show(i - 1); }
+
+    document.getElementById('next').addEventListener('click', next);
+    document.getElementById('prev').addEventListener('click', prev);
+
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+      else if (e.key === 'Home') { show(0); }
+      else if (e.key === 'End') { show(total - 1); }
+      else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+        else document.exitFullscreen && document.exitFullscreen();
+      }
+    });
+
+    // Touch swipe
+    let x0 = null;
+    window.addEventListener('touchstart', e => { x0 = e.changedTouches[0].clientX; }, {passive:true});
+    window.addEventListener('touchend', e => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
+      x0 = null;
+    }, {passive:true});
+
+    show(0);
+  })();
+</script>
+
+</body>
+</html>
