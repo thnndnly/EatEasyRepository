@@ -119,6 +119,13 @@ public class PantryServiceImpl implements PantryService {
         pantryRepository.delete(item);
     }
 
+    /**
+     * Liefert den aggregierten Vorrat eines Haushalts. Bewusst OHNE eigenen
+     * Auth-Check und ohne {@code userId} — der Aufrufer (z. B.
+     * {@code ShoppingListService}/{@code SmartSuggestionService}) hat den
+     * Haushalts-Zugriff bereits geprueft, analog zu
+     * {@code HouseholdService.isAutoRestockEnabled}.
+     */
     @Override
     public Map<UUID, Map<Unit, BigDecimal>> getInventory(UUID householdId) {
         Map<UUID, Map<Unit, BigDecimal>> result = new HashMap<>();

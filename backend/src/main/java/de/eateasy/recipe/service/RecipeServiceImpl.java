@@ -24,6 +24,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -187,7 +188,7 @@ public class RecipeServiceImpl implements RecipeService {
         if (recipeIds == null || recipeIds.isEmpty()) {
             return Map.of();
         }
-        Map<UUID, List<RecipeIngredientView>> result = new java.util.HashMap<>();
+        Map<UUID, List<RecipeIngredientView>> result = new HashMap<>();
         for (Recipe recipe : recipeRepository.findByIds(recipeIds)) {
             List<RecipeIngredientView> rows = new ArrayList<>(recipe.getIngredients().size());
             for (RecipeIngredient ri : recipe.getIngredients()) {

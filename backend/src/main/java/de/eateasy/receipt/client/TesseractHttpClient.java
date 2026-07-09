@@ -76,7 +76,12 @@ public class TesseractHttpClient implements OcrClient {
 
     private static byte[] buildMultipartBody(String boundary, byte[] imageBytes, String filename)
         throws java.io.IOException {
-        String safeName = filename == null || filename.isBlank() ? "receipt.jpg" : filename;
+        // Der Dateiname landet roh im Multipart-Header — neben Anfuehrungszeichen
+        // auch CR/LF entfernen, damit ein praeparierter Name keine zusaetzlichen
+        // Header/Parts in den Request an Tesseract einschleusen kann.
+        String safeName = filename == null || filename.isBlank()
+            ? "receipt.jpg"
+            : filename.replaceAll("[\"\\r\\n]", "");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         writeAscii(out, "--" + boundary + "\r\n");
@@ -85,7 +90,7 @@ public class TesseractHttpClient implements OcrClient {
 
         writeAscii(out, "--" + boundary + "\r\n");
         writeAscii(out, "Content-Disposition: form-data; name=\"file\"; filename=\""
-            + safeName.replace("\"", "") + "\"\r\n");
+            + safeName + "\"\r\n");
         writeAscii(out, "Content-Type: application/octet-stream\r\n\r\n");
         out.write(imageBytes);
         writeAscii(out, "\r\n--" + boundary + "--\r\n");

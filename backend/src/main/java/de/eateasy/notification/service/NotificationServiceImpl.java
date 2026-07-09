@@ -42,6 +42,9 @@ public class NotificationServiceImpl implements NotificationService {
                 .data("acceptUrl", acceptUrl)
                 .render();
 
+            // householdName fliesst in den Subject-Header ein; der Quarkus Mailer
+            // (Vert.x Mail) kodiert Header-Werte selbst und schuetzt so vor
+            // Header-Injection durch Steuerzeichen im Namen.
             String subject = "Einladung zu " + householdName + " bei EatEasy";
             mailer.send(Mail.withHtml(recipientEmail, subject, html));
         } catch (Exception ex) {

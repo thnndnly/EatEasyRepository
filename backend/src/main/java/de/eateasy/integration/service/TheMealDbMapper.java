@@ -118,7 +118,14 @@ public final class TheMealDbMapper {
         if (!m.matches()) {
             return new ParsedMeasure(BigDecimal.ONE, Unit.PIECE, true);
         }
-        BigDecimal amount = parseFraction(m.group("num"));
+        BigDecimal amount;
+        try {
+            amount = parseFraction(m.group("num"));
+        } catch (ArithmeticException | NumberFormatException ex) {
+            // Unerwartete externe Mengenangabe (z. B. "1/0") — kontrollierter
+            // Fallback statt 500, analog zum nicht-matchenden Fall oben.
+            return new ParsedMeasure(BigDecimal.ONE, Unit.PIECE, true);
+        }
         UnitParseResult unitResult = UnitParser.parse(m.group("unit"), Unit.PIECE);
         // Multiplier != 1 entspricht einer Einheitskonvertierung (z. B. kg → g).
         // Wir wenden ihn direkt auf die Menge an, damit das DTO konsistent in

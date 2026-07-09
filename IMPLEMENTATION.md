@@ -166,6 +166,7 @@ Base: `/api/v1`. Alle Endpunkte außer `/auth/*` brauchen Bearer-Token im `Autho
 POST   /auth/register              → 201 + JWT
 POST   /auth/login                 → 200 + JWT
 GET    /auth/me                    → 200 + User-Info
+POST   /auth/google                → 200 + JWT (Stretch, feature-geflaggt)
 
 POST   /households                 → 201
 GET    /households                 → 200 (Liste eigener Haushalte)
@@ -178,15 +179,16 @@ DELETE /households/{id}/members/{userId} → 204
 
 GET    /ingredients                → 200 (Suche/Liste)
 POST   /ingredients                → 201
+PATCH  /ingredients/{id}           → 200 (Name/Kategorie, Stretch)
 GET    /recipes                    → 200 (eigene + Haushalt, Filter via Query)
 POST   /recipes                    → 201
 GET    /recipes/{id}               → 200
 PATCH  /recipes/{id}               → 200
-DELETE /recipes/{id}               → 204
+DELETE /recipes/{id}               → 204 (Hard-Delete)
+PUT    /recipes/{id}/favorite      → 204 (Favorit setzen/entfernen, Stretch)
 POST   /recipes/import             → 201 (extern, body: {source, externalId})
 
-GET    /households/{id}/mealplans?weekStart=YYYY-MM-DD → 200
-POST   /households/{id}/mealplans  → 201 (anlegen für Woche)
+GET    /households/{id}/mealplans?weekStart=YYYY-MM-DD → 200 (lazy angelegt, falls noch nicht vorhanden)
 PUT    /mealplans/{id}/entries     → 200 (Slot setzen)
 DELETE /mealplans/{id}/entries/{day}/{mealType} → 204
 
@@ -194,12 +196,17 @@ GET    /households/{id}/pantry     → 200
 POST   /households/{id}/pantry     → 201
 PATCH  /pantry/{id}                → 200
 DELETE /pantry/{id}                → 204
-POST   /households/{id}/pantry/barcode → 201 (body: {barcode})
+POST   /households/{id}/pantry/barcode → 201 (body: {barcode, amount, unit})
+POST   /households/{id}/receipts/scan → 200 (Beleg-Scan, multipart, Stretch)
 
 GET    /mealplans/{id}/shoppinglist → 200 (lazy, wird berechnet wenn nicht da)
+POST   /mealplans/{id}/shoppinglist/regenerate → 200 (neu berechnen)
 PATCH  /shoppinglist/items/{id}    → 200 (checked toggle)
 
 POST   /households/{id}/suggestions → 200 (KI-Vorschlag, body: {numSuggestions})
+
+GET    /integration/recipes/search?query=... → 200 (TheMealDB-Suche)
+GET    /integration/products/{barcode} → 200 (OpenFoodFacts-Barcode, Stretch)
 ```
 
 Detail-Specs (Request/Response-Bodies) stehen in den jeweiligen Phasen.
@@ -260,7 +267,7 @@ Detail-Specs (Request/Response-Bodies) stehen in den jeweiligen Phasen.
      ollama_data:
    ```
 
-5. **application.properties (Backend)**
+5. **application.properties (Backend)** — _Initial-Scaffold aus Phase 0. Der aktuelle Stand weicht bewusst ab: Spoonacular wurde in Phase 7 entfernt, `hibernate-orm.database.generation` heißt heute `hibernate-orm.schema-management.strategy`, und Groq- bzw. Google-OAuth-Properties kamen hinzu. Maßgeblich ist immer die echte `backend/src/main/resources/application.properties`._
    ```properties
    quarkus.datasource.db-kind=postgresql
    quarkus.datasource.username=eateasy

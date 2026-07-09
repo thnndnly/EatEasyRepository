@@ -35,7 +35,8 @@ eateasy-ee/
 │   │   ├── pantry/             # Vorrat-Komponente
 │   │   ├── shoppinglist/       # Einkaufslisten-Komponente
 │   │   ├── ingredient/         # Zutaten-Komponente
-│   │   ├── suggestion/         # Smart-Suggestion-Komponente (Ollama)
+│   │   ├── suggestion/         # Smart-Suggestion-Komponente (Ollama/Groq)
+│   │   ├── receipt/            # Beleg-Scanner (OCR + LLM-Strukturierung, Stretch)
 │   │   ├── integration/        # Externe-API-Adapter
 │   │   ├── notification/       # E-Mail-Versand
 │   │   └── common/             # Shared Utilities, Exceptions
