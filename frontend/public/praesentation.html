@@ -14,43 +14,31 @@
     --ink-soft: #3a453d;
     --muted: #5f6c62;
     --faint: #8a968c;
-    --accent: #2f7d5b;        /* Basilikum */
+    --accent: #2f7d5b;
     --accent-deep: #245f45;
     --accent-soft: #e4f0e8;
-    --amber: #c96a2f;         /* Tomate/geröstet */
+    --amber: #c96a2f;
     --amber-soft: #f6e6d8;
     --border: #e2e5dc;
     --border-strong: #cdd2c6;
     --code-bg: #1c2620;
     --code-ink: #dfe7df;
-    --code-line: #7f9686;
     --code-kw: #7fc9a0;
     --code-str: #d9a679;
     --code-com: #6d8577;
     --shadow: 0 1px 2px rgba(20,30,24,.06), 0 8px 30px rgba(20,30,24,.07);
     --radius: 14px;
-    --maxw: 1040px;
     --font-body: ui-sans-serif, "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
     --font-mono: ui-monospace, "Cascadia Code", "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --ground: #10130f;
-      --surface: #191d17;
-      --surface-2: #20261f;
-      --ink: #eaefe6;
-      --ink-soft: #cdd6cb;
-      --muted: #9aa79d;
-      --faint: #71806f;
-      --accent: #63bb8d;
-      --accent-deep: #8fd3ad;
-      --accent-soft: #1c2a22;
-      --amber: #e0955c;
-      --amber-soft: #2c221a;
-      --border: #2a3128;
-      --border-strong: #3a4338;
-      --code-bg: #0c110d;
-      --code-ink: #d7e0d6;
+      --ground: #10130f; --surface: #191d17; --surface-2: #20261f;
+      --ink: #eaefe6; --ink-soft: #cdd6cb; --muted: #9aa79d; --faint: #71806f;
+      --accent: #63bb8d; --accent-deep: #8fd3ad; --accent-soft: #1c2a22;
+      --amber: #e0955c; --amber-soft: #2c221a;
+      --border: #2a3128; --border-strong: #3a4338;
+      --code-bg: #0c110d; --code-ink: #d7e0d6;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 40px rgba(0,0,0,.35);
     }
   }
@@ -76,175 +64,133 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; }
   body {
-    background: var(--ground);
-    color: var(--ink);
-    font-family: var(--font-body);
-    -webkit-font-smoothing: antialiased;
+    background: var(--ground); color: var(--ink);
+    font-family: var(--font-body); -webkit-font-smoothing: antialiased;
     overflow: hidden;
   }
 
-  #deck { height: 100vh; width: 100vw; position: relative; }
+  /* Fixed 16:9 canvas, scaled to viewport — guarantees no scrollbars anywhere. */
+  #deck { position: fixed; inset: 0; overflow: hidden; display: grid; place-items: center; background: var(--ground); }
+  #stage { width: 1280px; height: 720px; position: relative; overflow: hidden; flex: none;
+    transform: scale(var(--s, 1)); transform-origin: center center; }
 
   .slide {
-    position: absolute; inset: 0;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    padding: clamp(28px, 5vh, 64px) clamp(32px, 7vw, 110px);
-    opacity: 0;
-    transition: opacity .35s ease;
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; justify-content: center;
+    padding: 44px 72px; overflow: hidden;
+    opacity: 0; transition: opacity .3s ease;
   }
   .slide.active { display: flex; opacity: 1; }
-  .slide-inner { width: 100%; max-width: var(--maxw); margin: 0 auto; }
+  .slide-inner { width: 100%; max-width: 1040px; margin: 0 auto; }
 
   .eyebrow {
-    font-size: clamp(.68rem, 1.1vw, .8rem);
-    letter-spacing: .18em; text-transform: uppercase;
+    font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
     color: var(--accent); font-weight: 700;
-    display: inline-flex; align-items: center; gap: .55em;
-    margin-bottom: 1.1rem;
+    display: inline-flex; align-items: center; gap: .55em; margin-bottom: 16px;
   }
-  .eyebrow::before {
-    content: ""; width: 1.8em; height: 2px; background: var(--accent); display: inline-block;
-  }
+  .eyebrow::before { content: ""; width: 1.8em; height: 2px; background: var(--accent); display: inline-block; }
 
-  h1 { font-size: clamp(2.2rem, 6vw, 4.4rem); line-height: 1.02; letter-spacing: -.03em; margin: 0; font-weight: 800; text-wrap: balance; }
-  h2 { font-size: clamp(1.7rem, 4vw, 2.9rem); line-height: 1.06; letter-spacing: -.022em; margin: 0 0 1.4rem; font-weight: 800; text-wrap: balance; }
-  h3 { font-size: clamp(1rem, 1.8vw, 1.25rem); margin: 0 0 .5rem; font-weight: 700; letter-spacing: -.01em; }
-  p { line-height: 1.55; color: var(--ink-soft); }
-  .lead { font-size: clamp(1.05rem, 1.9vw, 1.4rem); color: var(--muted); max-width: 46ch; line-height: 1.5; }
+  h1 { font-size: 58px; line-height: 1.03; letter-spacing: -.03em; margin: 0; font-weight: 800; text-wrap: balance; }
+  h2 { font-size: 36px; line-height: 1.08; letter-spacing: -.022em; margin: 0 0 18px; font-weight: 800; text-wrap: balance; }
+  h3 { font-size: 18px; margin: 0 0 5px; font-weight: 700; letter-spacing: -.01em; }
+  p { line-height: 1.5; color: var(--ink-soft); margin: 0; }
+  .lead { font-size: 20px; color: var(--muted); max-width: 46ch; line-height: 1.5; }
   strong { color: var(--ink); font-weight: 700; }
   .accent { color: var(--accent); }
   .amber { color: var(--amber); }
 
-  /* Title slide */
-  .title-mark {
-    display: inline-flex; align-items: center; gap: .6rem;
-    font-weight: 800; letter-spacing: -.02em; font-size: 1.15rem; color: var(--ink);
-    margin-bottom: 2.4rem;
-  }
-  .leaf {
-    width: 30px; height: 30px; border-radius: 50% 0 50% 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-    transform: rotate(45deg); position: relative; flex: none;
-  }
+  .title-mark { display: inline-flex; align-items: center; gap: .6rem; font-weight: 800; letter-spacing: -.02em; font-size: 18px; color: var(--ink); margin-bottom: 30px; }
+  .leaf { width: 28px; height: 28px; border-radius: 50% 0 50% 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); transform: rotate(45deg); position: relative; flex: none; }
   .leaf::after { content:""; position:absolute; inset: 40% 8% 8% 40%; border-left: 2px solid rgba(255,255,255,.55); border-top-left-radius: 6px; }
-  .title-meta { margin-top: 2.6rem; display: flex; flex-wrap: wrap; gap: 1.6rem 2.6rem; color: var(--muted); font-size: 1rem; }
+  .title-meta { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 20px 40px; color: var(--muted); font-size: 15px; }
   .title-meta b { color: var(--ink); font-weight: 700; }
+  .title-meta div { line-height: 1.5; }
 
-  /* Grids & cards */
   .grid { display: grid; gap: 14px; }
   .cols-2 { grid-template-columns: 1fr 1fr; }
   .cols-3 { grid-template-columns: repeat(3, 1fr); }
-  .card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow);
-  }
+  .grid > * { min-width: 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 17px 19px; box-shadow: var(--shadow); }
   .card h3 { color: var(--ink); }
-  .card p { margin: 0; font-size: .95rem; color: var(--muted); }
-  .card .k { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .card p { font-size: 14.5px; color: var(--muted); line-height: 1.45; }
+  .card .k { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 3px; }
 
-  ul.clean { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .9rem; }
-  ul.clean li { position: relative; padding-left: 1.5rem; font-size: clamp(1rem, 1.6vw, 1.18rem); color: var(--ink-soft); line-height: 1.5; }
+  ul.clean { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; }
+  ul.clean li { position: relative; padding-left: 22px; font-size: 17px; color: var(--ink-soft); line-height: 1.48; }
   ul.clean li::before { content: ""; position: absolute; left: 0; top: .5em; width: 9px; height: 9px; border-radius: 3px; background: var(--accent); }
   ul.clean li.amberdot::before { background: var(--amber); }
   ul.clean b { color: var(--ink); }
 
-  .pill { display:inline-block; padding: .28em .7em; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .01em; }
+  .pill { display:inline-block; padding: .3em .75em; border-radius: 999px; font-size: 12.5px; font-weight: 700; }
   .pill.green { background: var(--accent-soft); color: var(--accent-deep); }
   .pill.amberp { background: var(--amber-soft); color: var(--amber); }
 
-  /* Flow (feature loop) */
-  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; }
-  .flow .node {
-    flex: 1 1 0; min-width: 120px; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 14px; text-align: center; box-shadow: var(--shadow);
-  }
-  .flow .node .ic { font-size: 1.5rem; display:block; margin-bottom: .4rem; }
-  .flow .node b { display:block; font-size: .98rem; color: var(--ink); }
-  .flow .node span { font-size: .78rem; color: var(--muted); }
-  .flow .arr { align-self: center; color: var(--accent); font-weight: 800; font-size: 1.3rem; }
+  .flow { display: flex; align-items: stretch; gap: 8px; }
+  .flow .node { flex: 1 1 0; min-width: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 10px; text-align: center; box-shadow: var(--shadow); }
+  .flow .node .ic { font-size: 22px; display:block; margin-bottom: 5px; }
+  .flow .node b { display:block; font-size: 15px; color: var(--ink); }
+  .flow .node span { font-size: 11.5px; color: var(--muted); line-height: 1.3; display:block; margin-top: 2px; }
+  .flow .arr { align-self: center; color: var(--accent); font-weight: 800; font-size: 20px; flex: none; }
 
-  /* Component map */
-  .maprow { display: grid; grid-template-columns: 1fr; gap: 12px; }
-  .lane { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; background: var(--surface); }
-  .lane .lane-h { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; color: var(--muted); }
+  .maprow { display: grid; grid-template-columns: 1fr; gap: 11px; }
+  .lane { border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 15px; background: var(--surface); }
+  .lane .lane-h { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; margin-bottom: 9px; color: var(--muted); }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    font-size: .92rem; font-weight: 600; padding: .5em .85em; border-radius: 9px;
-    border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--ink);
-  }
+  .chip { font-size: 14px; font-weight: 600; padding: .5em .85em; border-radius: 9px; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--ink); line-height: 1.25; }
   .chip.dom { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); }
   .chip.ext { border-color: var(--amber); background: var(--amber-soft); color: var(--amber); }
-  .chip small { display:block; font-size: .68rem; font-weight: 500; opacity: .75; letter-spacing: .01em; }
+  .chip small { display:block; font-size: 10.5px; font-weight: 500; opacity: .75; }
 
-  /* Layer stack */
-  .layers { display: flex; flex-direction: column; gap: 8px; }
-  .layer { display: flex; align-items: center; gap: 14px; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; background: var(--surface); }
-  .layer .ln { font-family: var(--font-mono); font-weight: 700; color: var(--accent); min-width: 118px; font-size: .98rem; }
-  .layer .ld { color: var(--muted); font-size: .95rem; }
+  .layers { display: flex; flex-direction: column; gap: 7px; }
+  .layer { display: flex; align-items: center; gap: 14px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 15px; background: var(--surface); }
+  .layer .ln { font-family: var(--font-mono); font-weight: 700; color: var(--accent); min-width: 112px; font-size: 15px; flex: none; }
+  .layer .ld { color: var(--muted); font-size: 14.5px; line-height: 1.4; }
 
-  /* Code */
+  code { font-family: var(--font-mono); font-size: .85em; background: var(--surface-2); color: var(--ink-soft); padding: .08em .38em; border-radius: 5px; }
   .codewrap { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border-strong); box-shadow: var(--shadow); }
-  .codebar {
-    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    background: var(--surface-2); padding: 9px 16px; border-bottom: 1px solid var(--border);
-    font-family: var(--font-mono); font-size: .82rem; color: var(--muted);
-  }
-  .codebar .path { color: var(--ink-soft); font-weight: 600; overflow-x: auto; white-space: nowrap; }
+  .codebar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--surface-2); padding: 8px 15px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+  .codebar .path { color: var(--ink-soft); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .codebar .ln { color: var(--accent); font-weight: 700; flex: none; }
-  code { font-family: var(--font-mono); font-size: .84em; background: var(--surface-2); color: var(--ink-soft); padding: .08em .38em; border-radius: 5px; }
-  pre { margin: 0; background: var(--code-bg); color: var(--code-ink); padding: 16px 18px; overflow-x: auto; }
-  pre code { font-family: var(--font-mono); font-size: clamp(.72rem, 1.15vw, .95rem); line-height: 1.6; white-space: pre; background: none; color: inherit; padding: 0; border-radius: 0; }
+  pre { margin: 0; background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; overflow: hidden; }
+  pre code { font-family: var(--font-mono); font-size: 15px; line-height: 1.55; white-space: pre; background: none; color: inherit; padding: 0; border-radius: 0; display: block; }
   .cm { color: var(--code-com); font-style: italic; }
   .kw { color: var(--code-kw); }
   .st { color: var(--code-str); }
-  .note { margin-top: 14px; font-size: .95rem; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 12px; line-height: 1.5; }
+  .note { margin-top: 12px; font-size: 14.5px; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 12px; line-height: 1.5; }
 
-  /* Divider slides */
   .slide.divider { justify-content: center; }
-  .slide.divider .slide-inner { text-align: left; }
-  .actnum { font-size: clamp(4rem, 16vw, 12rem); font-weight: 800; line-height: .85; letter-spacing: -.05em;
-    color: transparent; -webkit-text-stroke: 2px var(--accent); }
-  .divider h2 { font-size: clamp(2rem, 6vw, 4rem); margin: .2rem 0 .8rem; }
-  .divider .lead { font-size: clamp(1.05rem, 2.2vw, 1.5rem); }
-  .divider .tmark { margin-top: 1.6rem; }
+  .actnum { font-size: 150px; font-weight: 800; line-height: .85; letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 2px var(--accent); }
+  .divider h2 { font-size: 52px; margin: 4px 0 12px; }
+  .divider .lead { font-size: 22px; }
+  .divider .tmark { margin-top: 20px; display: flex; gap: 10px; }
 
-  .two { display: grid; grid-template-columns: 1.05fr .95fr; gap: 34px; align-items: center; }
-  .two.rev { grid-template-columns: .95fr 1.05fr; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; }
   .two > * { min-width: 0; }
-  .grid > * { min-width: 0; }
+  .two.cr { grid-template-columns: .82fr 1.18fr; }   /* code rechts, breiter */
+  .two.cl { grid-template-columns: 1.18fr .82fr; }   /* code links, breiter */
 
   .statrow { display: flex; flex-wrap: wrap; gap: 12px; }
-  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; box-shadow: var(--shadow); flex: 1 1 150px; }
-  .stat .n { font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 800; letter-spacing: -.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
-  .stat .l { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; box-shadow: var(--shadow); flex: 1 1 150px; }
+  .stat .n { font-size: 32px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
-  .runbook { counter-reset: step; display: flex; flex-direction: column; gap: 10px; }
-  .step { display: flex; gap: 16px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 13px 18px; box-shadow: var(--shadow); }
-  .step::before { counter-increment: step; content: counter(step); flex: none; width: 30px; height: 30px; border-radius: 8px;
-    background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: .95rem; }
-  :root[data-theme="dark"] .step::before, @media (prefers-color-scheme: dark) { }
-  .step b { color: var(--ink); }
-  .step span { color: var(--muted); font-size: .92rem; }
+  .runbook { display: flex; flex-direction: column; gap: 9px; }
+  .step { display: flex; gap: 15px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 11px 16px; box-shadow: var(--shadow); }
+  .step .num { flex: none; width: 28px; height: 28px; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 14px; }
+  .step b { color: var(--ink); font-size: 16px; }
+  .step span { color: var(--muted); font-size: 14px; line-height: 1.4; }
   .step .st-main { display: flex; flex-direction: column; gap: 1px; }
 
-  /* Chrome */
   #progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0; z-index: 50; transition: width .3s ease; }
-  #chrome { position: fixed; bottom: 16px; right: 22px; display: flex; align-items: center; gap: 14px; z-index: 40; font-size: .82rem; color: var(--faint); }
+  #chrome { position: fixed; bottom: 16px; right: 22px; display: flex; align-items: center; gap: 14px; z-index: 40; font-size: 13px; color: var(--faint); }
   #counter { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
-  .navbtn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; font-size: 1rem; display: grid; place-items: center; }
+  .navbtn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; font-size: 16px; display: grid; place-items: center; }
   .navbtn:hover { border-color: var(--accent); color: var(--accent); }
   .navbtn:focus-visible, .slide a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  #footer-brand { position: fixed; bottom: 18px; left: 24px; z-index: 40; font-size: .8rem; color: var(--faint); display: flex; align-items: center; gap: .5rem; }
+  #footer-brand { position: fixed; bottom: 18px; left: 24px; z-index: 40; font-size: 13px; color: var(--faint); display: flex; align-items: center; gap: .5rem; }
   #footer-brand .leaf { width: 16px; height: 16px; }
 
   a { color: var(--accent); }
-
-  @media (max-width: 820px) {
-    .cols-2, .cols-3, .two, .two.rev { grid-template-columns: 1fr; }
-    .flow { flex-direction: column; } .flow .arr { transform: rotate(90deg); }
-  }
   @media (prefers-reduced-motion: reduce) { .slide, #progress { transition: none; } }
 </style>
 </head>
@@ -253,6 +199,7 @@
 <div id="progress"></div>
 
 <div id="deck">
+ <div id="stage">
 
   <!-- 1 · TITLE -->
   <section class="slide active">
@@ -260,7 +207,7 @@
       <div class="title-mark"><span class="leaf"></span> EatEasy&nbsp;EE</div>
       <div class="eyebrow">Abschlusspräsentation · Web Frameworks</div>
       <h1>Haushaltsweite Mahlzeiten&shy;planung —<br>vom Rezept zur Einkaufsliste.</h1>
-      <p class="lead" style="margin-top:1.4rem">Ein komponentenbasierter modularer Monolith: Vue 3 im Frontend, Quarkus im Backend, PostgreSQL &amp; ein self-hosted LLM.</p>
+      <p class="lead" style="margin-top:18px">Ein komponentenbasierter modularer Monolith: Vue 3 im Frontend, Quarkus im Backend, PostgreSQL &amp; ein self-hosted LLM.</p>
       <div class="title-meta">
         <div><b>Gruppe 5</b><br>Dimitrios Tsakos · Kardeena Kameran</div>
         <div><b>Live-Demo</b><br>eateasy-web.onrender.com</div>
@@ -275,21 +222,9 @@
       <div class="eyebrow">Ablauf &amp; Zeitplan</div>
       <h2>Drei Akte in ~25 Minuten</h2>
       <div class="grid cols-3">
-        <div class="card">
-          <div class="k">Akt 1 · ~8 Min</div>
-          <h3>Architektur</h3>
-          <p>Modularer Monolith, Komponenten-Schnitt, Cross-Component-Regel, Auth &amp; Datenmodell.</p>
-        </div>
-        <div class="card">
-          <div class="k">Akt 2 · ~8 Min</div>
-          <h3>Live-Demo</h3>
-          <p>Der komplette Nutzer-Loop: Login → Rezept → Wochenplan → Vorrat → Einkaufsliste → KI-Vorschlag.</p>
-        </div>
-        <div class="card">
-          <div class="k">Akt 3 · ~8 Min</div>
-          <h3>Code-Walkthrough</h3>
-          <p>Vier zentrale Backend-Klassen: Autorisierung, Aggregation, KI mit Fallback, CDI-Producer.</p>
-        </div>
+        <div class="card"><div class="k">Akt 1 · ~8 Min</div><h3>Architektur</h3><p>Modularer Monolith, Komponenten-Schnitt, Cross-Component-Regel, Auth &amp; Datenmodell.</p></div>
+        <div class="card"><div class="k">Akt 2 · ~8 Min</div><h3>Live-Demo</h3><p>Der komplette Nutzer-Loop: Login → Rezept → Wochenplan → Vorrat → Einkaufsliste → KI-Vorschlag.</p></div>
+        <div class="card"><div class="k">Akt 3 · ~8 Min</div><h3>Code-Walkthrough</h3><p>Vier zentrale Backend-Klassen: Autorisierung, Aggregation, KI mit Fallback, CDI-Producer.</p></div>
       </div>
       <p class="note">Danach: kurze Reflexion (Herausforderungen &amp; Learnings) und offene Fragerunde.</p>
     </div>
@@ -341,26 +276,10 @@
       <div class="eyebrow">Technologie-Stack</div>
       <h2>Bewusst gewählt — jede Schicht typsicher</h2>
       <div class="grid cols-2">
-        <div class="card">
-          <div class="k">Frontend</div>
-          <h3>Vue 3 · TypeScript (strict)</h3>
-          <p>Composition API mit <code>&lt;script setup&gt;</code>, Pinia für State, Vue Router, Vite 8, Tailwind CSS 4, VueUse. Tests: Vitest + MSW, Playwright-Smoke.</p>
-        </div>
-        <div class="card">
-          <div class="k">Backend</div>
-          <h3>Quarkus 3.34 · Java 21</h3>
-          <p>RESTEasy Reactive, Hibernate ORM Panache, SmallRye JWT + OpenAPI. Tests: JUnit 5 + REST Assured + Testcontainers.</p>
-        </div>
-        <div class="card">
-          <div class="k">Daten &amp; KI</div>
-          <h3>PostgreSQL 16 · Ollama / Groq</h3>
-          <p>Flyway-Migrationen, UUID-Keys. LLM hinter einem Interface — lokal Ollama, Cloud-Demo über Groq.</p>
-        </div>
-        <div class="card">
-          <div class="k">Betrieb &amp; Doku</div>
-          <h3>Docker · GitHub Actions</h3>
-          <p>docker-compose für Dev-Infra, CI mit Backend- &amp; Frontend-Job, OpenAPI/Swagger-UI + VitePress-Doku.</p>
-        </div>
+        <div class="card"><div class="k">Frontend</div><h3>Vue 3 · TypeScript (strict)</h3><p>Composition API mit <code>&lt;script setup&gt;</code>, Pinia für State, Vue Router, Vite 8, Tailwind CSS 4, VueUse. Tests: Vitest + MSW, Playwright-Smoke.</p></div>
+        <div class="card"><div class="k">Backend</div><h3>Quarkus 3.34 · Java 21</h3><p>RESTEasy Reactive, Hibernate ORM Panache, SmallRye JWT + OpenAPI. Tests: JUnit 5 + REST Assured + Testcontainers.</p></div>
+        <div class="card"><div class="k">Daten &amp; KI</div><h3>PostgreSQL 16 · Ollama / Groq</h3><p>Flyway-Migrationen, UUID-Keys. LLM hinter einem Interface — lokal Ollama, Cloud-Demo über Groq.</p></div>
+        <div class="card"><div class="k">Betrieb &amp; Doku</div><h3>Docker · GitHub Actions</h3><p>docker-compose für Dev-Infra, CI mit Backend- &amp; Frontend-Job, OpenAPI/Swagger-UI + VitePress-Doku.</p></div>
       </div>
     </div>
   </section>
@@ -391,7 +310,7 @@
         <div>
           <div class="card" style="background:var(--accent-soft); border-color:var(--accent)">
             <div class="k">Leitregel</div>
-            <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.5">Komponenten reden über <strong>Service-Interfaces</strong> — nie über REST, nie über fremde Repositories.</p>
+            <p style="color:var(--ink-soft); font-size:16px; line-height:1.5">Komponenten reden über <strong>Service-Interfaces</strong> — nie über REST, nie über fremde Repositories.</p>
           </div>
           <div class="card" style="margin-top:12px">
             <div class="k">Wäre der Schnitt nötig</div>
@@ -411,13 +330,7 @@
         <div class="lane">
           <div class="lane-h">Fachlich · volle Schichtung (entity → repository → service → resource → dto)</div>
           <div class="chips">
-            <span class="chip dom">auth</span>
-            <span class="chip dom">household</span>
-            <span class="chip dom">recipe</span>
-            <span class="chip dom">ingredient</span>
-            <span class="chip dom">mealplan</span>
-            <span class="chip dom">pantry</span>
-            <span class="chip dom">shoppinglist</span>
+            <span class="chip dom">auth</span><span class="chip dom">household</span><span class="chip dom">recipe</span><span class="chip dom">ingredient</span><span class="chip dom">mealplan</span><span class="chip dom">pantry</span><span class="chip dom">shoppinglist</span>
           </div>
         </div>
         <div class="lane">
@@ -431,9 +344,7 @@
         </div>
         <div class="lane">
           <div class="lane-h">Querschnitt</div>
-          <div class="chips">
-            <span class="chip">common<small>Exceptions · security · units · diet · health</small></span>
-          </div>
+          <div class="chips"><span class="chip">common<small>Exceptions · security · units · diet · health</small></span></div>
         </div>
       </div>
       <p class="note">142 Java-Dateien. Jede fachliche Komponente exponiert genau ein <code>Service</code>-Interface nach außen.</p>
@@ -461,7 +372,7 @@
     <div class="slide-inner">
       <div class="eyebrow">Die wichtigste Regel</div>
       <h2>Service-Interface rein, Repository bleibt privat</h2>
-      <div class="two">
+      <div class="two cr">
         <div>
           <p class="lead">Braucht die Einkaufsliste den Vorrat, injiziert sie <code class="accent">PantryService</code> — niemals <code>PantryRepository</code>. So bleibt jede Komponente Herr über ihre eigenen Daten und Auth-Regeln.</p>
           <div class="card" style="margin-top:16px; background:var(--amber-soft); border-color:var(--amber)">
@@ -470,7 +381,7 @@
           </div>
         </div>
         <div class="codewrap">
-          <div class="codebar"><span class="path">shoppinglist/service/ShoppingListServiceImpl.java</span><span class="ln">Z. 47–53</span></div>
+          <div class="codebar"><span class="path">shoppinglist/…/ShoppingListServiceImpl.java</span><span class="ln">Z. 47–53</span></div>
 <pre><code><span class="kw">private final</span> ShoppingListRepository listRepository;
 <span class="kw">private final</span> ShoppingListItemRepository itemRepository;
 <span class="cm">// alle Fremddaten über Interfaces, nie Repositories:</span>
@@ -489,7 +400,7 @@
     <div class="slide-inner">
       <div class="eyebrow">Sicherheit</div>
       <h2>Autorisierung im Service-Layer — nicht nur per Annotation</h2>
-      <div class="two rev">
+      <div class="two cl">
         <div class="codewrap">
           <div class="codebar"><span class="path">household/service/HouseholdService.java</span><span class="ln">Z. 65</span></div>
 <pre><code><span class="cm">// Default-Method im Interface: ein Guard,</span>
@@ -507,7 +418,7 @@
             <li><code>@RolesAllowed</code> heißt nur <b>eingeloggt</b> — nicht <b>berechtigt</b> für genau diese Ressource.</li>
             <li>Jeder Service prüft zusätzlich: gehört die Ressource zu <b>meinem</b> Haushalt?</li>
             <li>Ein Guard im Interface — <code>assertMember</code> / <code>assertOwner</code> —, den alle Komponenten teilen.</li>
-            <li class="amberdot">Auch fremde Komponenten starten damit: Smart-Suggestion &amp; Einkaufsliste rufen zuerst <code>assertMember</code>.</li>
+            <li class="amberdot">Auch Smart-Suggestion &amp; Einkaufsliste rufen zuerst <code>assertMember</code>.</li>
           </ul>
           <p class="note">Zwei Wächter: Annotation (authentifiziert) <b>+</b> Service-Check (autorisiert).</p>
         </div>
@@ -520,7 +431,7 @@
     <div class="slide-inner">
       <div class="eyebrow">Authentifizierung</div>
       <h2>Stateless JWT — vom Login bis zum Request</h2>
-      <div class="flow" style="margin-bottom:18px">
+      <div class="flow" style="margin-bottom:16px">
         <div class="node"><b>Login / Register</b><span>E-Mail+Passwort oder Google</span></div>
         <div class="arr">→</div>
         <div class="node"><b>Backend signiert JWT</b><span>SmallRye · 8 h · Rolle „user"</span></div>
@@ -542,23 +453,24 @@
     <div class="slide-inner">
       <div class="eyebrow">Frontend-Spiegelung</div>
       <h2>Das Frontend spiegelt die Backend-Komponenten 1:1</h2>
-      <div class="two">
+      <div class="two cr">
         <div>
           <ul class="clean">
-            <li><b>Ein Pinia-Store je Komponente</b> — <code>useRecipeStore</code>, <code>usePantryStore</code>, <code>useShoppingListStore</code> … Server-State lebt nur dort.</li>
-            <li><b>Klare Schichten</b> — View → Store (State + <code>loading/error</code>) → Service (<code>apiFetch</code>) → Backend.</li>
-            <li><b>Der Token wird durchgereicht</b>, nie im Service gehalten — zentrale <code>Bearer</code>-Injektion in einem Wrapper.</li>
+            <li><b>Ein Pinia-Store je Komponente</b> — <code>useRecipeStore</code>, <code>usePantryStore</code> … Server-State lebt nur dort.</li>
+            <li><b>Klare Schichten</b> — View → Store (State + <code>loading/error</code>) → Service → Backend.</li>
+            <li><b>Der Token wird durchgereicht</b>, nie im Service gehalten — zentrale <code>Bearer</code>-Injektion im Wrapper.</li>
             <li class="amberdot"><b>Lazy-loaded Views</b>, deklarative Route-Guards (<code>requiresAuth</code> / <code>guestOnly</code>).</li>
           </ul>
         </div>
         <div class="codewrap">
           <div class="codebar"><span class="path">services/apiClient.ts</span><span class="ln">Token-Injektion</span></div>
 <pre><code><span class="kw">if</span> (token) {
-  finalHeaders[<span class="st">'Authorization'</span>] = <span class="st">`Bearer ${token}`</span>;
+  headers[<span class="st">'Authorization'</span>] = <span class="st">`Bearer ${token}`</span>;
 }
 <span class="cm">// composables/useRequireToken.ts</span>
 <span class="kw">return</span> () =&gt; {
-  <span class="kw">if</span> (!auth.token) <span class="kw">throw new</span> Error(<span class="st">'Nicht eingeloggt'</span>);
+  <span class="kw">if</span> (!auth.token)
+    <span class="kw">throw new</span> Error(<span class="st">'Nicht eingeloggt'</span>);
   <span class="kw">return</span> auth.token;
 };</code></pre>
         </div>
@@ -575,7 +487,7 @@
         <div class="card"><div class="k">Identität</div><h3>UUID v4 auf jeder Tabelle</h3><p>Keine Auto-Increment-Integer — verteil- und mergebar, keine ID-Kollisionen.</p></div>
         <div class="card"><div class="k">Historie</div><h3>created_at / updated_at überall</h3><p>Automatisch von Hibernate gepflegt — keine manuellen Timestamps.</p></div>
         <div class="card"><div class="k">Löschen</div><h3>Soft-Delete nur wo fachlich nötig</h3><p>Rezepte ja (Referenzen im Plan), Wochenplan-Einträge nein.</p></div>
-        <div class="card"><div class="k">Schema-Evolution</div><h3>Flyway, Hibernate = <code>validate</code></h3><p>Jede Änderung als nummerierte Migration <code>V&lt;N&gt;__…​.sql</code>; Hibernate ändert nie selbst.</p></div>
+        <div class="card"><div class="k">Schema-Evolution</div><h3>Flyway, Hibernate = <code>validate</code></h3><p>Jede Änderung als nummerierte Migration; Hibernate ändert nie selbst.</p></div>
       </div>
       <p class="note">Kernbeziehungen: User n:m Household · Recipe 1:n RecipeIngredient n:1 Ingredient · MealPlan 1:n Entry · ShoppingList 1:n Item.</p>
     </div>
@@ -616,12 +528,12 @@
       <div class="eyebrow">Demo-Regieplan</div>
       <h2>Der rote Faden durch die App</h2>
       <div class="runbook">
-        <div class="step"><div class="st-main"><b>Anmelden &amp; Haushalt</b><span>Login → Haushalt „Demo-WG" mit Mitglied und Standard-Diät-Tags.</span></div></div>
-        <div class="step"><div class="st-main"><b>Rezept anlegen &amp; importieren</b><span>Eigenes Rezept mit Zutaten + Diät-Tag; dann ein Rezept aus TheMealDB importieren.</span></div></div>
-        <div class="step"><div class="st-main"><b>Wochenplan füllen</b><span>Rezepte auf Tage/Mahlzeiten legen, Portionen am Slot hoch-/runterstellen.</span></div></div>
-        <div class="step"><div class="st-main"><b>Vorrat pflegen</b><span>Zutat per Barcode (OpenFoodFacts) in den Vorrat, MHD-Ampel zeigen.</span></div></div>
-        <div class="step"><div class="st-main"><b>Einkaufsliste = Plan − Vorrat</b><span>Liste öffnet sich fertig aggregiert; abhaken → Posten wandert zurück in den Vorrat.</span></div></div>
-        <div class="step"><div class="st-main"><b>KI-Vorschlag</b><span>„Was kann ich kochen?" → 3 Vorschläge mit LLM-Begründung (Groq), passend zum Vorrat.</span></div></div>
+        <div class="step"><div class="num">1</div><div class="st-main"><b>Anmelden &amp; Haushalt</b><span>Login → Haushalt „Demo-WG" mit Mitglied und Standard-Diät-Tags.</span></div></div>
+        <div class="step"><div class="num">2</div><div class="st-main"><b>Rezept anlegen &amp; importieren</b><span>Eigenes Rezept mit Zutaten + Diät-Tag; dann ein Rezept aus TheMealDB importieren.</span></div></div>
+        <div class="step"><div class="num">3</div><div class="st-main"><b>Wochenplan füllen</b><span>Rezepte auf Tage/Mahlzeiten legen, Portionen am Slot hoch-/runterstellen.</span></div></div>
+        <div class="step"><div class="num">4</div><div class="st-main"><b>Vorrat pflegen</b><span>Zutat per Barcode (OpenFoodFacts) in den Vorrat, MHD-Ampel zeigen.</span></div></div>
+        <div class="step"><div class="num">5</div><div class="st-main"><b>Einkaufsliste = Plan − Vorrat</b><span>Liste öffnet sich fertig aggregiert; abhaken → Posten wandert zurück in den Vorrat.</span></div></div>
+        <div class="step"><div class="num">6</div><div class="st-main"><b>KI-Vorschlag</b><span>„Was kann ich kochen?" → 3 Vorschläge mit LLM-Begründung (Groq), passend zum Vorrat.</span></div></div>
       </div>
     </div>
   </section>
@@ -634,13 +546,13 @@
           <div class="eyebrow">Demo-Absicherung</div>
           <h2>Für den Fall der Fälle vorbereitet</h2>
           <ul class="clean">
-            <li><b>Backend aufgewecken</b> — Free-Tier schläft nach 15 Min; wir wärmen es vor Beginn auf (~1 Min Kaltstart).</li>
+            <li><b>Backend aufgeweckt</b> — Free-Tier schläft nach 15 Min; wir wärmen es vor Beginn auf (~1 Min Kaltstart).</li>
             <li><b>Fallback-Screenshots</b> bereit, falls das Netz streikt.</li>
             <li class="amberdot"><b>Bewusst deaktiviert auf der Demo</b>: Beleg-Scanner (kein OCR-RAM im Free-Tier) &amp; Mail-Versand (gemockt) — Einladung zeigt stattdessen den Beitritts-Link direkt.</li>
           </ul>
         </div>
         <div>
-          <div class="card"><div class="k">Live-Ziel</div><p style="font-size:1.05rem"><a href="https://eateasy-web.onrender.com">eateasy-web.onrender.com</a></p></div>
+          <div class="card"><div class="k">Live-Ziel</div><p style="font-size:16px"><a href="https://eateasy-web.onrender.com">eateasy-web.onrender.com</a></p></div>
           <div class="card" style="margin-top:12px"><div class="k">Unter der Haube</div><p>Static Site proxyt <code>/api/*</code> → Quarkus-Backend (Docker) → Postgres 16. KI über Groq statt Ollama.</p></div>
         </div>
       </div>
@@ -675,22 +587,22 @@
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Station 2 · Herzstück</div>
-      <h2>Einkaufsliste = Bedarf skalieren, normalisieren, aggregieren</h2>
+      <h2>Einkaufsliste = skalieren, normalisieren, aggregieren</h2>
       <div class="codewrap">
-        <div class="codebar"><span class="path">shoppinglist/service/ShoppingListServiceImpl.java · aggregateNeeded()</span><span class="ln">Z. 169–178</span></div>
+        <div class="codebar"><span class="path">shoppinglist/…/ShoppingListServiceImpl.java · aggregateNeeded()</span><span class="ln">Z. 169–178</span></div>
 <pre><code>BigDecimal scaling = BigDecimal.valueOf(entry.servings())
     .divide(BigDecimal.valueOf(mini.servings()), SCALING_PRECISION, RoundingMode.HALF_UP);
 <span class="kw">for</span> (RecipeIngredientView ingredient : ingredients) {
     BigDecimal scaled = ingredient.amount().multiply(scaling);
     <span class="cm">// gleiche Zutat in verschiedenen Einheiten (TBSP vs ML) auf</span>
     <span class="cm">// eine kanonische Einheit bringen, damit sie zusammenfällt:</span>
-    Unit canonicalUnit    = UnitConverter.canonical(ingredient.unit());
-    BigDecimal canonical  = UnitConverter.toCanonical(scaled, ingredient.unit());
+    Unit canonicalUnit   = UnitConverter.canonical(ingredient.unit());
+    BigDecimal canonical = UnitConverter.toCanonical(scaled, ingredient.unit());
     needed.merge(<span class="kw">new</span> Key(ingredient.ingredientId(), canonicalUnit),
                  canonical, BigDecimal::add);
 }</code></pre>
       </div>
-      <p class="note"><code>BigDecimal</code> statt <code>double</code> (Geld/Mengen-Genauigkeit) · <code>merge</code> summiert pro <code>(Zutat, Einheit)</code> · danach wird der Vorrat mit derselben Kanonisierung abgezogen. Beim Neuberechnen bleibt der <code>checked</code>-Status je Zutat erhalten.</p>
+      <p class="note"><code>BigDecimal</code> statt <code>double</code> (Mengen-Genauigkeit) · <code>merge</code> summiert pro <code>(Zutat, Einheit)</code> · danach wird der Vorrat mit derselben Kanonisierung abgezogen. Beim Neuberechnen bleibt der <code>checked</code>-Status je Zutat erhalten.</p>
     </div>
   </section>
 
@@ -699,26 +611,26 @@
     <div class="slide-inner">
       <div class="eyebrow">Station 3 · KI mit Netz</div>
       <h2>Erst rechnen, dann fragen — LLM nur für den Grund</h2>
-      <div class="two rev">
+      <div class="two cl">
         <div class="codewrap">
           <div class="codebar"><span class="path">suggestion/…/SmartSuggestionServiceImpl.java</span><span class="ln">Z. 90–113</span></div>
 <pre><code><span class="cm">// 1) deterministisch: Vorrats-Abdeckung je Rezept</span>
 Map&lt;UUID,Double&gt; coverage =
     CoverageCalculator.compute(ingredientsByRecipe, pantryIds);
 List&lt;Candidate&gt; candidates = recipes.stream()
-    .map(r -&gt; <span class="kw">new</span> Candidate(r, coverage.getOrDefault(r.id(),0.0)))
-    .filter(c -&gt; c.coverage &gt;= COVERAGE_THRESHOLD)   <span class="cm">// 0.5</span>
+    .map(r -&gt; <span class="kw">new</span> Candidate(r, coverage.get(r.id())))
+    .filter(c -&gt; c.coverage &gt;= COVERAGE_THRESHOLD)  <span class="cm">// 0.5</span>
     .sorted(comparingDouble(c -&gt; c.coverage).reversed())
-    .limit(CANDIDATE_LIMIT).toList();               <span class="cm">// max 10</span>
+    .limit(CANDIDATE_LIMIT).toList();              <span class="cm">// max 10</span>
 
 <span class="cm">// 2) LLM begründet nur — fällt es aus, bleibt die Reihenfolge</span>
-OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
-<span class="kw">return new</span> SuggestionResponse(outcome.aiAvailable(), suggestions);</code></pre>
+OllamaOutcome outcome = askOllama(candidates, pantryIds);
+<span class="kw">return new</span> SuggestionResponse(outcome.aiAvailable(), list);</code></pre>
         </div>
         <div>
           <ul class="clean">
             <li><b>Heuristik trägt die Demo</b> — Ranking ist reproduzierbar, auch ohne KI.</li>
-            <li><b>Drei Ausfälle abgefangen</b> — leere Antwort, unparsbares JSON, Exception → alle geben <code>aiAvailable=false</code> zurück.</li>
+            <li><b>Drei Ausfälle abgefangen</b> — leere Antwort, unparsbares JSON, Exception → <code>aiAvailable=false</code>.</li>
             <li class="amberdot"><b>Frontend zeigt den Modus</b> — echte Begründung vs. „aus Vorratsabdeckung berechnet".</li>
           </ul>
         </div>
@@ -731,7 +643,7 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
     <div class="slide-inner">
       <div class="eyebrow">Station 4 · CDI-Feinheit</div>
       <h2>Ein Interface, zwei Provider — Auswahl per Config</h2>
-      <div class="two">
+      <div class="two cr">
         <div>
           <p class="lead">Dieselbe Pipeline läuft lokal auf self-hosted <strong>Ollama</strong> und in der Cloud-Demo auf gehostetem <strong>Groq</strong>. Kein Code-Zweig im Service — CDI liefert die passende Implementierung.</p>
           <div class="card" style="margin-top:14px"><div class="k">Warum es zählt</div><p>Render hat kein RAM für ein lokales LLM. Eine Env-Variable — <code>AI_PROVIDER=groq</code> — genügt.</p></div>
@@ -740,7 +652,8 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
           <div class="codebar"><span class="path">suggestion/client/LlmClientProducer.java</span><span class="ln">Z. 20–33</span></div>
 <pre><code><span class="kw">@Produces</span> <span class="kw">@ApplicationScoped</span>
 <span class="kw">public</span> OllamaClient llmClient(
-    <span class="kw">@ConfigProperty</span>(name=<span class="st">"ai.provider"</span>, defaultValue=<span class="st">"ollama"</span>) String provider,
+    <span class="kw">@ConfigProperty</span>(name = <span class="st">"ai.provider"</span>,
+        defaultValue = <span class="st">"ollama"</span>) String provider,
     OllamaHttpClient ollamaClient,
     GroqClient groqClient) {
   <span class="kw">if</span> (<span class="st">"groq"</span>.equalsIgnoreCase(provider.trim())) {
@@ -774,7 +687,7 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
       <h2>Was steht — und was käme als Nächstes</h2>
       <div class="two">
         <div>
-          <h3 style="color:var(--accent); margin-bottom:.8rem">Erreicht</h3>
+          <h3 style="color:var(--accent); margin-bottom:12px; font-size:20px">Erreicht</h3>
           <ul class="clean">
             <li>Alle Pflicht-Phasen 0–10 <b>plus</b> sechs Stretch-Goals (11–16) umgesetzt.</li>
             <li>Sauberer modularer Monolith, durchgängig getestet, CI-abgesichert, live deploybar.</li>
@@ -782,7 +695,7 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
           </ul>
         </div>
         <div>
-          <h3 style="color:var(--amber); margin-bottom:.8rem">Ausblick</h3>
+          <h3 style="color:var(--amber); margin-bottom:12px; font-size:20px">Ausblick</h3>
           <ul class="clean">
             <li class="amberdot">Google-OAuth ist gebaut, aber feature-geflaggt — produktiv scharfschalten.</li>
             <li class="amberdot">Kategorien-Sortierung der Liste weiter verfeinern (Supermarkt-Gang).</li>
@@ -797,7 +710,7 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
   <section class="slide divider">
     <div class="slide-inner">
       <div class="title-mark"><span class="leaf"></span> EatEasy&nbsp;EE</div>
-      <h2 style="font-size:clamp(2.4rem,7vw,4.6rem)">Vielen Dank.</h2>
+      <h2 style="font-size:60px">Vielen Dank.</h2>
       <p class="lead">Fragen? Gern jetzt — oder direkt live ausprobieren.</p>
       <div class="title-meta">
         <div><b>Live-Demo</b><br>eateasy-web.onrender.com</div>
@@ -807,6 +720,7 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
     </div>
   </section>
 
+ </div>
 </div>
 
 <div id="footer-brand"><span class="leaf"></span> EatEasy EE</div>
@@ -818,23 +732,50 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
 
 <script>
   (function () {
+    const stage = document.getElementById('stage');
     const slides = Array.from(document.querySelectorAll('.slide'));
     const total = slides.length;
     let i = 0;
     const counter = document.getElementById('counter');
     const progress = document.getElementById('progress');
 
+    // Scale the fixed 1280x720 stage to fit the viewport — no scrollbars ever.
+    function fitStage() {
+      const s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+      stage.style.setProperty('--s', s);
+    }
+
+    // Shrink each code block until it fits its panel — code always fully visible.
+    function fitCode() {
+      slides.forEach(sl => {
+        const hidden = !sl.classList.contains('active');
+        if (hidden) { sl.style.display = 'flex'; sl.style.visibility = 'hidden'; }
+        sl.querySelectorAll('pre').forEach(pre => {
+          const code = pre.querySelector('code');
+          if (!code) return;
+          let fs = 15;
+          code.style.fontSize = fs + 'px';
+          let guard = 0;
+          while (pre.scrollWidth > pre.clientWidth + 1 && fs > 8 && guard < 60) {
+            fs -= 0.5; code.style.fontSize = fs + 'px'; guard++;
+          }
+        });
+        if (hidden) { sl.style.display = ''; sl.style.visibility = ''; }
+      });
+    }
+
     function show(n) {
       i = Math.max(0, Math.min(total - 1, n));
       slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
       counter.textContent = (i + 1) + ' / ' + total;
-      progress.style.width = ((i) / (total - 1) * 100) + '%';
+      progress.style.width = (i / (total - 1) * 100) + '%';
     }
     function next() { show(i + 1); }
     function prev() { show(i - 1); }
 
     document.getElementById('next').addEventListener('click', next);
     document.getElementById('prev').addEventListener('click', prev);
+    window.addEventListener('resize', fitStage);
 
     window.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
@@ -847,17 +788,19 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds, …);
       }
     });
 
-    // Touch swipe
     let x0 = null;
-    window.addEventListener('touchstart', e => { x0 = e.changedTouches[0].clientX; }, {passive:true});
+    window.addEventListener('touchstart', e => { x0 = e.changedTouches[0].clientX; }, { passive: true });
     window.addEventListener('touchend', e => {
       if (x0 === null) return;
       const dx = e.changedTouches[0].clientX - x0;
       if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
       x0 = null;
-    }, {passive:true});
+    }, { passive: true });
 
+    fitStage();
+    fitCode();
     show(0);
+    window.addEventListener('load', () => { fitStage(); fitCode(); });
   })();
 </script>
 
