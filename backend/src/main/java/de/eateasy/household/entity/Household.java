@@ -24,7 +24,7 @@ public class Household {
     private String name;
 
     /**
-     * Lockerer Vorfilter fuer die Rezeptauswahl im Wochenplan.
+     * Lockerer Vorfilter für die Rezeptauswahl im Wochenplan.
      * Liste muss aus DietTag-Whitelist kommen — Validierung im Service.
      */
     @JdbcTypeCode(SqlTypes.ARRAY)
@@ -33,7 +33,7 @@ public class Household {
 
     /**
      * Steuert das Auto-Nachbuchen: abgehakte Einkaufslisten-Posten landen nur
-     * dann automatisch im Vorrat, wenn dies aktiv ist. Default true erhaelt das
+     * dann automatisch im Vorrat, wenn dies aktiv ist. Default true erhält das
      * bisherige Verhalten (Field-Initializer + Migration-Default V10).
      */
     @Column(name = "auto_restock_enabled", nullable = false)

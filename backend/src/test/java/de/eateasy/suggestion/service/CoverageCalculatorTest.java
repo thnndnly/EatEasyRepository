@@ -31,7 +31,7 @@ class CoverageCalculatorTest {
     }
 
     @Test
-    @DisplayName("Haelfte der Zutaten vorhanden → coverage = 0.5")
+    @DisplayName("Hälfte der Zutaten vorhanden → coverage = 0.5")
     void halfCoverage() {
         UUID salt = UUID.randomUUID();
         UUID pepper = UUID.randomUUID();
@@ -58,7 +58,7 @@ class CoverageCalculatorTest {
     }
 
     @Test
-    @DisplayName("Leere Zutatenliste → coverage = 0 (kein Match moeglich)")
+    @DisplayName("Leere Zutatenliste → coverage = 0 (kein Match möglich)")
     void emptyIngredientsZero() {
         UUID recipeId = UUID.randomUUID();
 
@@ -70,7 +70,7 @@ class CoverageCalculatorTest {
     }
 
     @Test
-    @DisplayName("Mehrere Rezepte → unabhaengige Coverage-Werte")
+    @DisplayName("Mehrere Rezepte → unabhängige Coverage-Werte")
     void multipleRecipes() {
         UUID r1 = UUID.randomUUID();
         UUID r2 = UUID.randomUUID();

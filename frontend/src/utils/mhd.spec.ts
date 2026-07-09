@@ -40,12 +40,12 @@ describe('daysUntil ist zeitzonen-robust', () => {
     vi.unstubAllEnvs()
   })
 
-  // Das heutige *lokale* Datum muss immer 0 Tage ergeben — unabhaengig von der
-  // Systemzeitzone. Die fruehere Implementierung (new Date(isoDate) parst als
+  // Das heutige *lokale* Datum muss immer 0 Tage ergeben — unabhängig von der
+  // Systemzeitzone. Die frühere Implementierung (new Date(isoDate) parst als
   // UTC-Mitternacht, dann setHours in lokaler TZ) lieferte in Zonen westlich
-  // von UTC faelschlich -1 und verschob damit den expiringSoon-Filter.
+  // von UTC fälschlich -1 und verschob damit den expiringSoon-Filter.
   it.each(['UTC', 'America/Los_Angeles', 'Pacific/Kiritimati'])(
-    'liefert 0 fuer das heutige lokale Datum in TZ %s',
+    'liefert 0 für das heutige lokale Datum in TZ %s',
     (tz) => {
       vi.stubEnv('TZ', tz)
       vi.useFakeTimers()

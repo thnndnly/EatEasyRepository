@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Haushaltsbezogene Pantry-Endpoints. {@link PantryItemResource} kuemmert
+ * Haushaltsbezogene Pantry-Endpoints. {@link PantryItemResource} kümmert
  * sich um Operationen auf einem konkreten Item — getrennt, weil RESTEasy
  * Reactive einen einzigen Class-Level-{@code @Path} pro Resource verlangt.
  */

@@ -21,14 +21,14 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
-    /** Null fuer reine Google-User (kein Passwort-Login). */
+    /** Null für reine Google-User (kein Passwort-Login). */
     @Column(name = "password_hash", length = 255)
     private String passwordHash;
 
     @Column(name = "display_name", nullable = false, length = 100)
     private String displayName;
 
-    /** Google "subject"-ID; gesetzt sobald der Account mit Google verknuepft ist. */
+    /** Google "subject"-ID; gesetzt sobald der Account mit Google verknüpft ist. */
     @Column(name = "google_sub", unique = true, length = 255)
     private String googleSub;
 

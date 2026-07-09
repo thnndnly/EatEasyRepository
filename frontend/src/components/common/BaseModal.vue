@@ -11,8 +11,8 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-// Esc schliesst das Modal. VueUse raeumt den Listener automatisch beim
-// Unmount auf — kein manuelles onUnmounted noetig.
+// Esc schliesst das Modal. VueUse räumt den Listener automatisch beim
+// Unmount auf — kein manuelles onUnmounted nötig.
 useEventListener(document, 'keydown', (event: KeyboardEvent) => {
   if (event.key === 'Escape' && props.open) {
     emit('close')

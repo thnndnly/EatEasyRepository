@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Sicht auf einen Haushalt fuer den eingeloggten User. {@code role} ist die
- * Rolle dieses Users im Haushalt — der Wert entscheidet ueber Edit-Rechte im
+ * Sicht auf einen Haushalt für den eingeloggten User. {@code role} ist die
+ * Rolle dieses Users im Haushalt — der Wert entscheidet über Edit-Rechte im
  * Frontend.
  */
 public record HouseholdDto(

@@ -35,7 +35,7 @@ async function onDelete(): Promise<void> {
   if (!recipe.value) {
     return
   }
-  const ok = await confirmDialog('Rezept wirklich loeschen?')
+  const ok = await confirmDialog('Rezept wirklich löschen?')
   if (!ok) {
     return
   }
@@ -43,7 +43,7 @@ async function onDelete(): Promise<void> {
     await recipeStore.remove(recipe.value.id)
     await router.replace({ name: 'recipes' })
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+    error.value = err instanceof Error ? err.message : 'Löschen fehlgeschlagen'
   }
 }
 
@@ -58,7 +58,7 @@ watch(recipeId, load)
       class="text-sm font-medium text-peach-600 hover:underline"
       @click="router.push({ name: 'recipes' })"
     >
-      &larr; Zurueck zur Liste
+      &larr; Zurück zur Liste
     </button>
 
     <ErrorMessage :message="error ?? ''" />
@@ -91,7 +91,7 @@ watch(recipeId, load)
             class="ee-btn-danger"
             @click="onDelete"
           >
-            Loeschen
+            Löschen
           </button>
         </div>
       </header>

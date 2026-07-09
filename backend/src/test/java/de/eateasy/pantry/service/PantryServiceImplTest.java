@@ -132,7 +132,7 @@ class PantryServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("add fuer fremden Haushalt wirft Forbidden")
+    @DisplayName("add für fremden Haushalt wirft Forbidden")
     void addForbiddenForOutsider() {
         UUID alice = registerUser("alice@example.com");
         UUID bob = registerUser("bob@example.com");
@@ -155,19 +155,19 @@ class PantryServiceImplTest {
         pantryService.add(userId, householdId, new AddPantryItemRequest(
             null, "OhneMHD", BigDecimal.ONE, Unit.PIECE, null));
         pantryService.add(userId, householdId, new AddPantryItemRequest(
-            null, "Spaeter", BigDecimal.ONE, Unit.PIECE, LocalDate.of(2026, 12, 31)));
+            null, "Später", BigDecimal.ONE, Unit.PIECE, LocalDate.of(2026, 12, 31)));
         pantryService.add(userId, householdId, new AddPantryItemRequest(
-            null, "Frueher", BigDecimal.ONE, Unit.PIECE, LocalDate.of(2026, 6, 1)));
+            null, "Früher", BigDecimal.ONE, Unit.PIECE, LocalDate.of(2026, 6, 1)));
 
         List<PantryItemDto> list = pantryService.list(userId, householdId);
 
         assertThat(list).extracting(PantryItemDto::ingredientName)
-            .containsExactly("Frueher", "Spaeter", "OhneMHD");
+            .containsExactly("Früher", "Später", "OhneMHD");
     }
 
     @Test
     @TestTransaction
-    @DisplayName("update aendert Menge und MHD")
+    @DisplayName("update ändert Menge und MHD")
     void updateChangesFields() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
@@ -185,7 +185,7 @@ class PantryServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("update fuer fremden Eintrag wirft Forbidden")
+    @DisplayName("update für fremden Eintrag wirft Forbidden")
     void updateForbiddenForOutsider() {
         UUID alice = registerUser("alice@example.com");
         UUID bob = registerUser("bob@example.com");

@@ -5,17 +5,17 @@ import java.util.Map;
 
 /**
  * Konvertiert Mengen zwischen verwandten Einheiten auf eine kanonische
- * Basis-Einheit. Aktuell unterstuetzt:
+ * Basis-Einheit. Aktuell unterstützt:
  *
  * <ul>
  *   <li>{@link Unit#TBSP} (1 EL = 15 ml) und {@link Unit#TSP} (1 TL = 5 ml) →
  *       Basis {@link Unit#ML}</li>
  *   <li>{@link Unit#GRAM}, {@link Unit#ML}, {@link Unit#PIECE} bleiben
- *       unveraendert (eigene Basis).</li>
+ *       unverändert (eigene Basis).</li>
  * </ul>
  *
  * <p>Wird im {@code ShoppingListService} genutzt, damit ein Rezept mit
- * „2 EL Olivenoel" und ein anderes mit „30 ml Olivenoel" auf einer einzigen
+ * „2 EL Olivenöl" und ein anderes mit „30 ml Olivenöl" auf einer einzigen
  * Liste-Zeile zusammenfallen. Auch der Pantry-Abzug normalisiert vorab.</p>
  */
 public final class UnitConverter {
@@ -39,7 +39,7 @@ public final class UnitConverter {
     private UnitConverter() {
     }
 
-    /** Liefert die Basis-Einheit fuer die uebergebene Einheit. */
+    /** Liefert die Basis-Einheit für die übergebene Einheit. */
     public static Unit canonical(Unit unit) {
         return CANONICAL.getOrDefault(unit, unit);
     }

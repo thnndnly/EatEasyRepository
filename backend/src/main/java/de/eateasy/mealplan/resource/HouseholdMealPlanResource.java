@@ -53,7 +53,7 @@ public class HouseholdMealPlanResource {
             return LocalDate.parse(weekStart);
         } catch (DateTimeParseException ex) {
             throw new BadRequestException(
-                "Ungueltiges weekStart-Format, erwartet ISO-Datum YYYY-MM-DD: " + weekStart);
+                "Ungültiges weekStart-Format, erwartet ISO-Datum YYYY-MM-DD: " + weekStart);
         }
     }
 }

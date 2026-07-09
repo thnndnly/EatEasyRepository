@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Eingabe fuer das Hinzufuegen eines Vorrats-Eintrags. Entweder existierende
+ * Eingabe für das Hinzufügen eines Vorrats-Eintrags. Entweder existierende
  * {@code ingredientId} oder neuer {@code ingredientName} (wird via
  * findOrCreate angelegt). Wenn schon ein Slot mit derselben Zutat + Unit
  * existiert, wird die Menge addiert.

@@ -10,7 +10,7 @@ import type {
 } from '@/types/recipe'
 
 /**
- * Haelt die letzte Liste, den aktuell betrachteten Datensatz und die zuletzt
+ * Hält die letzte Liste, den aktuell betrachteten Datensatz und die zuletzt
  * verwendeten Filter. Filter sind ein UI-Detail (kein Server-State), bleiben
  * aber im Store, damit Wechsel zwischen List- und Detail-View den Filter
  * nicht wegwirft.
@@ -92,7 +92,7 @@ export const useRecipeStore = defineStore('recipe', () => {
         current.value = null
       }
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+      error.value = err instanceof Error ? err.message : 'Löschen fehlgeschlagen'
       throw err
     }
   }
@@ -112,9 +112,9 @@ export const useRecipeStore = defineStore('recipe', () => {
       }
     } catch (err: unknown) {
       // Bewusst kein rethrow: der Favoriten-Toggle ist eine Fire-and-forget-
-      // UI-Aktion; die aufrufende View prueft nach dem await `store.error`
+      // UI-Aktion; die aufrufende View prüft nach dem await `store.error`
       // (statt zu catchen), um Erfolgs-Toast/Fehleranzeige zu steuern.
-      error.value = err instanceof Error ? err.message : 'Favorit aendern fehlgeschlagen'
+      error.value = err instanceof Error ? err.message : 'Favorit ändern fehlgeschlagen'
     }
   }
 

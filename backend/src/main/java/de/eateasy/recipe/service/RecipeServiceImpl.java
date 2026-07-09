@@ -145,7 +145,7 @@ public class RecipeServiceImpl implements RecipeService {
     public void delete(UUID userId, UUID recipeId) {
         Recipe recipe = loadActiveRecipe(recipeId);
         assertOwner(userId, recipe);
-        // Soft-Delete: als geloescht markieren statt entfernen, damit bestehende
+        // Soft-Delete: als gelöscht markieren statt entfernen, damit bestehende
         // Wochenplan-/Einkaufslisten-/Favoriten-Referenzen erhalten bleiben.
         recipe.markDeleted();
     }
@@ -158,13 +158,13 @@ public class RecipeServiceImpl implements RecipeService {
 
         if (favorite) {
             // Idempotenter Upsert (ON CONFLICT DO NOTHING) statt check-then-act:
-            // atomar auf DB-Ebene, damit parallele Requests keinen Unique-Constraint-500 ausloesen.
+            // atomar auf DB-Ebene, damit parallele Requests keinen Unique-Constraint-500 auslösen.
             favoriteRepository.insertIfAbsent(userId, recipeId);
         } else {
             favoriteRepository.findByUserAndRecipe(userId, recipeId)
                 .ifPresent(favoriteRepository::delete);
         }
-        // Gewuenschter Zustand besteht danach in jedem Fall — idempotent, kein Fehler.
+        // Gewünschter Zustand besteht danach in jedem Fall — idempotent, kein Fehler.
     }
 
     @Override
@@ -211,12 +211,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     /**
-     * Wie {@link #loadRecipe}, behandelt soft-geloeschte Rezepte aber als nicht
-     * vorhanden (404) — fuer Lese-/Schreibpfade, die nur aktive Rezepte sehen
-     * duerfen. Die Referenz-Aufloesung ({@code getMinis}/
+     * Wie {@link #loadRecipe}, behandelt soft-gelöschte Rezepte aber als nicht
+     * vorhanden (404) — für Lese-/Schreibpfade, die nur aktive Rezepte sehen
+     * dürfen. Die Referenz-Auflösung ({@code getMinis}/
      * {@code getIngredientsByRecipeIds}) nutzt bewusst {@code findByIds} ohne
-     * diesen Filter, damit bestehende Wochenplan-/Einkaufslisten-Eintraege
-     * geloeschte Rezepte weiterhin darstellen koennen.
+     * diesen Filter, damit bestehende Wochenplan-/Einkaufslisten-Einträge
+     * gelöschte Rezepte weiterhin darstellen können.
      */
     private Recipe loadActiveRecipe(UUID recipeId) {
         Recipe recipe = loadRecipe(recipeId);
@@ -239,7 +239,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     private void assertOwner(UUID userId, Recipe recipe) {
         if (!recipe.getOwnerId().equals(userId)) {
-            throw new ForbiddenException("Nur der Owner darf dieses Rezept aendern");
+            throw new ForbiddenException("Nur der Owner darf dieses Rezept ändern");
         }
     }
 

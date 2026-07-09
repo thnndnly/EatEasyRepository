@@ -2,7 +2,7 @@ import type { ApiError } from './apiClient'
 import type { ReceiptScanResponse } from '@/types/receipt'
 
 /**
- * Multipart-Upload — bewusst nicht ueber apiFetch, das JSON-Bodies
+ * Multipart-Upload — bewusst nicht über apiFetch, das JSON-Bodies
  * serialisiert und den Content-Type fest setzt. Die Fehlerbehandlung
  * spiegelt apiClient (ApiError mit status + body).
  */

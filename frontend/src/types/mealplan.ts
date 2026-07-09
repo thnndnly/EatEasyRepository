@@ -39,7 +39,7 @@ export const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER'] as const
 export type MealType = (typeof MEAL_TYPES)[number]
 
 export const MEAL_TYPE_LABELS: Record<MealType, string> = {
-  BREAKFAST: 'Fruehstueck',
+  BREAKFAST: 'Frühstück',
   LUNCH: 'Mittag',
   DINNER: 'Abend',
 }

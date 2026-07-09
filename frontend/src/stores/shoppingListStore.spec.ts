@@ -67,7 +67,7 @@ describe('shoppingListStore', () => {
     await store.toggle(TEST_SHOPPING_LIST.items[0]!.id, true)
 
     expect(store.list?.items[0]!.checked).toBe(true)
-    // andere Items unveraendert
+    // andere Items unverändert
     expect(store.list?.items[1]!.checked).toBe(true)
   })
 
@@ -131,7 +131,7 @@ describe('shoppingListStore', () => {
     expect(store.groupedItems.map((g) => g.category)).toEqual(['VORRAT', 'SONSTIGES'])
   })
 
-  it('changeCategory setzt error bei Server-Fehler und laesst Items unveraendert', async () => {
+  it('changeCategory setzt error bei Server-Fehler und lässt Items unverändert', async () => {
     const ingredientId = TEST_SHOPPING_LIST.items[0]!.ingredientId
     server.use(
       http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>
@@ -150,7 +150,7 @@ describe('shoppingListStore', () => {
     expect(store.list?.items[0]!.category).toBe('OBST_GEMUESE')
   })
 
-  it('changeCategory re-referenziert betroffene Items im Fehlerfall (fuer UI-Reset)', async () => {
+  it('changeCategory re-referenziert betroffene Items im Fehlerfall (für UI-Reset)', async () => {
     const ingredientId = TEST_SHOPPING_LIST.items[0]!.ingredientId
     server.use(
       http.get(`/api/v1/mealplans/${TEST_MEAL_PLAN.id}/shoppinglist`, () =>
@@ -168,7 +168,7 @@ describe('shoppingListStore', () => {
     await store.changeCategory(ingredientId, 'VORRAT')
 
     // Betroffenes Item ist eine neue Referenz (damit das <select> in der UI
-    // per :key-Watch zuruecksetzt), Kategorie aber unveraendert.
+    // per :key-Watch zurücksetzt), Kategorie aber unverändert.
     expect(store.list!.items[0]).not.toBe(before)
     expect(store.list!.items[0]!.category).toBe('OBST_GEMUESE')
     // Nicht betroffene Items behalten ihre Referenz.

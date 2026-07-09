@@ -73,9 +73,9 @@ async function onRemove(day: DayOfWeek, mealType: MealType): Promise<void> {
   await mealPlanStore.removeEntry(day, mealType)
 }
 
-// Portionen-Stepper (Phase 15): setEntry ueberschreibt den Slot idempotent,
-// die Einkaufsliste skaliert beim naechsten Neuberechnen automatisch mit.
-// savingSlot deaktiviert den Stepper, solange der Request laeuft — sonst
+// Portionen-Stepper (Phase 15): setEntry überschreibt den Slot idempotent,
+// die Einkaufsliste skaliert beim nächsten Neuberechnen automatisch mit.
+// savingSlot deaktiviert den Stepper, solange der Request läuft — sonst
 // rechnen schnelle Klicks mit dem alten Wert und Inkremente gehen verloren.
 const savingSlot = ref<string | null>(null)
 
@@ -110,7 +110,7 @@ async function onChangeServings(
       <div>
         <h1 class="text-2xl font-extrabold tracking-tight">📅 Wochenplan</h1>
         <p class="mt-1 text-sm text-ink-500">
-          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
+          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewählt' }}
           <span v-if="mealPlanStore.plan"> · Woche {{ mealPlanStore.weekRangeLabel }}</span>
         </p>
       </div>
@@ -123,15 +123,15 @@ async function onChangeServings(
           Heute
         </button>
         <button type="button" class="ee-btn-secondary" @click="mealPlanStore.gotoWeek(7)">
-          Naechste ›
+          Nächste ›
         </button>
       </div>
     </div>
 
     <EmptyState v-if="!householdStore.selected">
-      Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
+      Lege zuerst einen Haushalt an oder wähle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
-        Haushalte oeffnen
+        Haushalte öffnen
       </button>
     </EmptyState>
 

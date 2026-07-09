@@ -13,7 +13,7 @@ import java.util.UUID;
 public class PantryItemRepository implements PanacheRepositoryBase<PantryItem, UUID> {
 
     /**
-     * Liefert alle Vorrats-Eintraege eines Haushalts. Sortiert ASC nach
+     * Liefert alle Vorrats-Einträge eines Haushalts. Sortiert ASC nach
      * best_before, NULLs ans Ende — Postgres-Default ist NULLS LAST bei ASC.
      */
     public List<PantryItem> listByHousehold(UUID householdId) {
@@ -22,7 +22,7 @@ public class PantryItemRepository implements PanacheRepositoryBase<PantryItem, U
             householdId);
     }
 
-    /** Findet einen vorhandenen Slot mit derselben Zutat + Unit fuer Aggregation. */
+    /** Findet einen vorhandenen Slot mit derselben Zutat + Unit für Aggregation. */
     public Optional<PantryItem> findByHouseholdAndIngredientAndUnit(
         UUID householdId, UUID ingredientId, Unit unit) {
         return find("householdId = ?1 and ingredientId = ?2 and unit = ?3",

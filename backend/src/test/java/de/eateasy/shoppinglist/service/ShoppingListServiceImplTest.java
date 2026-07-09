@@ -155,7 +155,7 @@ class ShoppingListServiceImplTest {
             "Suppe", null, "Steps", 2, null, null, householdId,
             List.of(new RecipeIngredientRequest(null, "Tomate", new BigDecimal("500"), Unit.GRAM, null))));
         MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
-        // Recipe ist fuer 2 Portionen, Plan-Eintrag fordert 4 → Skalierung 2x.
+        // Recipe ist für 2 Portionen, Plan-Eintrag fordert 4 → Skalierung 2x.
         mealPlanService.setEntry(userId, plan.id(),
             new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 4));
 
@@ -191,18 +191,18 @@ class ShoppingListServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("Aggregation: TBSP und ML fuer gleiche Zutat fallen auf eine ML-Zeile")
+    @DisplayName("Aggregation: TBSP und ML für gleiche Zutat fallen auf eine ML-Zeile")
     void aggregatesTbspWithMl() {
-        // Olivenoel — Rezept A: 2 TBSP (=30 ml), Rezept B: 30 ml → erwartet 60 ml.
+        // Olivenöl — Rezept A: 2 TBSP (=30 ml), Rezept B: 30 ml → erwartet 60 ml.
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
             new HouseholdCreateRequest("Test", null)).id();
         RecipeDto a = recipeService.create(userId, new RecipeCreateRequest(
             "Pasta", null, "Steps", 2, null, null, householdId,
-            List.of(new RecipeIngredientRequest(null, "Olivenoel", new BigDecimal("2"), Unit.TBSP, null))));
+            List.of(new RecipeIngredientRequest(null, "Olivenöl", new BigDecimal("2"), Unit.TBSP, null))));
         RecipeDto b = recipeService.create(userId, new RecipeCreateRequest(
             "Salat", null, "Steps", 2, null, null, householdId,
-            List.of(new RecipeIngredientRequest(null, "Olivenoel", new BigDecimal("30"), Unit.ML, null))));
+            List.of(new RecipeIngredientRequest(null, "Olivenöl", new BigDecimal("30"), Unit.ML, null))));
         MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
         mealPlanService.setEntry(userId, plan.id(),
             new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, a.id(), 2));
@@ -212,7 +212,7 @@ class ShoppingListServiceImplTest {
         ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
 
         assertThat(list.items()).hasSize(1);
-        ShoppingListItemDto item = byName(list, "Olivenoel");
+        ShoppingListItemDto item = byName(list, "Olivenöl");
         assertThat(item.unit()).isEqualTo(Unit.ML);
         assertThat(item.amount()).isEqualByComparingTo("60.00");
     }
@@ -227,12 +227,12 @@ class ShoppingListServiceImplTest {
             new HouseholdCreateRequest("Test", null)).id();
         RecipeDto recipe = recipeService.create(userId, new RecipeCreateRequest(
             "Pasta", null, "Steps", 2, null, null, householdId,
-            List.of(new RecipeIngredientRequest(null, "Olivenoel", new BigDecimal("30"), Unit.ML, null))));
+            List.of(new RecipeIngredientRequest(null, "Olivenöl", new BigDecimal("30"), Unit.ML, null))));
         MealPlanDto plan = mealPlanService.getOrCreate(userId, householdId, LocalDate.of(2026, 4, 27));
         mealPlanService.setEntry(userId, plan.id(),
             new SetEntryRequest(DayOfWeek.MONDAY, MealType.LUNCH, recipe.id(), 2));
         pantryService.add(userId, householdId, new AddPantryItemRequest(
-            null, "Olivenoel", new BigDecimal("2"), Unit.TBSP, null));
+            null, "Olivenöl", new BigDecimal("2"), Unit.TBSP, null));
 
         ShoppingListDto list = shoppingListService.getOrGenerate(userId, plan.id());
 
@@ -262,7 +262,7 @@ class ShoppingListServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("Pantry-Diff: teilweise gedeckt → Liste enthaelt nur Restmenge")
+    @DisplayName("Pantry-Diff: teilweise gedeckt → Liste enthält nur Restmenge")
     void pantryPartiallyCovers() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
@@ -284,7 +284,7 @@ class ShoppingListServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("Unit-Mismatch: Pantry GRAM vs Recipe PIECE bleibt getrennt — Vorrat zaehlt nicht")
+    @DisplayName("Unit-Mismatch: Pantry GRAM vs Recipe PIECE bleibt getrennt — Vorrat zählt nicht")
     void pantryUnitMismatch() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
@@ -326,7 +326,7 @@ class ShoppingListServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("regenerate behaelt checked-Status, wenn das Item noch in der Liste ist")
+    @DisplayName("regenerate behält checked-Status, wenn das Item noch in der Liste ist")
     void regeneratePreservesChecked() {
         // Setup: zwei Zutaten, der User legt manuell *mehr* Salz in den Pantry,
         // als das Rezept braucht — sodass Salz nach Auto-Nachbuchen weiter
@@ -353,11 +353,11 @@ class ShoppingListServiceImplTest {
         // bleibt → Pfeffer-Item bleibt mit checked=true.
         // (Auto-Nachbuchen hat 10g eingebucht; das Rezept braucht 10g, daher
         // Diff = 0. Wir geben dem Pfeffer-Rezept-Bedarf mehr, indem wir noch
-        // einen weiteren Eintrag haben wuerden — hier reicht der Test fuer
+        // einen weiteren Eintrag haben würden — hier reicht der Test für
         // Salz: Salz wurde nicht gecheckt, ist also "unchecked" im Regenerate.)
         ShoppingListDto regenerated = shoppingListService.regenerate(userId, plan.id());
 
-        // Pfeffer ist nach Auto-Nachbuchen vollstaendig im Vorrat → nicht
+        // Pfeffer ist nach Auto-Nachbuchen vollständig im Vorrat → nicht
         // mehr auf der Liste. Salz dagegen ist nie gekauft worden → da.
         assertThat(byName(regenerated, "Salz").checked()).isFalse();
         assertThatThrownBy(() -> byName(regenerated, "Pfeffer"))
@@ -411,7 +411,7 @@ class ShoppingListServiceImplTest {
         assertThat(pantryService.list(userId, householdId)).hasSize(1);
 
         shoppingListService.toggleChecked(userId, saltItem.id(), false);
-        // Uncheck soll nichts aendern — der Vorrat bleibt befuellt.
+        // Uncheck soll nichts ändern — der Vorrat bleibt befüllt.
         assertThat(pantryService.list(userId, householdId)).hasSize(1);
     }
 
@@ -447,7 +447,7 @@ class ShoppingListServiceImplTest {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
             new HouseholdCreateRequest("Test", null)).id();
-        // Auto-Nachbuchen fuer diesen Haushalt abschalten (Phase 14).
+        // Auto-Nachbuchen für diesen Haushalt abschalten (Phase 14).
         householdService.update(userId, householdId,
             new HouseholdUpdateRequest(null, null, false));
         RecipeDto recipe = recipeService.create(userId, new RecipeCreateRequest(
@@ -488,7 +488,7 @@ class ShoppingListServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("getOrGenerate fuer fremden Plan wirft Forbidden")
+    @DisplayName("getOrGenerate für fremden Plan wirft Forbidden")
     void getOrGenerateForbiddenForOutsider() {
         UUID alice = registerUser("alice@example.com");
         UUID bob = registerUser("bob@example.com");

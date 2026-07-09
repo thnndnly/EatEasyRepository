@@ -20,7 +20,7 @@ const toastStore = useToastStore()
 const suggestionStore = useSuggestionStore()
 
 const status = ref<'loading' | 'ok' | 'error'>('loading')
-const detail = ref<string>('Pruefe Backend ...')
+const detail = ref<string>('Prüfe Backend ...')
 
 const planTarget = ref<SuggestionDto | null>(null)
 
@@ -28,10 +28,10 @@ const selected = computed(() => householdStore.selected)
 
 async function refresh(): Promise<void> {
   status.value = 'loading'
-  detail.value = 'Pruefe Backend ...'
+  detail.value = 'Prüfe Backend ...'
   try {
-    // Bewusste Ausnahme von "API nur ueber Stores": der Health-Check ist ein
-    // reiner Infrastruktur-Ping (kein Domaenen-State), der nirgends geteilt wird.
+    // Bewusste Ausnahme von "API nur über Stores": der Health-Check ist ein
+    // reiner Infrastruktur-Ping (kein Domänen-State), der nirgends geteilt wird.
     const health = await fetchHealth()
     status.value = health.status === 'ok' ? 'ok' : 'error'
     detail.value = `Backend status: ${health.status}`
@@ -62,7 +62,7 @@ function startPlanAdd(suggestion: SuggestionDto): void {
 
 function onPlanSaved(): void {
   if (planTarget.value) {
-    toastStore.success(`"${planTarget.value.recipe.title}" in den Wochenplan uebernommen`)
+    toastStore.success(`"${planTarget.value.recipe.title}" in den Wochenplan übernommen`)
   }
   planTarget.value = null
 }
@@ -72,13 +72,13 @@ function coveragePercent(value: number): string {
 }
 
 onMounted(async () => {
-  // Health-Check und Haushaltsliste sind unabhaengig — parallel laden
+  // Health-Check und Haushaltsliste sind unabhängig — parallel laden
   // spart eine Round-Trip-Wartezeit beim Dashboard-Mount.
   await Promise.all([refresh(), householdStore.load()])
 })
 
-// Vorrat fuer das MHD-Widget nachladen, sobald ein Haushalt feststeht
-// (initial und beim Wechsel ueber die Topbar).
+// Vorrat für das MHD-Widget nachladen, sobald ein Haushalt feststeht
+// (initial und beim Wechsel über die Topbar).
 watch(
   () => selected.value?.id,
   async (id) => {
@@ -95,12 +95,12 @@ watch(
 <template>
   <section class="space-y-8">
     <div class="rounded-3xl border border-cream-200 bg-gradient-to-br from-peach-100 via-cream-50 to-butter-100 px-7 py-8 shadow-[0_2px_18px_rgba(255,181,167,0.18)]">
-      <p class="text-xs font-semibold uppercase tracking-widest text-peach-700">Willkommen zurueck</p>
+      <p class="text-xs font-semibold uppercase tracking-widest text-peach-700">Willkommen zurück</p>
       <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink-900">
         Hallo, {{ authStore.user?.displayName ?? 'Gast' }} 👋
       </h1>
       <p class="mt-2 max-w-xl text-ink-700">
-        Plane Mahlzeiten, behalte Vorrat und Rezepte im Blick — und lass dir den naechsten Wocheneinkauf zusammenstellen.
+        Plane Mahlzeiten, behalte Vorrat und Rezepte im Blick — und lass dir den nächsten Wocheneinkauf zusammenstellen.
       </p>
     </div>
 
@@ -112,7 +112,7 @@ watch(
             <span>🥘</span> Was kann ich kochen?
           </h2>
           <p class="mt-1 text-sm text-ink-500">
-            {{ selected ? `Vorschlaege aus dem Vorrat von ${selected.name}.` : 'Waehle zuerst einen Haushalt.' }}
+            {{ selected ? `Vorschläge aus dem Vorrat von ${selected.name}.` : 'Wähle zuerst einen Haushalt.' }}
           </p>
         </div>
         <button
@@ -121,7 +121,7 @@ watch(
           :disabled="!selected || suggestionStore.loading"
           @click="onSuggest"
         >
-          {{ suggestionStore.loading ? 'Denke nach ...' : 'Vorschlaege holen' }}
+          {{ suggestionStore.loading ? 'Denke nach ...' : 'Vorschläge holen' }}
         </button>
       </div>
 
@@ -136,14 +136,14 @@ watch(
         v-else-if="suggestionStore.requested && !suggestionStore.loading && suggestionStore.suggestions.length === 0"
         class="mt-4 rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-4 py-3 text-sm text-ink-500"
       >
-        Keine passenden Rezepte gefunden. Mehr Vorrat anlegen oder Rezepte hinzufuegen.
+        Keine passenden Rezepte gefunden. Mehr Vorrat anlegen oder Rezepte hinzufügen.
       </p>
 
       <p
         v-if="suggestionStore.suggestions.length > 0 && !suggestionStore.aiAvailable"
         class="mt-4 rounded-2xl border border-butter-200 bg-butter-100/60 px-4 py-3 text-sm text-ink-600"
       >
-        ⚠️ KI-Begruendungen gerade nicht verfuegbar — sortiert nach Vorrats-Abdeckung.
+        ⚠️ KI-Begründungen gerade nicht verfügbar — sortiert nach Vorrats-Abdeckung.
       </p>
 
       <ul v-if="suggestionStore.suggestions.length > 0" class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -204,7 +204,7 @@ watch(
       @saved="onPlanSaved"
     />
 
-    <!-- MHD-Widget: demnaechst ablaufender Vorrat -->
+    <!-- MHD-Widget: demnächst ablaufender Vorrat -->
     <ExpiringSoonWidget v-if="selected" />
 
     <!-- Backend-Status (Health-Check) -->
@@ -227,7 +227,7 @@ watch(
           </div>
         </div>
         <button type="button" class="ee-btn-secondary" @click="refresh">
-          Erneut pruefen
+          Erneut prüfen
         </button>
       </div>
     </div>

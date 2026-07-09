@@ -96,7 +96,7 @@ class ReceiptResourceTest {
     }
 
     @Test
-    @DisplayName("POST /receipts/scan fuer fremden Haushalt liefert 403")
+    @DisplayName("POST /receipts/scan für fremden Haushalt liefert 403")
     void scanForbiddenForOutsider() {
         String aliceToken = registerUser("alice@example.com");
         String bobToken = registerUser("bob@example.com");

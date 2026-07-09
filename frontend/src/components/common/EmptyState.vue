@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Wrapper fuer leere Zustaende (Listen ohne Eintraege, etc.).
-// Default-Slot enthaelt den Inhalt (Text, Icon, Buttons).
+// Wrapper für leere Zustände (Listen ohne Einträge, etc.).
+// Default-Slot enthält den Inhalt (Text, Icon, Buttons).
 </script>
 
 <template>

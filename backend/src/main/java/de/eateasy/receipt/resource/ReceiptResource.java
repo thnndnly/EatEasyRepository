@@ -30,19 +30,19 @@ import java.util.UUID;
 /**
  * Beleg-Scanner (Phase 11, Stretch). Steht hinter dem Feature-Flag
  * {@code eateasy.receipt.enabled} — ist es aus, antwortet der Endpoint mit
- * 404, als gaebe es das Feature nicht (Demo-Deployments ohne
+ * 404, als gäbe es das Feature nicht (Demo-Deployments ohne
  * Tesseract/Ollama-Container).
  */
 @Path("/api/v1/households/{householdId}/receipts")
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed("user")
-@Tag(name = "Beleg-Scanner", description = "Kassenbon fotografieren, OCR + LLM-Extraktion, Vorschau fuer den Vorrat.")
+@Tag(name = "Beleg-Scanner", description = "Kassenbon fotografieren, OCR + LLM-Extraktion, Vorschau für den Vorrat.")
 @SecurityRequirement(name = "BearerAuth")
 public class ReceiptResource {
 
     private static final long MAX_FILE_BYTES = 10L * 1024 * 1024;
 
-    /** Nur Foto-Formate zulassen — der Rest wuerde bei Tesseract ohnehin scheitern. */
+    /** Nur Foto-Formate zulassen — der Rest würde bei Tesseract ohnehin scheitern. */
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
         "image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif");
 
@@ -65,12 +65,12 @@ public class ReceiptResource {
     @Operation(
         summary = "Belegfoto scannen",
         description = "OCR via Tesseract + Strukturierung via Ollama. Persistiert nichts — "
-            + "die Uebernahme in den Vorrat laeuft ueber die bestehende Pantry-API."
+            + "die Übernahme in den Vorrat läuft über die bestehende Pantry-API."
     )
     @APIResponse(responseCode = "200", description = "Rohtext + erkannte Posten (items kann leer sein).")
     @APIResponse(responseCode = "400", description = "Kein Bild, zu gross oder kein Text erkennbar.")
     @APIResponse(responseCode = "404", description = "Feature deaktiviert oder Haushalt unbekannt.")
-    @APIResponse(responseCode = "503", description = "Texterkennung (OCR) gerade nicht verfuegbar.")
+    @APIResponse(responseCode = "503", description = "Texterkennung (OCR) gerade nicht verfügbar.")
     public ReceiptScanResponse scan(
         @Parameter(description = "Haushalt-UUID.") @PathParam("householdId") UUID householdId,
         @RestForm("file") FileUpload file
@@ -86,7 +86,7 @@ public class ReceiptResource {
         }
         if (!isAllowedContentType(file.contentType())) {
             throw new BadRequestException(
-                "Nur Bilddateien werden unterstuetzt (JPEG, PNG, WebP, HEIC)");
+                "Nur Bilddateien werden unterstützt (JPEG, PNG, WebP, HEIC)");
         }
 
         byte[] imageBytes;
@@ -103,7 +103,7 @@ public class ReceiptResource {
             currentUser.id(), householdId, imageBytes, file.fileName());
     }
 
-    /** Prueft den gemeldeten Content-Type gegen die Foto-Allowlist (ohne evtl. Charset-Suffix). */
+    /** Prüft den gemeldeten Content-Type gegen die Foto-Allowlist (ohne evtl. Charset-Suffix). */
     private static boolean isAllowedContentType(String contentType) {
         if (contentType == null || contentType.isBlank()) {
             return false;

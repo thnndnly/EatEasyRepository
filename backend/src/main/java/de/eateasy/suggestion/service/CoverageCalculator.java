@@ -11,11 +11,11 @@ import java.util.UUID;
 /**
  * Pure Funktion: berechnet pro Rezept den Vorrats-Abdeckungsgrad —
  * {@code matched / total} der Zutaten, die der Haushalt zumindest in
- * irgendeiner Menge im Vorrat hat. Die exakte Mengen-Pruefung uebernimmt
- * spaeter die Einkaufsliste; fuer die Suggestion-Heuristik reicht die
+ * irgendeiner Menge im Vorrat hat. Die exakte Mengen-Prüfung übernimmt
+ * später die Einkaufsliste; für die Suggestion-Heuristik reicht die
  * Anwesenheit der Zutat.
  *
- * <p>Rezepte ohne Zutaten erhalten Coverage {@code 0} (kein Match moeglich).</p>
+ * <p>Rezepte ohne Zutaten erhalten Coverage {@code 0} (kein Match möglich).</p>
  */
 public final class CoverageCalculator {
 

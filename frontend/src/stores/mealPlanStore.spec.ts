@@ -62,7 +62,7 @@ describe('mealPlanStore', () => {
     expect(store.householdId).toBe(TEST_HOUSEHOLD.id)
   })
 
-  it('load mit explizitem Week-Start uebernimmt diesen Wert', async () => {
+  it('load mit explizitem Week-Start übernimmt diesen Wert', async () => {
     server.use(
       http.get(`/api/v1/households/${TEST_HOUSEHOLD.id}/mealplans`, ({ request }) => {
         expect(new URL(request.url).searchParams.get('weekStart')).toBe('2026-06-01')
@@ -129,7 +129,7 @@ describe('mealPlanStore', () => {
     ).rejects.toThrow('Kein Wochenplan geladen')
   })
 
-  it('setEntry merged den neuen Eintrag in plan.entries und ueberschreibt Duplikate', async () => {
+  it('setEntry merged den neuen Eintrag in plan.entries und überschreibt Duplikate', async () => {
     server.use(
       http.get(`/api/v1/households/${TEST_HOUSEHOLD.id}/mealplans`, () =>
         HttpResponse.json({ ...TEST_MEAL_PLAN, entries: [ENTRY] }),

@@ -35,7 +35,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
 
     private static final Logger LOG = Logger.getLogger(SmartSuggestionServiceImpl.class);
 
-    /** Mindest-Abdeckung, damit ein Rezept als Kandidat fuer Ollama betrachtet wird. */
+    /** Mindest-Abdeckung, damit ein Rezept als Kandidat für Ollama betrachtet wird. */
     private static final double COVERAGE_THRESHOLD = 0.5;
 
     /** Wie viele Top-Kandidaten wir an Ollama schicken (vermeidet Token-Explosion). */
@@ -123,7 +123,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
 
     // --- Ollama ----------------------------------------------------------
 
-    /** Ergebnis der KI-Stufe: ob Ollama erreichbar war + die Begruendungen. */
+    /** Ergebnis der KI-Stufe: ob Ollama erreichbar war + die Begründungen. */
     private record OllamaOutcome(boolean aiAvailable, Map<UUID, String> reasons) {
     }
 
@@ -140,7 +140,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
                 OllamaGenerateRequest.of(ollamaModel, prompt));
             if (response == null || response.response() == null || response.response().isBlank()) {
                 // Leere Antwort = KI faktisch nicht nutzbar (z. B. Modell fehlt).
-                LOG.errorf("Ollama lieferte leere Antwort — Modell '%s' verfuegbar?", ollamaModel);
+                LOG.errorf("Ollama lieferte leere Antwort — Modell '%s' verfügbar?", ollamaModel);
                 return new OllamaOutcome(false, Map.of());
             }
             LOG.debugf("Ollama raw response: %s", response.response());
@@ -149,10 +149,10 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
                 LOG.warnf("Ollama-Antwort parsed zu leerer Map. Raw: %s", response.response());
                 return new OllamaOutcome(false, Map.of());
             }
-            // Ollama hat geantwortet und lieferte mind. eine Begruendung.
+            // Ollama hat geantwortet und lieferte mind. eine Begründung.
             return new OllamaOutcome(true, parsed);
         } catch (Exception ex) {
-            LOG.errorf(ex, "Ollama-Aufruf fehlgeschlagen — falle zurueck auf Coverage-Reihenfolge");
+            LOG.errorf(ex, "Ollama-Aufruf fehlgeschlagen — falle zurück auf Coverage-Reihenfolge");
             return new OllamaOutcome(false, Map.of());
         }
     }
@@ -202,16 +202,16 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
 
         return """
             Du hilfst bei der Rezeptauswahl. Alle unten gelisteten Rezepte sind \
-            BEREITS gut durch den Vorrat abgedeckt. Verfuegbarer Vorrat:
+            BEREITS gut durch den Vorrat abgedeckt. Verfügbarer Vorrat:
             %s
             Rezepte (verwende exakt die id aus der Liste):
             %s
-            Gib fuer JEDES Rezept GENAU EINEN Eintrag mit kurzer positiver \
-            Begruendung (auf Deutsch) zurueck, die die passenden VORHANDENEN \
+            Gib für JEDES Rezept GENAU EINEN Eintrag mit kurzer positiver \
+            Begründung (auf Deutsch) zurück, die die passenden VORHANDENEN \
             Zutaten benennt — erfinde KEINE fehlenden Zutaten. Sortiere nach \
             Passung zum Vorrat. Antworte AUSSCHLIESSLICH mit JSON im Format: \
             [{"recipeId":"<id>","reason":"<kurzer Grund>"}]. \
-            Keine Erklaerungen ausserhalb des JSON.
+            Keine Erklärungen ausserhalb des JSON.
             """.formatted(pantryList, recipeList);
     }
 
@@ -245,7 +245,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
                     result.put(UUID.fromString(idNode.asText()),
                         reasonNode != null ? reasonNode.asText() : null);
                 } catch (IllegalArgumentException ignore) {
-                    // halluzinierte ID — uebergehen
+                    // halluzinierte ID — übergehen
                 }
             }
             return result;

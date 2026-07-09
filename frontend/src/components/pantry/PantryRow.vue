@@ -59,7 +59,7 @@ function save(): void {
 }
 
 async function onRemove(): Promise<void> {
-  const ok = await confirmDialog('Eintrag wirklich loeschen?')
+  const ok = await confirmDialog('Eintrag wirklich löschen?')
   if (ok) {
     emit('remove', props.item.id)
   }
@@ -104,7 +104,7 @@ async function onRemove(): Promise<void> {
           Bearbeiten
         </button>
         <button type="button" class="ee-btn-danger ee-btn-sm ml-2" @click="onRemove">
-          Loeschen
+          Löschen
         </button>
       </template>
     </td>

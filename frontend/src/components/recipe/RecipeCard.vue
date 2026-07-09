@@ -10,8 +10,8 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{ toggleFavorite: [id: string] }>()
 
-// Sperrt den Herz-Button, solange der Toggle-Request laeuft — verhindert
-// schnelle Doppelklicks, die parallele PUT .../favorite ausloesen wuerden.
+// Sperrt den Herz-Button, solange der Toggle-Request läuft — verhindert
+// schnelle Doppelklicks, die parallele PUT .../favorite auslösen würden.
 const favoritePending = ref(false)
 
 function onToggleFavorite(): void {
@@ -48,7 +48,7 @@ watch(
           type="button"
           class="text-lg leading-none transition-transform hover:scale-125 disabled:cursor-not-allowed disabled:opacity-50"
           :class="recipe.favorite ? '' : 'opacity-40 grayscale hover:opacity-100 hover:grayscale-0'"
-          :title="recipe.favorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufuegen'"
+          :title="recipe.favorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'"
           :aria-pressed="recipe.favorite"
           :disabled="favoritePending"
           aria-label="Favorit umschalten"

@@ -17,11 +17,11 @@ import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Verifiziert Google-ID-Tokens ueber Googles {@code tokeninfo}-Endpoint. Google
- * prueft dort Signatur und Ablauf serverseitig; wir pruefen zusaetzlich die
- * Audience gegen unsere Client-ID. Bewusst ohne zusaetzliche Google-SDK-
+ * Verifiziert Google-ID-Tokens über Googles {@code tokeninfo}-Endpoint. Google
+ * prüft dort Signatur und Ablauf serverseitig; wir prüfen zusätzlich die
+ * Audience gegen unsere Client-ID. Bewusst ohne zusätzliche Google-SDK-
  * Dependency — gleiche Design-Entscheidung wie beim {@code TesseractHttpClient}
- * (JDK-HttpClient, Base-URL fix). Fuer die erwartbaren Login-Volumina eines
+ * (JDK-HttpClient, Base-URL fix). Für die erwartbaren Login-Volumina eines
  * Studienprojekts ist der Remote-Call unkritisch.
  */
 @ApplicationScoped
@@ -37,7 +37,7 @@ public class GoogleTokenVerifierImpl implements GoogleTokenVerifier {
     public GoogleTokenVerifierImpl(
         ObjectMapper objectMapper,
         // Optional statt defaultValue="": SmallRye behandelt einen leeren
-        // String-Wert als "nicht gesetzt" und wuerde die Konvertierung sonst
+        // String-Wert als "nicht gesetzt" und würde die Konvertierung sonst
         // beim Boot fehlschlagen lassen.
         @ConfigProperty(name = "google.oauth.client-id") Optional<String> clientId
     ) {
@@ -54,8 +54,8 @@ public class GoogleTokenVerifierImpl implements GoogleTokenVerifier {
             throw new InvalidCredentialsException();
         }
         if (clientId.isBlank()) {
-            // Feature nicht konfiguriert — kein gueltiges Token moeglich.
-            LOG.warn("google.oauth.client-id ist nicht gesetzt, Google-Login nicht moeglich");
+            // Feature nicht konfiguriert — kein gültiges Token möglich.
+            LOG.warn("google.oauth.client-id ist nicht gesetzt, Google-Login nicht möglich");
             throw new InvalidCredentialsException();
         }
         try {
@@ -70,7 +70,7 @@ public class GoogleTokenVerifierImpl implements GoogleTokenVerifier {
             HttpResponse<String> response = httpClient.send(
                 request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
-                // 400 = Token abgelaufen/ungueltig — kein Server-Fehler.
+                // 400 = Token abgelaufen/ungültig — kein Server-Fehler.
                 throw new InvalidCredentialsException();
             }
 

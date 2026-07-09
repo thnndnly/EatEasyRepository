@@ -34,7 +34,7 @@ async function onSubmit(): Promise<void> {
   try {
     const created = await householdStore.invite(props.householdId, email.value.trim())
     lastInvitation.value = created
-    toastStore.success(`Einladung fuer ${created.email} erstellt`)
+    toastStore.success(`Einladung für ${created.email} erstellt`)
     email.value = ''
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Einladung fehlgeschlagen'
@@ -51,7 +51,7 @@ async function copyLink(): Promise<void> {
     await navigator.clipboard.writeText(acceptUrl.value)
     toastStore.success('Beitritts-Link kopiert')
   } catch {
-    // Clipboard-API nicht verfuegbar (z. B. kein HTTPS) — der Link steht sichtbar
+    // Clipboard-API nicht verfügbar (z. B. kein HTTPS) — der Link steht sichtbar
     // im Feld und kann manuell markiert werden.
     toastStore.info('Link markieren und manuell kopieren')
   }
@@ -96,7 +96,7 @@ async function copyLink(): Promise<void> {
       class="space-y-2 rounded-2xl border border-mint-200 bg-mint-50 px-4 py-3 text-sm text-mint-800"
     >
       <p>
-        Einladung fuer <strong>{{ lastInvitation.email }}</strong> erstellt — 7 Tage gueltig.
+        Einladung für <strong>{{ lastInvitation.email }}</strong> erstellt — 7 Tage gültig.
       </p>
       <p class="text-mint-700">
         Falls keine E-Mail ankommt, teile diesen Beitritts-Link direkt mit der Person:

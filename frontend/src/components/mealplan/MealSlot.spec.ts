@@ -41,12 +41,12 @@ describe('MealSlot Portionen-Stepper', () => {
     await minus.trigger('click')
 
     expect(wrapper.emitted('changeServings')).toBeUndefined()
-    // Frueher fiel der Klick per pointer-events-none auf den Slot durch
-    // und oeffnete den Picker — darf nicht wieder passieren.
+    // Früher fiel der Klick per pointer-events-none auf den Slot durch
+    // und öffnete den Picker — darf nicht wieder passieren.
     expect(wrapper.emitted('select')).toBeUndefined()
   })
 
-  it('erlaubt Dekrement auch oberhalb von 20 (Werte > 20 sind via Picker/API moeglich)', async () => {
+  it('erlaubt Dekrement auch oberhalb von 20 (Werte > 20 sind via Picker/API möglich)', async () => {
     const wrapper = mount(MealSlot, { props: { entry: entryWithServings(25) } })
 
     expect(wrapper.find('[aria-label="Mehr Portionen"]').attributes('disabled')).toBeDefined()
@@ -55,7 +55,7 @@ describe('MealSlot Portionen-Stepper', () => {
     expect(wrapper.emitted('changeServings')).toEqual([[24]])
   })
 
-  it('deaktiviert beide Stepper-Buttons waehrend saving', async () => {
+  it('deaktiviert beide Stepper-Buttons während saving', async () => {
     const wrapper = mount(MealSlot, {
       props: { entry: entryWithServings(4), saving: true },
     })
@@ -67,7 +67,7 @@ describe('MealSlot Portionen-Stepper', () => {
     expect(wrapper.emitted('changeServings')).toBeUndefined()
   })
 
-  it('Klick auf die Slot-Flaeche emittet select', async () => {
+  it('Klick auf die Slot-Fläche emittet select', async () => {
     const wrapper = mount(MealSlot, { props: { entry: entryWithServings(4) } })
 
     await wrapper.find('button.absolute').trigger('click')
@@ -80,6 +80,6 @@ describe('MealSlot Portionen-Stepper', () => {
     const wrapper = mount(MealSlot, { props: { entry: null } })
 
     expect(wrapper.find('[aria-label="Mehr Portionen"]').exists()).toBe(false)
-    expect(wrapper.find('button[aria-label="Rezept waehlen"]').exists()).toBe(true)
+    expect(wrapper.find('button[aria-label="Rezept wählen"]').exists()).toBe(true)
   })
 })

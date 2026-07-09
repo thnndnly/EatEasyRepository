@@ -5,7 +5,7 @@ import de.eateasy.recipe.dto.RecipeMiniDto;
 /**
  * Ein Smart-Suggestion-Vorschlag. {@code reason} kann {@code null} sein,
  * wenn der Ollama-Fallback aktiv war — das Frontend zeigt dann statt
- * Begruendung einen Hinweis auf die Coverage-Heuristik.
+ * Begründung einen Hinweis auf die Coverage-Heuristik.
  */
 public record SuggestionDto(
     RecipeMiniDto recipe,

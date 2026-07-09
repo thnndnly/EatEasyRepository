@@ -6,7 +6,7 @@ const MAX_SERVINGS = 20
 
 interface Props {
   entry: MealPlanEntryDto | null
-  /** true, solange ein Portionen-Update fuer diesen Slot laeuft. */
+  /** true, solange ein Portionen-Update für diesen Slot läuft. */
   saving?: boolean
 }
 
@@ -22,9 +22,9 @@ function stepServings(delta: number): void {
     return
   }
   const next = props.entry.servings + delta
-  // Nur die Grenze in Klickrichtung pruefen: Werte ausserhalb 1-20 sind ueber
-  // Picker/API erreichbar (dort gibt es kein Max) und muessen per Stepper
-  // zurueck in den Bereich gefuehrt werden koennen.
+  // Nur die Grenze in Klickrichtung prüfen: Werte ausserhalb 1-20 sind über
+  // Picker/API erreichbar (dort gibt es kein Max) und müssen per Stepper
+  // zurück in den Bereich geführt werden können.
   if (delta > 0 && next > MAX_SERVINGS) {
     return
   }
@@ -37,8 +37,8 @@ function stepServings(delta: number): void {
 
 <template>
   <!--
-    Der Slot ist ein div mit einer vollflaechigen Klickflaeche (Button) darunter
-    und den Bedien-Buttons (Stepper, Entfernen) darueber. Buttons duerfen nicht
+    Der Slot ist ein div mit einer vollflächigen Klickfläche (Button) darunter
+    und den Bedien-Buttons (Stepper, Entfernen) darüber. Buttons dürfen nicht
     in Buttons verschachtelt werden — echte <button>-Elemente geben uns
     disabled-Semantik (kein Durchklicken auf den Picker) und Tastatur-Fokus.
   -->
@@ -53,7 +53,7 @@ function stepServings(delta: number): void {
     <button
       type="button"
       class="absolute inset-0 rounded-xl"
-      :aria-label="entry?.recipe ? `${entry.recipe.title} — Rezept aendern` : 'Rezept waehlen'"
+      :aria-label="entry?.recipe ? `${entry.recipe.title} — Rezept ändern` : 'Rezept wählen'"
       @click="emit('select')"
     ></button>
 

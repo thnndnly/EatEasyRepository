@@ -155,7 +155,7 @@ class TheMealDbMapperTest {
 
     private static TheMealDbMeal meal(String id, String title, String category, String area,
                                       String instructions, String... ingredientPairs) {
-        // Pairs sind (ingredient, measure)*. Wir fuellen bis zu 20 Slots auf.
+        // Pairs sind (ingredient, measure)*. Wir füllen bis zu 20 Slots auf.
         String[] ing = new String[20];
         String[] meas = new String[20];
         for (int i = 0; i < ingredientPairs.length / 2 && i < 20; i++) {

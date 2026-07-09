@@ -16,8 +16,8 @@ interface EditableItem {
   amount: number
   unit: Unit
   ingredientId: string | null
-  // Scan-Match merken: aendert der User den Namen, gilt die ID nicht mehr —
-  // das Backend loest sonst per ingredientId auf und verwirft den Edit.
+  // Scan-Match merken: ändert der User den Namen, gilt die ID nicht mehr —
+  // das Backend löst sonst per ingredientId auf und verwirft den Edit.
   matchedName: string
   matchedIngredientId: string | null
 }
@@ -34,7 +34,7 @@ const saving = ref(false)
 const saveError = ref<string | null>(null)
 const rawTextVisible = ref(false)
 
-// Scan-Ergebnis in editierbare Zeilen uebernehmen; alle vorselektiert.
+// Scan-Ergebnis in editierbare Zeilen übernehmen; alle vorselektiert.
 watch(
   () => receiptStore.result,
   (next) => {
@@ -72,7 +72,7 @@ async function onFileChange(event: Event): Promise<void> {
     return
   }
   await receiptStore.scan(props.householdId, file)
-  // Gleiche Datei nochmal waehlbar machen (change feuert sonst nicht).
+  // Gleiche Datei nochmal wählbar machen (change feuert sonst nicht).
   input.value = ''
 }
 
@@ -87,7 +87,7 @@ function updateName(index: number, name: string): void {
   if (!item) {
     return
   }
-  // Namensaenderung invalidiert den Scan-Match (Chip wechselt auf "neu");
+  // Namensänderung invalidiert den Scan-Match (Chip wechselt auf "neu");
   // tippt der User den Original-Namen wieder ein, lebt der Match wieder auf.
   const keepsMatch = name.trim().toLowerCase() === item.matchedName.trim().toLowerCase()
   updateItem(index, { name, ingredientId: keepsMatch ? item.matchedIngredientId : null })
@@ -104,7 +104,7 @@ async function onConfirm(): Promise<void> {
   saving.value = true
   try {
     // Sequenziell statt parallel: PantryService aggregiert gleiche Zutaten —
-    // parallele Requests koennten sich gegenseitig ueberschreiben.
+    // parallele Requests könnten sich gegenseitig überschreiben.
     for (const item of toAdd) {
       await pantryStore.addItem({
         ingredientId: item.ingredientId,
@@ -113,8 +113,8 @@ async function onConfirm(): Promise<void> {
         unit: item.unit,
         bestBefore: null,
       })
-      // Uebernommene Zeile sofort entfernen: schlaegt ein spaeterer Request
-      // fehl, wuerde ein erneutes Bestaetigen sie sonst doppelt buchen
+      // Übernommene Zeile sofort entfernen: schlägt ein späterer Request
+      // fehl, würde ein erneutes Bestätigen sie sonst doppelt buchen
       // (der Server aggregiert gleiche Zutaten).
       editableItems.value = editableItems.value.filter((i) => i !== item)
     }
@@ -122,7 +122,7 @@ async function onConfirm(): Promise<void> {
   } catch {
     saveError.value =
       pantryStore.error ??
-      'Uebernahme fehlgeschlagen — die verbliebenen Posten sind weiter ausgewaehlt.'
+      'Übernahme fehlgeschlagen — die verbliebenen Posten sind weiter ausgewählt.'
   } finally {
     saving.value = false
   }
@@ -136,11 +136,11 @@ async function onConfirm(): Promise<void> {
     </template>
 
     <div class="space-y-4">
-      <!-- Schritt 1: Foto waehlen -->
+      <!-- Schritt 1: Foto wählen -->
       <div v-if="!receiptStore.result" class="space-y-3">
         <p class="text-sm text-ink-500">
-          Fotografiere deinen Kassenbon oder waehle ein Foto aus. Der Text wird per
-          OCR erkannt und die Lebensmittel automatisch extrahiert — du bestaetigst
+          Fotografiere deinen Kassenbon oder wähle ein Foto aus. Der Text wird per
+          OCR erkannt und die Lebensmittel automatisch extrahiert — du bestätigst
           das Ergebnis, bevor etwas im Vorrat landet.
         </p>
         <input
@@ -157,7 +157,7 @@ async function onConfirm(): Promise<void> {
           :disabled="receiptStore.scanning"
           @click="fileInput?.click()"
         >
-          {{ receiptStore.scanning ? 'Erkenne Text ...' : '📷 Foto auswaehlen' }}
+          {{ receiptStore.scanning ? 'Erkenne Text ...' : '📷 Foto auswählen' }}
         </button>
         <p
           v-if="receiptStore.error"
@@ -167,7 +167,7 @@ async function onConfirm(): Promise<void> {
         </p>
       </div>
 
-      <!-- Schritt 2: Vorschau bestaetigen -->
+      <!-- Schritt 2: Vorschau bestätigen -->
       <div v-else class="space-y-4">
         <p v-if="editableItems.length === 0" class="rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-4 py-3 text-sm text-ink-500">
           Es konnten keine Lebensmittel extrahiert werden. Wirf einen Blick in den
@@ -248,7 +248,7 @@ async function onConfirm(): Promise<void> {
             :disabled="saving || selectedCount === 0"
             @click="onConfirm"
           >
-            {{ saving ? 'Uebernehme ...' : `${selectedCount} Posten in den Vorrat` }}
+            {{ saving ? 'Übernehme ...' : `${selectedCount} Posten in den Vorrat` }}
           </button>
         </div>
       </div>

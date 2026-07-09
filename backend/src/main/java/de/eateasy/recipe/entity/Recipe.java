@@ -29,7 +29,7 @@ public class Recipe {
     @Column(name = "owner_id", nullable = false)
     private UUID ownerId;
 
-    /** NULL = privates Rezept; sonst sichtbar fuer alle Mitglieder. */
+    /** NULL = privates Rezept; sonst sichtbar für alle Mitglieder. */
     @Column(name = "household_id")
     private UUID householdId;
 
@@ -64,7 +64,7 @@ public class Recipe {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    /** Soft-Delete: NULL = aktiv, sonst Zeitpunkt der Loeschung. */
+    /** Soft-Delete: NULL = aktiv, sonst Zeitpunkt der Löschung. */
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
@@ -211,12 +211,12 @@ public class Recipe {
         return deletedAt;
     }
 
-    /** Soft-Delete-Status: true, wenn das Rezept als geloescht markiert ist. */
+    /** Soft-Delete-Status: true, wenn das Rezept als gelöscht markiert ist. */
     public boolean isDeleted() {
         return deletedAt != null;
     }
 
-    /** Markiert das Rezept als geloescht (Soft-Delete); die Zeile bleibt bestehen. */
+    /** Markiert das Rezept als gelöscht (Soft-Delete); die Zeile bleibt bestehen. */
     public void markDeleted() {
         this.deletedAt = Instant.now();
     }
@@ -225,8 +225,8 @@ public class Recipe {
         return ingredients;
     }
 
-    /** Loescht alle bisherigen Zutaten und uebernimmt die uebergebenen. Nutzt
-     *  orphanRemoval, damit verwaiste Eintraege automatisch geloescht werden. */
+    /** Löscht alle bisherigen Zutaten und übernimmt die übergebenen. Nutzt
+     *  orphanRemoval, damit verwaiste Einträge automatisch gelöscht werden. */
     public void replaceIngredients(List<RecipeIngredient> next) {
         this.ingredients.clear();
         for (RecipeIngredient ri : next) {

@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 /**
- * Patch-Request fuer einen Haushalt. Alle Felder sind optional —
- * nur gesetzte (non-null) Felder werden uebernommen.
+ * Patch-Request für einen Haushalt. Alle Felder sind optional —
+ * nur gesetzte (non-null) Felder werden übernommen.
  */
 public record HouseholdUpdateRequest(
     @Size(max = 100) String name,

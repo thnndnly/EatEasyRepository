@@ -27,8 +27,8 @@ import java.util.UUID;
 
 /**
  * Pipeline des Beleg-Scanners (Phase 11): OCR → LLM-Strukturierung →
- * Ingredient-Matching. Bewusst fehlertolerant: schlaegt die Strukturierung
- * fehl, kommt der Rohtext mit leerer Item-Liste zurueck statt eines Fehlers —
+ * Ingredient-Matching. Bewusst fehlertolerant: schlägt die Strukturierung
+ * fehl, kommt der Rohtext mit leerer Item-Liste zurück statt eines Fehlers —
  * das UI zeigt dann den Text und der User kann manuell anlegen.
  */
 @ApplicationScoped
@@ -40,8 +40,8 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
     private static final int AMOUNT_SCALE = 2;
 
     /**
-     * Obergrenze fuer den OCR-Text, der in den Ollama-Prompt eingebettet wird.
-     * Ein dichtes/adversariales Bild koennte sonst einen riesigen Prompt
+     * Obergrenze für den OCR-Text, der in den Ollama-Prompt eingebettet wird.
+     * Ein dichtes/adversariales Bild könnte sonst einen riesigen Prompt
      * erzeugen und die geteilte, sequentielle Ollama-Instanz (auch von der
      * Smart-Suggestion genutzt) blockieren. Ein realer Kassenbon liegt weit
      * darunter.
@@ -79,7 +79,7 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
         String rawText = extractText(imageBytes, filename);
         if (rawText == null || rawText.isBlank()) {
             throw new BadRequestException(
-                "Auf dem Bild wurde kein Text erkannt — bitte schaerfer fotografieren");
+                "Auf dem Bild wurde kein Text erkannt — bitte schärfer fotografieren");
         }
 
         List<ReceiptItemDto> items = structureWithOllama(rawText);
@@ -89,20 +89,20 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
     // --- OCR ---------------------------------------------------------------
 
     /**
-     * Kapselt den OCR-Aufruf. Faellt der Tesseract-Dienst aus (Timeout,
+     * Kapselt den OCR-Aufruf. Fällt der Tesseract-Dienst aus (Timeout,
      * Connection refused, non-2xx), wirft {@link OcrClient} eine
      * {@link RuntimeException} — die wird hier gefangen, serverseitig mit
      * Detail geloggt und als {@link ServiceUnavailableException} (HTTP 503,
-     * generische Nachricht) uebersetzt, statt als unbehandelte 500 mit
+     * generische Nachricht) übersetzt, statt als unbehandelte 500 mit
      * internen Details beim Client zu landen.
      */
     private String extractText(byte[] imageBytes, String filename) {
         try {
             return ocrClient.extractText(imageBytes, filename);
         } catch (RuntimeException ex) {
-            LOG.errorf(ex, "OCR-Aufruf fehlgeschlagen fuer Datei '%s'", filename);
+            LOG.errorf(ex, "OCR-Aufruf fehlgeschlagen für Datei '%s'", filename);
             throw new ServiceUnavailableException(
-                "Texterkennung ist gerade nicht verfuegbar — bitte spaeter erneut versuchen");
+                "Texterkennung ist gerade nicht verfügbar — bitte später erneut versuchen");
         }
     }
 
@@ -113,7 +113,7 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
             OllamaGenerateResponse response = ollamaClient.generate(
                 OllamaGenerateRequest.of(ollamaModel, buildPrompt(rawText)));
             if (response == null || response.response() == null || response.response().isBlank()) {
-                LOG.warn("Ollama lieferte leere Antwort fuer Beleg-Strukturierung");
+                LOG.warn("Ollama lieferte leere Antwort für Beleg-Strukturierung");
                 return List.of();
             }
             return parseItems(response.response());
@@ -125,25 +125,25 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
 
     private static String buildPrompt(String rawText) {
         // Rohtext vor dem Einbetten kappen: ein dichtes/adversariales Bild
-        // koennte sonst einen riesigen Prompt erzeugen und die geteilte,
+        // könnte sonst einen riesigen Prompt erzeugen und die geteilte,
         // sequentielle Ollama-Instanz blockieren.
         String promptText = rawText.length() > MAX_PROMPT_TEXT_CHARS
             ? rawText.substring(0, MAX_PROMPT_TEXT_CHARS)
             : rawText;
         // replace statt String.formatted: der Bon-Text (und der Prompt selbst,
-        // "3,5%") enthaelt literale %-Zeichen, die formatted als
-        // Format-Spezifizierer interpretieren wuerde.
+        // "3,5%") enthält literale %-Zeichen, die formatted als
+        // Format-Spezifizierer interpretieren würde.
         return """
             Du extrahierst Lebensmittel aus einem deutschen Kassenbon (OCR-Text, \
             kann Fehler enthalten). Ignoriere Preise, Pfand, Rabatte, Summen und \
             Nicht-Lebensmittel. Normalisiere Produktnamen auf die Grundzutat \
-            (z. B. "Bio Vollmilch 3,5%" -> "Milch"). Schaetze Menge und Einheit; \
+            (z. B. "Bio Vollmilch 3,5%" -> "Milch"). Schätze Menge und Einheit; \
             erlaubte Einheiten: GRAM, ML, PIECE. Wenn unklar: 1 PIECE.
             Kassenbon-Text:
             {BON_TEXT}
             Antworte AUSSCHLIESSLICH mit JSON im Format: \
             [{"name":"<Zutat>","amount":<Zahl>,"unit":"GRAM|ML|PIECE"}]. \
-            Keine Erklaerungen ausserhalb des JSON.
+            Keine Erklärungen ausserhalb des JSON.
             """.replace("{BON_TEXT}", promptText);
     }
 
@@ -151,7 +151,7 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
         try {
             JsonNode array = findItemsArray(body);
             if (array == null) {
-                LOG.warnf("Ollama-Antwort enthaelt kein Item-Array: %s", body);
+                LOG.warnf("Ollama-Antwort enthält kein Item-Array: %s", body);
                 return List.of();
             }
 
@@ -206,7 +206,7 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
                 }
             }
         } catch (Exception ex) {
-            LOG.debugf(ex, "Ingredient-Matching fuer '%s' fehlgeschlagen", name);
+            LOG.debugf(ex, "Ingredient-Matching für '%s' fehlgeschlagen", name);
         }
         return null;
     }
@@ -228,7 +228,7 @@ public class ReceiptScanServiceImpl implements ReceiptScanService {
         return array;
     }
 
-    /** Liefert das Array nur, wenn der Text parsebar ist und Objekte enthaelt. */
+    /** Liefert das Array nur, wenn der Text parsebar ist und Objekte enthält. */
     private JsonNode tryParseItemsArray(String text) {
         try {
             JsonNode root = objectMapper.readTree(text);

@@ -57,8 +57,8 @@ public class AuthResource {
     @Path("/google")
     @PermitAll
     public AuthResponse google(@Valid GoogleLoginRequest request) {
-        // Feature-Flag: ist Google-OAuth aus (Default), verhaelt sich der
-        // Endpoint, als gaebe es ihn nicht (404) — analog zum Beleg-Scanner.
+        // Feature-Flag: ist Google-OAuth aus (Default), verhält sich der
+        // Endpoint, als gäbe es ihn nicht (404) — analog zum Beleg-Scanner.
         if (!googleEnabled) {
             throw new NotFoundException("Google-Login ist nicht aktiviert");
         }

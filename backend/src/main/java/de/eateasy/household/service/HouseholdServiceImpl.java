@@ -65,8 +65,8 @@ public class HouseholdServiceImpl implements HouseholdService {
     @Override
     @Transactional
     public HouseholdDto create(UUID userId, HouseholdCreateRequest request) {
-        // Sanity-Check: Aufrufer muss als User existieren — sonst koennten wir
-        // dangling Memberships anlegen, falls das JWT auf einen geloeschten
+        // Sanity-Check: Aufrufer muss als User existieren — sonst könnten wir
+        // dangling Memberships anlegen, falls das JWT auf einen gelöschten
         // User zeigt.
         authService.getUser(userId);
 
@@ -83,7 +83,7 @@ public class HouseholdServiceImpl implements HouseholdService {
     @Override
     @Transactional
     public List<HouseholdDto> listForUser(UUID userId) {
-        // N+1 vermeiden: erst alle Memberships laden, dann die zugehoerigen
+        // N+1 vermeiden: erst alle Memberships laden, dann die zugehörigen
         // Haushalte in einem Batch-Query holen, anschliessend in-memory mappen.
         List<HouseholdMembership> memberships = membershipRepository.findByUser(userId);
         if (memberships.isEmpty()) {
@@ -142,7 +142,7 @@ public class HouseholdServiceImpl implements HouseholdService {
 
         String email = request.email().trim().toLowerCase();
 
-        // Falls die Email schon einem registrierten User gehoert und der bereits
+        // Falls die Email schon einem registrierten User gehört und der bereits
         // im Haushalt ist → Konflikt, sonst lohnt der Token nicht.
         boolean existingMember = authService.findByEmail(email)
             .map(existing -> membershipRepository.existsByUserAndHousehold(existing.id(), householdId))
@@ -157,7 +157,7 @@ public class HouseholdServiceImpl implements HouseholdService {
         invitationRepository.persist(invitation);
 
         // Mail-Versand — Fehler werden im Service geloggt, Invitation bleibt
-        // unabhaengig davon persistiert (Token-Weitergabe als Fallback moeglich).
+        // unabhängig davon persistiert (Token-Weitergabe als Fallback möglich).
         notificationService.sendInvitation(email, household.getName(),
             inviter.displayName(), token);
 
@@ -172,7 +172,7 @@ public class HouseholdServiceImpl implements HouseholdService {
 
         Instant now = Instant.now();
         if (invitation.isAccepted()) {
-            throw new ConflictException("Einladung wurde bereits eingeloest");
+            throw new ConflictException("Einladung wurde bereits eingelöst");
         }
         if (invitation.isExpired(now)) {
             throw new ConflictException("Einladung ist abgelaufen");
@@ -180,7 +180,7 @@ public class HouseholdServiceImpl implements HouseholdService {
 
         UserDto user = authService.getUser(userId);
         if (!user.email().equalsIgnoreCase(invitation.getEmail())) {
-            throw new ForbiddenException("Diese Einladung ist fuer eine andere Email-Adresse");
+            throw new ForbiddenException("Diese Einladung ist für eine andere Email-Adresse");
         }
 
         Household household = loadHousehold(invitation.getHouseholdId());
@@ -272,7 +272,7 @@ public class HouseholdServiceImpl implements HouseholdService {
     private void assertOwner(UUID userId, UUID householdId) {
         HouseholdMembership membership = assertMembership(userId, householdId);
         if (membership.getRole() != MembershipRole.OWNER) {
-            throw new ForbiddenException("Nur der Owner darf diese Aktion ausfuehren");
+            throw new ForbiddenException("Nur der Owner darf diese Aktion ausführen");
         }
     }
 

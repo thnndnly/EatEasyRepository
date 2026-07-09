@@ -10,7 +10,7 @@ import type { RecipeDto } from '@/types/recipe'
 interface Props {
   open: boolean
   defaultDietTags: DietTag[]
-  /** Initial-Servings (z. B. aus Haushaltsgroesse oder vorhandenem Slot). */
+  /** Initial-Servings (z. B. aus Haushaltsgröße oder vorhandenem Slot). */
   initialServings: number
 }
 
@@ -34,7 +34,7 @@ watch(
     if (!isOpen) {
       return
     }
-    // Beim Oeffnen: Default-Diaeten des Haushalts vorschlagen, Servings zuruecksetzen.
+    // Beim Öffnen: Default-Diäten des Haushalts vorschlagen, Servings zurücksetzen.
     tags.value = [...props.defaultDietTags]
     servings.value = props.initialServings
     query.value = ''
@@ -75,7 +75,7 @@ function selectRecipe(recipe: RecipeDto): void {
 <template>
   <BaseModal :open="open" @close="emit('close')">
     <template #header>
-      <h2 class="text-base font-semibold text-ink-900">Rezept auswaehlen</h2>
+      <h2 class="text-base font-semibold text-ink-900">Rezept auswählen</h2>
     </template>
 
     <div class="space-y-4">
@@ -128,7 +128,7 @@ function selectRecipe(recipe: RecipeDto): void {
             class="ee-btn-primary ee-btn-sm"
             @click="selectRecipe(recipe)"
           >
-            Auswaehlen
+            Auswählen
           </button>
         </li>
       </ul>

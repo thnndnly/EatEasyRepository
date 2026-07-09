@@ -73,7 +73,7 @@ async function onCreate(): Promise<void> {
       </div>
 
       <div class="space-y-2">
-        <span class="block text-sm font-medium text-ink-700">Standard-Diaeten</span>
+        <span class="block text-sm font-medium text-ink-700">Standard-Diäten</span>
         <DietTagSelector v-model="newTags" />
       </div>
 
@@ -110,7 +110,7 @@ async function onCreate(): Promise<void> {
     </ul>
 
     <p v-else-if="!showCreate" class="rounded border border-dashed border-cream-300 bg-white p-6 text-center text-ink-500">
-      Noch keine Haushalte. Lege deinen ersten Haushalt an oder loese eine Einladung ein.
+      Noch keine Haushalte. Lege deinen ersten Haushalt an oder löse eine Einladung ein.
     </p>
   </section>
 </template>

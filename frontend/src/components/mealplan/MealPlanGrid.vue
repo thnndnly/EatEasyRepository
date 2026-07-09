@@ -12,7 +12,7 @@ import {
 
 interface Props {
   entryAt: (day: DayOfWeek, mealType: MealType) => MealPlanEntryDto | null
-  /** Slot-Key `${day}:${mealType}`, dessen Portionen-Update gerade laeuft. */
+  /** Slot-Key `${day}:${mealType}`, dessen Portionen-Update gerade läuft. */
   savingSlot?: string | null
 }
 

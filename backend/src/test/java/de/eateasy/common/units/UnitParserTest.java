@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UnitParserTest {
 
     @Test
-    @DisplayName("null/leeres Token faellt auf defaultUnit mit Multiplier 1.0 zurueck")
+    @DisplayName("null/leeres Token fällt auf defaultUnit mit Multiplier 1.0 zurück")
     void blankFallsBackToDefault() {
         assertThat(UnitParser.parse(null, Unit.PIECE))
             .isEqualTo(new UnitParseResult(Unit.PIECE, 1.0));
@@ -22,7 +22,7 @@ class UnitParserTest {
     }
 
     @Test
-    @DisplayName("unbekanntes Token faellt auf defaultUnit zurueck")
+    @DisplayName("unbekanntes Token fällt auf defaultUnit zurück")
     void unknownFallsBack() {
         assertThat(UnitParser.parse("xyz", Unit.PIECE))
             .isEqualTo(new UnitParseResult(Unit.PIECE, 1.0));
@@ -69,7 +69,7 @@ class UnitParserTest {
         "piece, PIECE, 1.0",
         "pcs, PIECE, 1.0",
         "stück, PIECE, 1.0",
-        "stueck, PIECE, 1.0"
+        "stück, PIECE, 1.0"
     })
     @DisplayName("parametrisierte Token-Mappings")
     void knownTokens(String token, Unit expectedUnit, double expectedMultiplier) {

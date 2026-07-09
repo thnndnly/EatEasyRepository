@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Komplett-Update eines Rezepts. Vollstaendig gespiegelte Eingabe — wir machen
- * keinen Patch-Modus, weil Zutatenliste sonst inkonsistent waere.
+ * Komplett-Update eines Rezepts. Vollständig gespiegelte Eingabe — wir machen
+ * keinen Patch-Modus, weil Zutatenliste sonst inkonsistent wäre.
  */
 public record RecipeUpdateRequest(
     @NotBlank @Size(max = 200) String title,

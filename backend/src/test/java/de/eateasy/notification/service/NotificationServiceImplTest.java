@@ -59,7 +59,7 @@ class NotificationServiceImplTest {
     }
 
     @Test
-    @DisplayName("Subject enthaelt 'EatEasy'-Markenbezeichnung")
+    @DisplayName("Subject enthält 'EatEasy'-Markenbezeichnung")
     void subjectMentionsBrand() {
         notificationService.sendInvitation(
             "bob@example.com", "WG", "Alice", "tok");

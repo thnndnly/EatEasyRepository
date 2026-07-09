@@ -68,7 +68,7 @@ describe('recipeStore', () => {
     expect(store.current).toEqual(TEST_RECIPE)
   })
 
-  it('create fuegt das neue Rezept zur Liste hinzu und setzt current', async () => {
+  it('create fügt das neue Rezept zur Liste hinzu und setzt current', async () => {
     server.use(
       http.post('/api/v1/recipes', () => HttpResponse.json(TEST_RECIPE, { status: 201 })),
     )
@@ -133,7 +133,7 @@ describe('recipeStore', () => {
     expect(store.current?.favorite).toBe(true)
   })
 
-  it('toggleFavorite setzt error bei Server-Fehler und laesst Flag unveraendert', async () => {
+  it('toggleFavorite setzt error bei Server-Fehler und lässt Flag unverändert', async () => {
     server.use(
       http.get('/api/v1/recipes', () => HttpResponse.json([TEST_RECIPE])),
       http.put(`/api/v1/recipes/${TEST_RECIPE.id}/favorite`, () =>

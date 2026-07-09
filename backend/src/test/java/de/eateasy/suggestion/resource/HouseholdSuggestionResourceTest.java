@@ -69,7 +69,7 @@ class HouseholdSuggestionResourceTest {
     }
 
     @Test
-    @DisplayName("POST /households/{id}/suggestions liefert Vorschlaege")
+    @DisplayName("POST /households/{id}/suggestions liefert Vorschläge")
     void happyPath() {
         String token = registerUser("alice@example.com");
         String householdId = createHousehold(token, "WG");
@@ -113,7 +113,7 @@ class HouseholdSuggestionResourceTest {
     }
 
     @Test
-    @DisplayName("POST fuer fremden Haushalt → 403")
+    @DisplayName("POST für fremden Haushalt → 403")
     void foreignHousehold() {
         String alice = registerUser("alice@example.com");
         String bob = registerUser("bob@example.com");

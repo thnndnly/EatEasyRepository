@@ -120,8 +120,8 @@ public class RecipeResource {
 
     @DELETE
     @Path("/{id}")
-    @Operation(summary = "Rezept loeschen (Soft-Delete).")
-    @APIResponse(responseCode = "204", description = "Geloescht.")
+    @Operation(summary = "Rezept löschen (Soft-Delete).")
+    @APIResponse(responseCode = "204", description = "Gelöscht.")
     @APIResponse(responseCode = "404", description = "Rezept nicht vorhanden oder kein Zugriff.")
     public Response delete(@Parameter(description = "Rezept-UUID.") @PathParam("id") UUID id) {
         recipeService.delete(currentUser.id(), id);

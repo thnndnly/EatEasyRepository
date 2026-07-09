@@ -71,15 +71,15 @@ describe('pantryStore', () => {
     })
   })
 
-  it('addItem wirft ohne ausgewaehlten Haushalt', async () => {
+  it('addItem wirft ohne ausgewählten Haushalt', async () => {
     const store = usePantryStore()
 
     await expect(
       store.addItem({ ingredientName: 'X', amount: 1, unit: 'PIECE' }),
-    ).rejects.toThrow('Kein Haushalt ausgewaehlt')
+    ).rejects.toThrow('Kein Haushalt ausgewählt')
   })
 
-  it('addItem haengt neues Item an die Liste', async () => {
+  it('addItem hängt neues Item an die Liste', async () => {
     server.use(
       http.get(`/api/v1/households/${TEST_HOUSEHOLD.id}/pantry`, () => HttpResponse.json([])),
       http.post(`/api/v1/households/${TEST_HOUSEHOLD.id}/pantry`, () =>
@@ -99,7 +99,7 @@ describe('pantryStore', () => {
     expect(store.items).toEqual([TEST_PANTRY_ITEM])
   })
 
-  it('addItem ersetzt aggregiertes Item, wenn Server dieselbe ID zurueckgibt', async () => {
+  it('addItem ersetzt aggregiertes Item, wenn Server dieselbe ID zurückgibt', async () => {
     const merged = { ...TEST_PANTRY_ITEM, amount: 8 }
     server.use(
       http.get(`/api/v1/households/${TEST_HOUSEHOLD.id}/pantry`, () =>

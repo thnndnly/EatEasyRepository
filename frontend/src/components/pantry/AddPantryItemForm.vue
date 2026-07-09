@@ -26,7 +26,7 @@ function onSubmit(): void {
   error.value = null
   const name = picker.value.name.trim()
   if (!picker.value.id && !name) {
-    error.value = 'Bitte Zutat auswaehlen oder Namen eingeben'
+    error.value = 'Bitte Zutat auswählen oder Namen eingeben'
     return
   }
   if (!amount.value || amount.value <= 0) {
@@ -51,7 +51,7 @@ function onSubmit(): void {
     class="space-y-3 rounded-lg border border-cream-200 bg-white p-5 shadow-sm"
     @submit.prevent="onSubmit"
   >
-    <h2 class="text-base font-semibold text-ink-900">Eintrag hinzufuegen</h2>
+    <h2 class="text-base font-semibold text-ink-900">Eintrag hinzufügen</h2>
 
     <div class="grid grid-cols-12 gap-2">
       <div class="col-span-5">
@@ -92,7 +92,7 @@ function onSubmit(): void {
       type="submit"
       class="ee-btn-primary"
     >
-      Hinzufuegen
+      Hinzufügen
     </button>
   </form>
 </template>

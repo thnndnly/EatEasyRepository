@@ -37,7 +37,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class ShoppingListServiceImpl implements ShoppingListService {
 
-    /** Schluessel fuer die Aggregation: gleiche Zutat in gleicher Einheit. */
+    /** Schlüssel für die Aggregation: gleiche Zutat in gleicher Einheit. */
     private record Key(UUID ingredientId, Unit unit) {
     }
 
@@ -71,8 +71,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     @Transactional
     public ShoppingListDto getOrGenerate(UUID userId, UUID mealPlanId) {
-        // Auth-Check ueber MealPlan: getById wirft 403 wenn der User kein
-        // Mitglied des zugehoerigen Haushalts ist.
+        // Auth-Check über MealPlan: getById wirft 403 wenn der User kein
+        // Mitglied des zugehörigen Haushalts ist.
         MealPlanDto plan = mealPlanService.getById(userId, mealPlanId);
 
         return listRepository.findByMealPlan(mealPlanId)
@@ -100,9 +100,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // Auto-Nachbuchen: false→true bedeutet "gekauft" → landet im Vorrat,
         // sofern der Haushalt das Feature aktiviert hat (Phase 14). Nur beim
-        // echten Uebergang, sonst wuerde mehrfaches Toggeln Duplikate erzeugen
-        // (PantryService.add aggregiert zwar gleiche (Zutat, Unit)-Eintraege,
-        // doppelt-aufrufen waere aber unschoen).
+        // echten Übergang, sonst würde mehrfaches Toggeln Duplikate erzeugen
+        // (PantryService.add aggregiert zwar gleiche (Zutat, Unit)-Einträge,
+        // doppelt-aufrufen wäre aber unschön).
         if (checked && !wasChecked && householdService.isAutoRestockEnabled(householdId)) {
             pantryService.add(userId, householdId, new AddPantryItemRequest(
                 item.getIngredientId(),
@@ -171,7 +171,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             for (RecipeIngredientView ingredient : ingredients) {
                 BigDecimal scaled = ingredient.amount().multiply(scaling);
                 // Normalisieren auf kanonische Einheit, damit gleiche Zutat in
-                // unterschiedlichen Einheiten (z. B. TBSP vs ML) zusammenfaellt.
+                // unterschiedlichen Einheiten (z. B. TBSP vs ML) zusammenfällt.
                 Unit canonicalUnit = UnitConverter.canonical(ingredient.unit());
                 BigDecimal canonicalAmount = UnitConverter.toCanonical(scaled, ingredient.unit());
                 needed.merge(new Key(ingredient.ingredientId(), canonicalUnit),

@@ -16,14 +16,14 @@ export type IngredientCategory = (typeof INGREDIENT_CATEGORIES)[number]
 
 /** Anzeige-Labels; Reihenfolge von INGREDIENT_CATEGORIES = Gang durch den Supermarkt. */
 export const CATEGORY_LABELS: Record<IngredientCategory, string> = {
-  OBST_GEMUESE: 'Obst & Gemuese',
+  OBST_GEMUESE: 'Obst & Gemüse',
   BACKWAREN: 'Backwaren',
   MILCHPRODUKTE: 'Milchprodukte & Eier',
   FLEISCH_FISCH: 'Fleisch & Fisch',
   VORRAT: 'Vorrat & Trockenwaren',
-  GEWUERZE_SAUCEN: 'Gewuerze & Saucen',
-  TIEFKUEHL: 'Tiefkuehl',
-  GETRAENKE: 'Getraenke',
+  GEWUERZE_SAUCEN: 'Gewürze & Saucen',
+  TIEFKUEHL: 'Tiefkühl',
+  GETRAENKE: 'Getränke',
   SONSTIGES: 'Sonstiges',
 }
 

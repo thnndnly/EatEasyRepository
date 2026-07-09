@@ -18,7 +18,7 @@ import static io.restassured.RestAssured.given;
 
 /**
  * Feature-Flag-Verhalten: mit {@code eateasy.receipt.enabled=false} tut der
- * Endpoint so, als gaebe es ihn nicht (404) — so laeuft die Render-Demo ohne
+ * Endpoint so, als gäbe es ihn nicht (404) — so läuft die Render-Demo ohne
  * Tesseract/Ollama-Container.
  */
 @QuarkusTest
@@ -42,7 +42,7 @@ class ReceiptResourceDisabledTest {
     }
 
     @Test
-    @DisplayName("Flag aus: POST /receipts/scan liefert 404 trotz gueltigem Token")
+    @DisplayName("Flag aus: POST /receipts/scan liefert 404 trotz gültigem Token")
     void scanReturns404WhenDisabled() {
         String token = given()
             .contentType(ContentType.JSON)

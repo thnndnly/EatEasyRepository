@@ -124,7 +124,7 @@ class AuthResourceTest {
     }
 
     @Test
-    @DisplayName("GET /auth/me mit gueltigem Token liefert User")
+    @DisplayName("GET /auth/me mit gültigem Token liefert User")
     void meAuthenticated() {
         String token = registerUser("eve@example.com", "secret12", "Eve");
 

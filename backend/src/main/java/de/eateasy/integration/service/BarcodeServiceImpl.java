@@ -30,7 +30,7 @@ public class BarcodeServiceImpl implements BarcodeService {
         OpenFoodFactsResponse response = openFoodFactsClient.getProduct(barcode);
         BarcodeProductDto dto = OpenFoodFactsMapper.toDto(barcode, response);
         if (dto == null) {
-            throw new NotFoundException("Kein Produkt fuer Barcode gefunden: " + barcode);
+            throw new NotFoundException("Kein Produkt für Barcode gefunden: " + barcode);
         }
         return dto;
     }

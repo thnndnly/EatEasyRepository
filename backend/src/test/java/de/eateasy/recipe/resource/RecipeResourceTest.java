@@ -180,7 +180,7 @@ class RecipeResourceTest {
     }
 
     @Test
-    @DisplayName("GET /recipes/{id} fuer fremdes Rezept liefert 403")
+    @DisplayName("GET /recipes/{id} für fremdes Rezept liefert 403")
     void getForbiddenForOutsider() {
         String aliceToken = registerUser("alice@example.com", "Alice");
         String bobToken = registerUser("bob@example.com", "Bob");
@@ -211,14 +211,14 @@ class RecipeResourceTest {
     @DisplayName("DELETE /recipes/{id} ist Soft-Delete: danach 404 und weg aus der Liste")
     void deleteSoftDeletesRecipe() {
         String token = registerUser("alice@example.com", "Alice");
-        String recipeId = createRecipe(token, "Wird geloescht");
+        String recipeId = createRecipe(token, "Wird gelöscht");
 
         given()
             .header("Authorization", "Bearer " + token)
             .when().delete("/api/v1/recipes/" + recipeId)
             .then().statusCode(204);
 
-        // Direkter Abruf eines soft-geloeschten Rezepts liefert 404.
+        // Direkter Abruf eines soft-gelöschten Rezepts liefert 404.
         given()
             .header("Authorization", "Bearer " + token)
             .when().get("/api/v1/recipes/" + recipeId)
@@ -234,7 +234,7 @@ class RecipeResourceTest {
     }
 
     @Test
-    @DisplayName("PATCH /recipes/{id} als Owner aendert das Rezept")
+    @DisplayName("PATCH /recipes/{id} als Owner ändert das Rezept")
     void patchAsOwner() {
         String token = registerUser("alice@example.com", "Alice");
         String recipeId = createRecipe(token, "Original");
@@ -243,14 +243,14 @@ class RecipeResourceTest {
             .header("Authorization", "Bearer " + token)
             .contentType(ContentType.JSON)
             .body(Map.of(
-                "title", "Geaendert",
+                "title", "Geändert",
                 "instructions", "Neue Steps",
                 "servings", 4,
                 "ingredients", List.of(Map.of("ingredientName", "Mehl", "amount", 200, "unit", "GRAM"))))
             .when().patch("/api/v1/recipes/" + recipeId)
             .then()
                 .statusCode(200)
-                .body("title", equalTo("Geaendert"))
+                .body("title", equalTo("Geändert"))
                 .body("servings", equalTo(4))
                 .body("ingredients[0].ingredientName", equalTo("Mehl"));
     }

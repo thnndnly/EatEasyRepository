@@ -10,7 +10,7 @@ import type { RecipeDto } from '@/types/recipe'
 
 /**
  * Vermittler zwischen Frontend und Externe-API-Adapter (TheMealDB, etc.).
- * Components rufen Suche/Import ueber den Store, damit Service-Calls nicht
+ * Components rufen Suche/Import über den Store, damit Service-Calls nicht
  * direkt in Templates passieren.
  */
 export const useIntegrationStore = defineStore('integration', () => {

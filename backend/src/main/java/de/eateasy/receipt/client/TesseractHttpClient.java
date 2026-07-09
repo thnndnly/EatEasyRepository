@@ -15,11 +15,11 @@ import java.time.Duration;
 import java.util.UUID;
 
 /**
- * Client fuer den tesseract-server-Container (hertzg/tesseract-server):
+ * Client für den tesseract-server-Container (hertzg/tesseract-server):
  * {@code POST /tesseract} mit Multipart-Feldern {@code options} (JSON) und
  * {@code file}. Antwort: {@code {"data":{"stdout":"<text>", ...}}}.
  *
- * <p>Multipart wird von Hand gebaut (JDK-HttpClient hat keinen Builder dafuer)
+ * <p>Multipart wird von Hand gebaut (JDK-HttpClient hat keinen Builder dafür)
  * — gleiche Design-Entscheidung wie beim {@code OllamaHttpClient}: kein
  * MP-REST-Client-Magic, Base-URL steht beim Bean-Init fest.</p>
  */
@@ -76,8 +76,8 @@ public class TesseractHttpClient implements OcrClient {
 
     private static byte[] buildMultipartBody(String boundary, byte[] imageBytes, String filename)
         throws java.io.IOException {
-        // Der Dateiname landet roh im Multipart-Header — neben Anfuehrungszeichen
-        // auch CR/LF entfernen, damit ein praeparierter Name keine zusaetzlichen
+        // Der Dateiname landet roh im Multipart-Header — neben Anführungszeichen
+        // auch CR/LF entfernen, damit ein präparierter Name keine zusätzlichen
         // Header/Parts in den Request an Tesseract einschleusen kann.
         String safeName = filename == null || filename.isBlank()
             ? "receipt.jpg"

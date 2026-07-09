@@ -27,7 +27,7 @@ describe('authStore', () => {
 
     await expect(
       store.login({ email: 'fail@eateasy.local', password: 'wrong' }),
-    ).rejects.toThrow('Ungueltige Anmeldedaten')
+    ).rejects.toThrow('Ungültige Anmeldedaten')
 
     expect(store.token).toBeNull()
     expect(store.isAuthenticated).toBe(false)
@@ -51,7 +51,7 @@ describe('authStore', () => {
     expect(store.isAuthenticated).toBe(true)
   })
 
-  it('leert die Session, wenn /auth/me beim Restore 401 zurueckgibt', async () => {
+  it('leert die Session, wenn /auth/me beim Restore 401 zurückgibt', async () => {
     localStorage.setItem('eateasy.auth.token', 'stale.token')
     server.use(
       http.get('/api/v1/auth/me', () =>
@@ -67,7 +67,7 @@ describe('authStore', () => {
     expect(localStorage.getItem('eateasy.auth.token')).toBeNull()
   })
 
-  it('restoreSession verifiziert ein gueltiges Token und laedt den User', async () => {
+  it('restoreSession verifiziert ein gültiges Token und lädt den User', async () => {
     localStorage.setItem('eateasy.auth.token', TEST_TOKEN)
 
     const store = useAuthStore()

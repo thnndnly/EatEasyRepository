@@ -1,6 +1,6 @@
 const MS_PER_DAY = 1000 * 60 * 60 * 24
 
-/** Schwellen (Kalendertage) fuer den MHD-Ampelstatus. */
+/** Schwellen (Kalendertage) für den MHD-Ampelstatus. */
 const URGENT_DAYS = 3
 const SOON_DAYS = 7
 
@@ -11,7 +11,7 @@ export function daysUntil(isoDate: string): number {
   // Datumsteile direkt parsen statt `new Date(isoDate)`: ein date-only
   // ISO-String wird sonst als UTC-Mitternacht interpretiert, und ein
   // anschliessendes setHours(0,0,0,0) in lokaler Zeitzone (westlich von UTC)
-  // verschiebt das Datum um einen Tag — was den expiringSoon-Filter verfaelscht.
+  // verschiebt das Datum um einen Tag — was den expiringSoon-Filter verfälscht.
   const parts = isoDate.slice(0, 10).split('-')
   const year = Number(parts[0])
   const month = Number(parts[1])
@@ -28,9 +28,9 @@ export interface MhdStatus {
 }
 
 /**
- * Ampel-Status fuer ein MHD: abgelaufen (rose), ≤3 Tage (rose),
+ * Ampel-Status für ein MHD: abgelaufen (rose), ≤3 Tage (rose),
  * ≤7 Tage (butter), sonst neutral. Wird von PantryRow und dem
- * Dashboard-Widget „Demnaechst ablaufend" geteilt.
+ * Dashboard-Widget „Demnächst ablaufend" geteilt.
  */
 export function mhdStatusFor(bestBefore: string): MhdStatus {
   const days = daysUntil(bestBefore)

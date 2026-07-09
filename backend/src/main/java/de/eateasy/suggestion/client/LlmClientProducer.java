@@ -6,10 +6,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * Waehlt zur Laufzeit die {@link OllamaClient}-Implementierung anhand von
+ * Wählt zur Laufzeit die {@link OllamaClient}-Implementierung anhand von
  * {@code ai.provider}: {@code ollama} (Default, self-hosted lokal) oder
- * {@code groq} (gehostete OpenAI-kompatible API — z. B. fuer die Render-Demo,
- * wo kein Ollama laeuft). Die konkreten Clients sind per {@code @Typed}
+ * {@code groq} (gehostete OpenAI-kompatible API — z. B. für die Render-Demo,
+ * wo kein Ollama läuft). Die konkreten Clients sind per {@code @Typed}
  * verborgen, damit hier keine Injection-Mehrdeutigkeit entsteht.
  */
 @ApplicationScoped

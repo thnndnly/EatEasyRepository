@@ -99,7 +99,7 @@ class BarcodeResourceTest {
         String householdId = createHousehold(token, "Alice");
         when(openFoodFactsClient.getProduct("555")).thenReturn(
             new OpenFoodFactsResponse("555", 1,
-                new Product("Olive Oil", "Olivenoel", "500 ml")));
+                new Product("Olive Oil", "Olivenöl", "500 ml")));
 
         given()
             .header("Authorization", "Bearer " + token)
@@ -111,7 +111,7 @@ class BarcodeResourceTest {
             .when().post("/api/v1/households/" + householdId + "/pantry/barcode")
             .then()
                 .statusCode(201)
-                .body("ingredientName", equalTo("Olivenoel"))
+                .body("ingredientName", equalTo("Olivenöl"))
                 .body("unit", equalTo("ML"));
     }
 
@@ -135,7 +135,7 @@ class BarcodeResourceTest {
     }
 
     @Test
-    @DisplayName("POST /households/{id}/pantry/barcode fuer fremden Haushalt liefert 403")
+    @DisplayName("POST /households/{id}/pantry/barcode für fremden Haushalt liefert 403")
     void addByBarcodeForeignHousehold() {
         String aliceToken = registerUser("alice@example.com");
         String bobToken = registerUser("bob@example.com");

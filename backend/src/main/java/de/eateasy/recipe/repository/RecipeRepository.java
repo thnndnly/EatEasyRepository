@@ -22,12 +22,12 @@ public class RecipeRepository implements PanacheRepositoryBase<Recipe, UUID> {
     }
 
     /**
-     * Liefert Rezepte, die fuer einen User sichtbar sind:
+     * Liefert Rezepte, die für einen User sichtbar sind:
      * <ul>
      *   <li>{@code ownerId == userId} (eigenes, ggf. privates Rezept), ODER</li>
      *   <li>{@code householdId} ist einer der Haushalte des Users.</li>
      * </ul>
-     * Optionale Filter: Volltextsuche im Titel, Diaet-Tag-AND-Match,
+     * Optionale Filter: Volltextsuche im Titel, Diät-Tag-AND-Match,
      * konkreter Haushalt.
      */
     public List<Recipe> search(UUID userId,
@@ -45,8 +45,8 @@ public class RecipeRepository implements PanacheRepositoryBase<Recipe, UUID> {
         }
         hql.append(")");
 
-        // Soft-Delete: geloeschte Rezepte tauchen nicht in Browse/Suche/Vorschlaegen
-        // auf. Referenz-Aufloesung (findByIds) bleibt bewusst ungefiltert.
+        // Soft-Delete: gelöschte Rezepte tauchen nicht in Browse/Suche/Vorschlägen
+        // auf. Referenz-Auflösung (findByIds) bleibt bewusst ungefiltert.
         hql.append(" and r.deletedAt is null");
 
         if (householdFilter != null) {
@@ -61,8 +61,8 @@ public class RecipeRepository implements PanacheRepositoryBase<Recipe, UUID> {
 
         // Diät-Tags AND-Match: jeder gesuchte Tag muss im Array enthalten sein.
         // Wir filtern die Tags nach dem Query in Java (post-filter, siehe unten)
-        // statt per Postgres-Array-Operator — einfacher und fuer die Datenmengen
-        // in diesem Studienprojekt voellig ausreichend.
+        // statt per Postgres-Array-Operator — einfacher und für die Datenmengen
+        // in diesem Studienprojekt völlig ausreichend.
 
         List<Recipe> raw = find(hql.toString(), Sort.by("title"), params).list();
 

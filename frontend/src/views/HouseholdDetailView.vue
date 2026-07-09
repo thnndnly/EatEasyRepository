@@ -106,7 +106,7 @@ function back(): void {
       class="text-sm font-medium text-peach-600 hover:underline"
       @click="back"
     >
-      &larr; Zurueck zur Liste
+      &larr; Zurück zur Liste
     </button>
 
     <ErrorMessage :message="loadError ?? ''" />
@@ -139,7 +139,7 @@ function back(): void {
         </div>
 
         <div class="space-y-2">
-          <span class="block text-sm font-medium text-ink-700">Standard-Diaeten</span>
+          <span class="block text-sm font-medium text-ink-700">Standard-Diäten</span>
           <DietTagSelector v-model="editTags" />
         </div>
 
@@ -153,7 +153,7 @@ function back(): void {
           <span class="text-sm">
             <span class="block font-medium text-ink-700">Auto-Nachbuchen</span>
             <span class="block text-ink-500">
-              Abgehakte Einkaufslisten-Artikel automatisch in den Vorrat uebernehmen.
+              Abgehakte Einkaufslisten-Artikel automatisch in den Vorrat übernehmen.
             </span>
           </span>
         </label>

@@ -67,7 +67,7 @@ export const useShoppingListStore = defineStore('shoppingList', () => {
         items: list.value.items.map((i) => (i.id === itemId ? updated : i)),
       }
     } catch (err: unknown) {
-      // Bewusst kein rethrow: Fire-and-forget-Toggle; die View prueft nach dem
+      // Bewusst kein rethrow: Fire-and-forget-Toggle; die View prüft nach dem
       // await `store.error` (statt zu catchen), um den Erfolgs-Toast zu steuern.
       error.value = err instanceof Error ? err.message : 'Aktualisieren fehlgeschlagen'
     }
@@ -91,10 +91,10 @@ export const useShoppingListStore = defineStore('shoppingList', () => {
         ),
       }
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Kategorie aendern fehlgeschlagen'
-      // Fehlerfall: Kategorie bleibt unveraendert, aber die betroffenen Items
+      error.value = err instanceof Error ? err.message : 'Kategorie ändern fehlgeschlagen'
+      // Fehlerfall: Kategorie bleibt unverändert, aber die betroffenen Items
       // werden neu referenziert. Dadurch reagiert die UI (das native <select>)
-      // und springt auf den tatsaechlichen, gespeicherten Zustand zurueck.
+      // und springt auf den tatsächlichen, gespeicherten Zustand zurück.
       if (list.value) {
         list.value = {
           ...list.value,

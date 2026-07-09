@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
- * Eingabe-DTO fuer eine Recipe-Zutat. Entweder {@code ingredientId} (existierende
+ * Eingabe-DTO für eine Recipe-Zutat. Entweder {@code ingredientId} (existierende
  * Zutat) ODER {@code ingredientName} (neue Zutat — wird via findOrCreate
  * angelegt). Der Service entscheidet, welcher Pfad genutzt wird.
  */

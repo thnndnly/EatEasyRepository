@@ -15,11 +15,11 @@ import java.time.Duration;
 /**
  * Direkt-Aufruf gegen Ollama mit dem JDK-{@link HttpClient}. Vorteil ggue. dem
  * MP-REST-Client: kein magic property lookup — Base-URL wird beim Bean-Init
- * einmal aufgeloest und steht. Timeouts werden explizit gesetzt; der
- * SmartSuggestionService faengt Exceptions ab und fa-llt auf Coverage zurueck.
+ * einmal aufgelöst und steht. Timeouts werden explizit gesetzt; der
+ * SmartSuggestionService fängt Exceptions ab und fa-llt auf Coverage zurück.
  */
 // @Typed: nur als konkreter Typ injizierbar, nicht als OllamaClient — die
-// OllamaClient-Auswahl (Ollama vs. Groq) uebernimmt der LlmClientProducer.
+// OllamaClient-Auswahl (Ollama vs. Groq) übernimmt der LlmClientProducer.
 @Typed(OllamaHttpClient.class)
 @ApplicationScoped
 public class OllamaHttpClient implements OllamaClient {
@@ -62,7 +62,7 @@ public class OllamaHttpClient implements OllamaClient {
             }
             return objectMapper.readValue(response.body(), OllamaGenerateResponse.class);
         } catch (Exception ex) {
-            // RuntimeException, damit das Service-Catch greift und auf Coverage faellt.
+            // RuntimeException, damit das Service-Catch greift und auf Coverage fällt.
             throw new RuntimeException("Ollama-Call fehlgeschlagen: " + ex.getMessage(), ex);
         }
     }

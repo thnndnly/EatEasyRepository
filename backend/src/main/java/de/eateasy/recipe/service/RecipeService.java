@@ -17,7 +17,7 @@ public interface RecipeService {
     /** Liefert eigene + Haushalts-sichtbare Rezepte mit optionalen Filtern. */
     List<RecipeDto> list(UUID userId, RecipeFilter filter);
 
-    /** Einzelnes Rezept; 403 wenn weder Owner noch Mitglied im verknuepften Haushalt. */
+    /** Einzelnes Rezept; 403 wenn weder Owner noch Mitglied im verknüpften Haushalt. */
     RecipeDto get(UUID userId, UUID recipeId);
 
     /** Anlegen; bei {@code householdId != null} muss User Mitglied sein. */
@@ -26,13 +26,13 @@ public interface RecipeService {
     /** Komplett-Update; nur Owner. */
     RecipeDto update(UUID userId, UUID recipeId, RecipeUpdateRequest request);
 
-    /** Loeschen; nur Owner. */
+    /** Löschen; nur Owner. */
     void delete(UUID userId, UUID recipeId);
 
     /**
      * Markiert ein Rezept als (Nicht-)Favorit des Users. Idempotent: doppeltes
      * Setzen/Entfernen ist kein Fehler. Sichtbarkeits-Check wie bei
-     * {@link #get(UUID, UUID)} — nur lesbare Rezepte koennen favorisiert werden.
+     * {@link #get(UUID, UUID)} — nur lesbare Rezepte können favorisiert werden.
      */
     void setFavorite(UUID userId, UUID recipeId, boolean favorite);
 

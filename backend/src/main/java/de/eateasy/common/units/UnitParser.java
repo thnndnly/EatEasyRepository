@@ -3,13 +3,13 @@ package de.eateasy.common.units;
 import java.util.Locale;
 
 /**
- * Zentraler Parser fuer Einheits-Tokens aus externen Quellen (TheMealDB,
+ * Zentraler Parser für Einheits-Tokens aus externen Quellen (TheMealDB,
  * OpenFoodFacts). Liefert immer ein Paar aus {@link Unit} und Multiplikator —
- * letzterer ist {@code 1.0} fuer Einheiten, die schon in der kanonischen
- * Form vorliegen, und {@code 1000.0} fuer {@code kg} → {@code g} bzw.
+ * letzterer ist {@code 1.0} für Einheiten, die schon in der kanonischen
+ * Form vorliegen, und {@code 1000.0} für {@code kg} → {@code g} bzw.
  * {@code l} → {@code ml}.
  *
- * <p>Damit ersetzt diese Klasse das fehleranfaellige Pattern, in dem
+ * <p>Damit ersetzt diese Klasse das fehleranfällige Pattern, in dem
  * {@code kg} stillschweigend als {@link Unit#GRAM} mit gleichem Wert
  * interpretiert wurde — der Multiplikator muss vom Aufrufer auf die
  * Menge angewendet werden.</p>
@@ -24,7 +24,7 @@ public final class UnitParser {
     }
 
     /**
-     * Parst ein Einheits-Token. {@code null}/leer fuehrt zum {@code defaultUnit}
+     * Parst ein Einheits-Token. {@code null}/leer führt zum {@code defaultUnit}
      * mit Multiplier {@code 1.0}; unbekannte Tokens ebenfalls.
      *
      * @param token       das Roh-Token, z. B. {@code "kg"}, {@code "EL"}
@@ -47,7 +47,7 @@ public final class UnitParser {
                 new UnitParseResult(Unit.TBSP, 1.0);
             case "tsp", "teaspoon", "teaspoons", "tl" ->
                 new UnitParseResult(Unit.TSP, 1.0);
-            case "piece", "pieces", "pcs", "stück", "stueck", "st" ->
+            case "piece", "pieces", "pcs", "stueck", "stück", "st" ->
                 new UnitParseResult(Unit.PIECE, 1.0);
             default ->
                 new UnitParseResult(defaultUnit, 1.0);

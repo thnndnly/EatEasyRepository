@@ -78,7 +78,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     public MealPlanEntryDto setEntry(UUID userId, UUID mealPlanId, SetEntryRequest request) {
         MealPlan plan = loadPlan(mealPlanId);
         householdService.assertMember(userId, plan.getHouseholdId());
-        // RecipeService.get prueft Sichtbarkeit/Auth fuer das Rezept aus User-Sicht.
+        // RecipeService.get prüft Sichtbarkeit/Auth für das Rezept aus User-Sicht.
         recipeService.get(userId, request.recipeId());
 
         Optional<MealPlanEntry> existing = plan.getEntries().stream()

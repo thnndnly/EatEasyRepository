@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Minimal-Mapping: wir brauchen nur das {@code response}-Feld als String
- * (enthaelt das vom Modell generierte JSON, wenn {@code format=json}).
+ * (enthält das vom Modell generierte JSON, wenn {@code format=json}).
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record OllamaGenerateResponse(

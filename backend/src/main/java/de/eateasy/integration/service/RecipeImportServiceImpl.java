@@ -69,16 +69,16 @@ public class RecipeImportServiceImpl implements RecipeImportService {
         TheMealDbMeal meal = response.meals().get(0);
 
         RecipeCreateRequest createRequest = TheMealDbMapper.toCreateRequest(meal, request.householdId());
-        // RecipeService kapselt Auth-Check fuer householdId, Diaet-Tag-Validation
-        // und Ingredient-findOrCreate. Wir muessen anschliessend nur noch die
+        // RecipeService kapselt Auth-Check für householdId, Diät-Tag-Validation
+        // und Ingredient-findOrCreate. Wir müssen anschliessend nur noch die
         // externen Felder nachpflegen.
         RecipeDto created = recipeService.create(userId, createRequest);
 
         // Externe Metadaten nachpflegen via RecipeService — wir vermeiden bewusst
-        // den direkten Zugriff auf RecipeRepository ueber Komponentengrenzen hinweg.
+        // den direkten Zugriff auf RecipeRepository über Komponentengrenzen hinweg.
         recipeService.updateExternalMetadata(created.id(), safeSourceUrl(meal), SOURCE_THEMEALDB);
 
-        // Re-fetch ueber RecipeService, damit der Aufrufer die aktualisierten
+        // Re-fetch über RecipeService, damit der Aufrufer die aktualisierten
         // Felder im DTO sieht (sourceUrl, externalSource).
         return recipeService.get(userId, created.id());
     }
@@ -87,7 +87,7 @@ public class RecipeImportServiceImpl implements RecipeImportService {
         if (meal.strSource() != null && !meal.strSource().isBlank()) {
             return meal.strSource();
         }
-        // Fallback: TheMealDB hat fuer jedes Rezept eine eigene Detail-URL.
+        // Fallback: TheMealDB hat für jedes Rezept eine eigene Detail-URL.
         return "https://www.themealdb.com/meal/" + meal.idMeal();
     }
 }

@@ -14,9 +14,9 @@ import type {
 const STORAGE_SELECTED = 'eateasy.household.selected'
 
 /**
- * Quelle der Wahrheit fuer alle Haushalte des eingeloggten Users plus die ID
- * des aktuell ausgewaehlten Haushalts (Topbar-Switcher). Auswahl wird in
- * localStorage persistiert, damit Reload den Kontext beibehaelt.
+ * Quelle der Wahrheit für alle Haushalte des eingeloggten Users plus die ID
+ * des aktuell ausgewählten Haushalts (Topbar-Switcher). Auswahl wird in
+ * localStorage persistiert, damit Reload den Kontext beibehält.
  */
 export const useHouseholdStore = defineStore('household', () => {
   const households = ref<HouseholdDto[]>([])
@@ -25,7 +25,7 @@ export const useHouseholdStore = defineStore('household', () => {
   const error = ref<string | null>(null)
   const lastLoadedFor = ref<string | null>(null)
   /**
-   * Mitglieder pro Haushalt — wird beim Oeffnen einer Detail-View geladen
+   * Mitglieder pro Haushalt — wird beim Öffnen einer Detail-View geladen
    * (keine globale Initial-Last). HouseholdId → MemberDto[].
    */
   const membersById = ref<Record<string, MemberDto[]>>({})
@@ -158,7 +158,7 @@ export const useHouseholdStore = defineStore('household', () => {
   }
 
   // `memberId` ist die userId des zu entfernenden Mitglieds — im Datenmodell
-  // gibt es keine eigene Membership-ID nach aussen, ein Mitglied wird ueber
+  // gibt es keine eigene Membership-ID nach aussen, ein Mitglied wird über
   // (householdId, userId) identifiziert (siehe MemberDto.userId).
   async function removeMember(householdId: string, memberId: string): Promise<void> {
     error.value = null

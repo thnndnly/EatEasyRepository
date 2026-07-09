@@ -29,7 +29,7 @@ describe('suggestionStore', () => {
     expect(store.aiAvailable).toBe(true)
   })
 
-  it('setzt aiAvailable=false, wenn die KI laut Backend nicht verfuegbar war', async () => {
+  it('setzt aiAvailable=false, wenn die KI laut Backend nicht verfügbar war', async () => {
     server.use(
       http.post(`/api/v1/households/${TEST_HOUSEHOLD.id}/suggestions`, () =>
         HttpResponse.json({ aiAvailable: false, suggestions: [TEST_SUGGESTION] }),

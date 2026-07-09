@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Verifiziert ein bereits persistiertes Token per /auth/me.
    * Bei 401 oder anderem Fehler wird die Session geleert.
-   * Idempotent — laeuft nur einmal pro App-Lifecycle.
+   * Idempotent — läuft nur einmal pro App-Lifecycle.
    */
   async function restoreSession(): Promise<void> {
     if (initialized.value) {

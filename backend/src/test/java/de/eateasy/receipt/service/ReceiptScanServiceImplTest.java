@@ -166,7 +166,7 @@ class ReceiptScanServiceImplTest {
         when(ocrClient.extractText(any(), anyString())).thenReturn("Bon-Text");
         when(ollamaClient.generate(any())).thenReturn(new OllamaGenerateResponse(
             "llama3",
-            "Hinweis [OCR-Fehler moeglich]: "
+            "Hinweis [OCR-Fehler möglich]: "
                 + "[{\"name\":\"Milch\",\"amount\":1000,\"unit\":\"ML\"}] Viel Spass!",
             true));
 

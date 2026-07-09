@@ -5,8 +5,8 @@ import { useRequireToken } from '@/composables/useRequireToken'
 import type { IngredientDto } from '@/types/ingredient'
 
 /**
- * Schlanker Store fuer Zutat-Autocomplete. Hauptzweck: Komponenten wie
- * `IngredientPicker` gehen ueber den Store statt direkt auf
+ * Schlanker Store für Zutat-Autocomplete. Hauptzweck: Komponenten wie
+ * `IngredientPicker` gehen über den Store statt direkt auf
  * `ingredientService.searchIngredients` zuzugreifen (Konvention).
  */
 export const useIngredientStore = defineStore('ingredient', () => {

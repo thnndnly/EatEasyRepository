@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Minimal-Mapping fuer die OpenFoodFacts-v2-Antwort. Das echte JSON ist
+ * Minimal-Mapping für die OpenFoodFacts-v2-Antwort. Das echte JSON ist
  * riesig — wir mappen nur, was wir brauchen, und ignorieren den Rest.
  *
  * <p>{@code status = 0} signalisiert „nicht gefunden". Ansonsten steht das

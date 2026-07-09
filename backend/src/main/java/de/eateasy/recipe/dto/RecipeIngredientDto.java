@@ -8,7 +8,7 @@ import java.util.UUID;
 
 /**
  * Antwort-DTO einer Recipe-Zutat. {@code ingredientName} wird vom Service
- * separat aufgeloest, damit das Frontend den Picker initial befuellen kann
+ * separat aufgelöst, damit das Frontend den Picker initial befüllen kann
  * ohne nachzuladen.
  */
 public record RecipeIngredientDto(

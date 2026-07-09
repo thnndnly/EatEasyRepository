@@ -34,8 +34,8 @@ public class MealPlanEntry {
     private MealType mealType;
 
     /**
-     * Cross-Component-FK auf {@code recipe.id}. Der MealPlanService loest die
-     * Mini-Daten ueber {@link de.eateasy.recipe.service.RecipeService} auf,
+     * Cross-Component-FK auf {@code recipe.id}. Der MealPlanService löst die
+     * Mini-Daten über {@link de.eateasy.recipe.service.RecipeService} auf,
      * damit die Komponenten-Grenze sauber bleibt.
      */
     @Column(name = "recipe_id", nullable = false)
