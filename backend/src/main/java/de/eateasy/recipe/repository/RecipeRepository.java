@@ -45,6 +45,10 @@ public class RecipeRepository implements PanacheRepositoryBase<Recipe, UUID> {
         }
         hql.append(")");
 
+        // Soft-Delete: geloeschte Rezepte tauchen nicht in Browse/Suche/Vorschlaegen
+        // auf. Referenz-Aufloesung (findByIds) bleibt bewusst ungefiltert.
+        hql.append(" and r.deletedAt is null");
+
         if (householdFilter != null) {
             hql.append(" and r.householdId = :hhFilter");
             params = params.and("hhFilter", householdFilter);

@@ -18,6 +18,7 @@ import de.eateasy.suggestion.client.OllamaGenerateResponse;
 import de.eateasy.suggestion.dto.SuggestionDto;
 import de.eateasy.suggestion.dto.SuggestionResponse;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -67,6 +68,7 @@ public class SmartSuggestionServiceImpl implements SmartSuggestionService {
     }
 
     @Override
+    @Transactional
     public SuggestionResponse suggest(UUID userId, UUID householdId, int numSuggestions) {
         householdService.assertMember(userId, householdId);
 

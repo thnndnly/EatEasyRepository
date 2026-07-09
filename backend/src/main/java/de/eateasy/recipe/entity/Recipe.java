@@ -64,6 +64,10 @@ public class Recipe {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    /** Soft-Delete: NULL = aktiv, sonst Zeitpunkt der Loeschung. */
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
     @OneToMany(
         mappedBy = "recipe",
         cascade = CascadeType.ALL,
@@ -201,6 +205,20 @@ public class Recipe {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    /** Soft-Delete-Status: true, wenn das Rezept als geloescht markiert ist. */
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    /** Markiert das Rezept als geloescht (Soft-Delete); die Zeile bleibt bestehen. */
+    public void markDeleted() {
+        this.deletedAt = Instant.now();
     }
 
     public List<RecipeIngredient> getIngredients() {

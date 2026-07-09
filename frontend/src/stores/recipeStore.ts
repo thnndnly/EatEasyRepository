@@ -56,26 +56,44 @@ export const useRecipeStore = defineStore('recipe', () => {
   }
 
   async function create(request: RecipeCreateRequest): Promise<RecipeDto> {
-    const created = await recipeService.createRecipe(requireToken(), request)
-    recipes.value = [...recipes.value, created]
-    current.value = created
-    return created
+    error.value = null
+    try {
+      const created = await recipeService.createRecipe(requireToken(), request)
+      recipes.value = [...recipes.value, created]
+      current.value = created
+      return created
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Anlegen fehlgeschlagen'
+      throw err
+    }
   }
 
   async function update(id: string, request: RecipeUpdateRequest): Promise<RecipeDto> {
-    const updated = await recipeService.updateRecipe(requireToken(), id, request)
-    recipes.value = recipes.value.map((r) => (r.id === id ? updated : r))
-    if (current.value?.id === id) {
-      current.value = updated
+    error.value = null
+    try {
+      const updated = await recipeService.updateRecipe(requireToken(), id, request)
+      recipes.value = recipes.value.map((r) => (r.id === id ? updated : r))
+      if (current.value?.id === id) {
+        current.value = updated
+      }
+      return updated
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Speichern fehlgeschlagen'
+      throw err
     }
-    return updated
   }
 
   async function remove(id: string): Promise<void> {
-    await recipeService.deleteRecipe(requireToken(), id)
-    recipes.value = recipes.value.filter((r) => r.id !== id)
-    if (current.value?.id === id) {
-      current.value = null
+    error.value = null
+    try {
+      await recipeService.deleteRecipe(requireToken(), id)
+      recipes.value = recipes.value.filter((r) => r.id !== id)
+      if (current.value?.id === id) {
+        current.value = null
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+      throw err
     }
   }
 
@@ -93,6 +111,9 @@ export const useRecipeStore = defineStore('recipe', () => {
         current.value = { ...current.value, favorite: next }
       }
     } catch (err: unknown) {
+      // Bewusst kein rethrow: der Favoriten-Toggle ist eine Fire-and-forget-
+      // UI-Aktion; die aufrufende View prueft nach dem await `store.error`
+      // (statt zu catchen), um Erfolgs-Toast/Fehleranzeige zu steuern.
       error.value = err instanceof Error ? err.message : 'Favorit aendern fehlgeschlagen'
     }
   }

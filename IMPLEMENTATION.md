@@ -184,7 +184,7 @@ GET    /recipes                    → 200 (eigene + Haushalt, Filter via Query)
 POST   /recipes                    → 201
 GET    /recipes/{id}               → 200
 PATCH  /recipes/{id}               → 200
-DELETE /recipes/{id}               → 204 (Hard-Delete)
+DELETE /recipes/{id}               → 204 (Soft-Delete)
 PUT    /recipes/{id}/favorite      → 204 (Favorit setzen/entfernen, Stretch)
 POST   /recipes/import             → 201 (extern, body: {source, externalId})
 
