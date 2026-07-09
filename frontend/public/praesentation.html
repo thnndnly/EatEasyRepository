@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Abschlusspräsentation EatEasy EE — Architektur, Live-Demo, Code-Walkthrough.">
-<title>EatEasy EE — Abschlusspräsentation</title>
+<title>EatEasy EE · Abschlusspräsentation</title>
 <style>
   :root {
     --ground: #faf9f4;
@@ -206,7 +206,7 @@
     <div class="slide-inner">
       <div class="title-mark"><span class="leaf"></span> EatEasy&nbsp;EE</div>
       <div class="eyebrow">Abschlusspräsentation · Web Frameworks</div>
-      <h1>Haushaltsweite Mahlzeiten&shy;planung —<br>vom Rezept zur Einkaufsliste.</h1>
+      <h1>Haushaltsweite Mahlzeiten&shy;planung.<br>Vom Rezept zur Einkaufsliste.</h1>
       <p class="lead" style="margin-top:18px">Ein komponentenbasierter modularer Monolith: Vue 3 im Frontend, Quarkus im Backend, PostgreSQL &amp; ein self-hosted LLM.</p>
       <div class="title-meta">
         <div><b>Gruppe 5</b><br>Dimitrios Tsakos · Kardeena Kameran</div>
@@ -236,14 +236,14 @@
       <div class="two">
         <div>
           <div class="eyebrow">Problem &amp; Idee</div>
-          <h2>„Was kochen wir diese Woche — und was fehlt dafür?"</h2>
+          <h2>„Was kochen wir diese Woche, und was fehlt dafür?"</h2>
           <p class="lead">Mahlzeitenplanung im Haushalt ist verteiltes Wissen: Rezepte im Kopf, Vorrat im Kühlschrank, Einkauf auf einem Zettel. EatEasy führt das an <strong>einem</strong> Ort zusammen.</p>
         </div>
         <div>
           <ul class="clean">
-            <li><b>Gemeinsam statt einzeln</b> — ein Haushalt, mehrere Mitglieder, geteilte Rezepte &amp; Pläne.</li>
-            <li><b>Kein doppelter Einkauf</b> — die Liste entsteht automatisch aus Plan <em>minus</em> Vorrat.</li>
-            <li class="amberdot"><b>Weniger Denkarbeit</b> — die KI schlägt Gerichte vor, die der Vorrat schon fast hergibt.</li>
+            <li><b>Gemeinsam statt einzeln:</b> ein Haushalt, mehrere Mitglieder, geteilte Rezepte &amp; Pläne.</li>
+            <li><b>Kein doppelter Einkauf:</b> die Liste entsteht automatisch aus Plan <em>minus</em> Vorrat.</li>
+            <li class="amberdot"><b>Weniger Denkarbeit:</b> die KI schlägt Gerichte vor, die der Vorrat schon fast hergibt.</li>
           </ul>
         </div>
       </div>
@@ -266,7 +266,7 @@
         <div class="arr">→</div>
         <div class="node"><span class="ic">✨</span><b>KI-Vorschlag</b><span>passend zum Vorrat</span></div>
       </div>
-      <p class="note">Jeder Schritt ist eine eigene fachliche Komponente — im Backend wie im Frontend. Genau dieser Loop ist gleich unsere Live-Demo.</p>
+      <p class="note">Jeder Schritt ist eine eigene fachliche Komponente, im Backend wie im Frontend. Genau dieser Loop ist gleich unsere Live-Demo.</p>
     </div>
   </section>
 
@@ -274,11 +274,11 @@
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Technologie-Stack</div>
-      <h2>Bewusst gewählt — jede Schicht typsicher</h2>
+      <h2>Bewusst gewählt, jede Schicht typsicher</h2>
       <div class="grid cols-2">
         <div class="card"><div class="k">Frontend</div><h3>Vue 3 · TypeScript (strict)</h3><p>Composition API mit <code>&lt;script setup&gt;</code>, Pinia für State, Vue Router, Vite 8, Tailwind CSS 4, VueUse. Tests: Vitest + MSW, Playwright-Smoke.</p></div>
         <div class="card"><div class="k">Backend</div><h3>Quarkus 3.34 · Java 21</h3><p>RESTEasy Reactive, Hibernate ORM Panache, SmallRye JWT + OpenAPI. Tests: JUnit 5 + REST Assured + Testcontainers.</p></div>
-        <div class="card"><div class="k">Daten &amp; KI</div><h3>PostgreSQL 16 · Ollama / Groq</h3><p>Flyway-Migrationen, UUID-Keys. LLM hinter einem Interface — lokal Ollama, Cloud-Demo über Groq.</p></div>
+        <div class="card"><div class="k">Daten &amp; KI</div><h3>PostgreSQL 16 · Ollama / Groq</h3><p>Flyway-Migrationen, UUID-Keys. LLM hinter einem Interface: lokal Ollama, Cloud-Demo über Groq.</p></div>
         <div class="card"><div class="k">Betrieb &amp; Doku</div><h3>Docker · GitHub Actions</h3><p>docker-compose für Dev-Infra, CI mit Backend- &amp; Frontend-Job, OpenAPI/Swagger-UI + VitePress-Doku.</p></div>
       </div>
     </div>
@@ -289,7 +289,7 @@
     <div class="slide-inner">
       <div class="actnum">01</div>
       <h2>Die Architektur</h2>
-      <p class="lead">Wie EatEasy geschnitten ist — und warum genau so.</p>
+      <p class="lead">Wie EatEasy geschnitten ist, und warum genau so.</p>
       <div class="tmark"><span class="pill green">~8 Minuten</span></div>
     </div>
   </section>
@@ -302,15 +302,15 @@
           <div class="eyebrow">Grundentscheidung</div>
           <h2>Modularer Monolith, kein Microservice-Zoo</h2>
           <ul class="clean">
-            <li><b>Fachliche Module statt technischer Layer</b> — geschnitten nach Domäne, nicht nach „alle Controller / alle Services".</li>
-            <li><b>Ein Deploy, klare Grenzen</b> — die Trennschärfe von Services, ohne Netzwerk-, Latenz- und Betriebs-Overhead.</li>
-            <li class="amberdot"><b>Herauslösbar geschnitten</b> — die Komponentengrenzen bleiben ein späterer Service-Split-Pfad.</li>
+            <li><b>Fachliche Module statt technischer Layer:</b> geschnitten nach Domäne, nicht nach „alle Controller / alle Services".</li>
+            <li><b>Ein Deploy, klare Grenzen:</b> die Trennschärfe von Services, ohne Netzwerk-, Latenz- und Betriebs-Overhead.</li>
+            <li class="amberdot"><b>Herauslösbar geschnitten:</b> die Komponentengrenzen bleiben ein späterer Service-Split-Pfad.</li>
           </ul>
         </div>
         <div>
           <div class="card" style="background:var(--accent-soft); border-color:var(--accent)">
             <div class="k">Leitregel</div>
-            <p style="color:var(--ink-soft); font-size:16px; line-height:1.5">Komponenten reden über <strong>Service-Interfaces</strong> — nie über REST, nie über fremde Repositories.</p>
+            <p style="color:var(--ink-soft); font-size:16px; line-height:1.5">Komponenten reden über <strong>Service-Interfaces</strong>, nie über REST, nie über fremde Repositories.</p>
           </div>
           <div class="card" style="margin-top:12px">
             <div class="k">Wäre der Schnitt nötig</div>
@@ -355,13 +355,13 @@
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Schichten innerhalb einer Komponente</div>
-      <h2>Immer dieselbe Ordnung — Beispiel <span class="accent">recipe</span></h2>
+      <h2>Immer dieselbe Ordnung: Beispiel <span class="accent">recipe</span></h2>
       <div class="layers">
-        <div class="layer"><span class="ln">resource/</span><span class="ld">JAX-RS-Endpunkte unter <code>/api/v1/recipes</code> — dünn, delegiert sofort. <span class="pill green">@RolesAllowed("user")</span></span></div>
-        <div class="layer"><span class="ln">dto/</span><span class="ld">Request/Response als <b>Java Records</b> mit Bean-Validation — Entities lecken nie nach außen.</span></div>
-        <div class="layer"><span class="ln">service/</span><span class="ld"><code>RecipeService</code> (Interface) + <code>RecipeServiceImpl</code> — Business-Logik, <b>Autorisierung</b>, <code>@Transactional</code>.</span></div>
-        <div class="layer"><span class="ln">repository/</span><span class="ld">Panache-Repositories — <code>RecipeRepository</code>, kompakte Queries.</span></div>
-        <div class="layer"><span class="ln">entity/</span><span class="ld">JPA-Entitäten — <code>Recipe</code>, <code>RecipeIngredient</code>, <code>RecipeFavorite</code>.</span></div>
+        <div class="layer"><span class="ln">resource/</span><span class="ld">JAX-RS-Endpunkte unter <code>/api/v1/recipes</code>. Dünn, delegiert sofort. <span class="pill green">@RolesAllowed("user")</span></span></div>
+        <div class="layer"><span class="ln">dto/</span><span class="ld">Request/Response als <b>Java Records</b> mit Bean-Validation. Entities lecken nie nach außen.</span></div>
+        <div class="layer"><span class="ln">service/</span><span class="ld"><code>RecipeService</code> (Interface) + <code>RecipeServiceImpl</code>. Business-Logik, <b>Autorisierung</b>, <code>@Transactional</code>.</span></div>
+        <div class="layer"><span class="ln">repository/</span><span class="ld">Panache-Repositories: <code>RecipeRepository</code>, kompakte Queries.</span></div>
+        <div class="layer"><span class="ln">entity/</span><span class="ld">JPA-Entitäten: <code>Recipe</code>, <code>RecipeIngredient</code>, <code>RecipeFavorite</code>.</span></div>
       </div>
       <p class="note">Andere Komponenten sehen nur das <code>Service</code>-Interface. Alles darunter ist privat.</p>
     </div>
@@ -374,7 +374,7 @@
       <h2>Service-Interface rein, Repository bleibt privat</h2>
       <div class="two cr">
         <div>
-          <p class="lead">Braucht die Einkaufsliste den Vorrat, injiziert sie <code class="accent">PantryService</code> — niemals <code>PantryRepository</code>. So bleibt jede Komponente Herr über ihre eigenen Daten und Auth-Regeln.</p>
+          <p class="lead">Braucht die Einkaufsliste den Vorrat, injiziert sie <code class="accent">PantryService</code>, niemals <code>PantryRepository</code>. So bleibt jede Komponente Herr über ihre eigenen Daten und Auth-Regeln.</p>
           <div class="card" style="margin-top:16px; background:var(--amber-soft); border-color:var(--amber)">
             <div class="k" style="color:var(--amber)">Konkret</div>
             <p style="color:var(--ink-soft)"><code>ShoppingListServiceImpl</code> injiziert <b>fünf</b> fremde Service-Interfaces und <b>null</b> fremde Repositories.</p>
@@ -399,7 +399,7 @@
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Sicherheit</div>
-      <h2>Autorisierung im Service-Layer — nicht nur per Annotation</h2>
+      <h2>Autorisierung im Service-Layer, nicht nur per Annotation</h2>
       <div class="two cl">
         <div class="codewrap">
           <div class="codebar"><span class="path">household/service/HouseholdService.java</span><span class="ln">Z. 65</span></div>
@@ -415,9 +415,9 @@
         </div>
         <div>
           <ul class="clean">
-            <li><code>@RolesAllowed</code> heißt nur <b>eingeloggt</b> — nicht <b>berechtigt</b> für genau diese Ressource.</li>
+            <li><code>@RolesAllowed</code> heißt nur <b>eingeloggt</b>, nicht <b>berechtigt</b> für genau diese Ressource.</li>
             <li>Jeder Service prüft zusätzlich: gehört die Ressource zu <b>meinem</b> Haushalt?</li>
-            <li>Ein Guard im Interface — <code>assertMember</code> / <code>assertOwner</code> —, den alle Komponenten teilen.</li>
+            <li>Ein Guard im Interface, <code>assertMember</code> / <code>assertOwner</code>, den alle Komponenten teilen.</li>
             <li class="amberdot">Auch Smart-Suggestion &amp; Einkaufsliste rufen zuerst <code>assertMember</code>.</li>
           </ul>
           <p class="note">Zwei Wächter: Annotation (authentifiziert) <b>+</b> Service-Check (autorisiert).</p>
@@ -430,7 +430,7 @@
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Authentifizierung</div>
-      <h2>Stateless JWT — vom Login bis zum Request</h2>
+      <h2>Stateless JWT: vom Login bis zum Request</h2>
       <div class="flow" style="margin-bottom:16px">
         <div class="node"><b>Login / Register</b><span>E-Mail+Passwort oder Google</span></div>
         <div class="arr">→</div>
@@ -443,7 +443,7 @@
       <div class="grid cols-3">
         <div class="card"><div class="k">Passwörter</div><p>BCrypt-Hash, nie im Klartext. Google-User sind passwortlos (Account-Linking per E-Mail).</p></div>
         <div class="card"><div class="k">Reload-fest</div><p>Router-Guard stellt die Session aus dem localStorage wieder her und verifiziert gegen <code>/auth/me</code>.</p></div>
-        <div class="card"><div class="k">Zwei Wächter</div><p>Annotation (authentifiziert) <b>+</b> Service-Check (autorisiert) — Defense in Depth.</p></div>
+        <div class="card"><div class="k">Zwei Wächter</div><p>Annotation (authentifiziert) <b>+</b> Service-Check (autorisiert). Defense in Depth.</p></div>
       </div>
     </div>
   </section>
@@ -456,9 +456,9 @@
       <div class="two cr">
         <div>
           <ul class="clean">
-            <li><b>Ein Pinia-Store je Komponente</b> — <code>useRecipeStore</code>, <code>usePantryStore</code> … Server-State lebt nur dort.</li>
-            <li><b>Klare Schichten</b> — View → Store (State + <code>loading/error</code>) → Service → Backend.</li>
-            <li><b>Der Token wird durchgereicht</b>, nie im Service gehalten — zentrale <code>Bearer</code>-Injektion im Wrapper.</li>
+            <li><b>Ein Pinia-Store je Komponente:</b> <code>useRecipeStore</code>, <code>usePantryStore</code> … Server-State lebt nur dort.</li>
+            <li><b>Klare Schichten:</b> View → Store (State + <code>loading/error</code>) → Service → Backend.</li>
+            <li><b>Der Token wird durchgereicht</b>, nie im Service gehalten. Zentrale <code>Bearer</code>-Injektion im Wrapper.</li>
             <li class="amberdot"><b>Lazy-loaded Views</b>, deklarative Route-Guards (<code>requiresAuth</code> / <code>guestOnly</code>).</li>
           </ul>
         </div>
@@ -484,8 +484,8 @@
       <div class="eyebrow">Datenmodell-Highlights</div>
       <h2>Konventionen, die überall gelten</h2>
       <div class="grid cols-2">
-        <div class="card"><div class="k">Identität</div><h3>UUID v4 auf jeder Tabelle</h3><p>Keine Auto-Increment-Integer — verteil- und mergebar, keine ID-Kollisionen.</p></div>
-        <div class="card"><div class="k">Historie</div><h3>created_at / updated_at überall</h3><p>Automatisch von Hibernate gepflegt — keine manuellen Timestamps.</p></div>
+        <div class="card"><div class="k">Identität</div><h3>UUID v4 auf jeder Tabelle</h3><p>Keine Auto-Increment-Integer, verteil- und mergebar, keine ID-Kollisionen.</p></div>
+        <div class="card"><div class="k">Historie</div><h3>created_at / updated_at überall</h3><p>Automatisch von Hibernate gepflegt, keine manuellen Timestamps.</p></div>
         <div class="card"><div class="k">Löschen</div><h3>Soft-Delete nur wo fachlich nötig</h3><p>Rezepte ja (Referenzen im Plan), Wochenplan-Einträge nein.</p></div>
         <div class="card"><div class="k">Schema-Evolution</div><h3>Flyway, Hibernate = <code>validate</code></h3><p>Jede Änderung als nummerierte Migration; Hibernate ändert nie selbst.</p></div>
       </div>
@@ -517,7 +517,7 @@
     <div class="slide-inner">
       <div class="actnum">02</div>
       <h2>Die Live-Demo</h2>
-      <p class="lead">Der komplette Loop — live auf <a href="https://eateasy-web.onrender.com">eateasy-web.onrender.com</a>.</p>
+      <p class="lead">Der komplette Loop, live auf <a href="https://eateasy-web.onrender.com">eateasy-web.onrender.com</a>.</p>
       <div class="tmark"><span class="pill green">~8 Minuten</span> <span class="pill amberp">Backend vorher aufgewärmt</span></div>
     </div>
   </section>
@@ -552,12 +552,12 @@
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Fahrplan</div>
-      <h2>Vom Guard zur KI — vier Stationen</h2>
+      <h2>Vom Guard zur KI: vier Stationen</h2>
       <div class="grid cols-2">
         <div class="card"><div class="k">Station 1</div><h3>HouseholdService</h3><p>Autorisierung als wiederverwendbarer Guard im Interface.</p></div>
         <div class="card"><div class="k">Station 2</div><h3>ShoppingListServiceImpl</h3><p>Cross-Component-Injection + Mengen-Aggregation mit Einheiten-Normalisierung.</p></div>
         <div class="card"><div class="k">Station 3</div><h3>SmartSuggestionServiceImpl</h3><p>Deterministische Heuristik + LLM nur für die Begründung, mit sauberem Fallback.</p></div>
-        <div class="card"><div class="k">Station 4</div><h3>LlmClientProducer</h3><p>CDI wählt den LLM-Provider zur Laufzeit — Ollama oder Groq.</p></div>
+        <div class="card"><div class="k">Station 4</div><h3>LlmClientProducer</h3><p>CDI wählt den LLM-Provider zur Laufzeit: Ollama oder Groq.</p></div>
       </div>
       <p class="note">Danach vier Technik-Highlights: LLM-Robustheit · deklarativer REST-Client · Race-Schutz · Google-Token-Verifikation.</p>
     </div>
@@ -590,7 +590,7 @@
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Station 3 · KI mit Netz</div>
-      <h2>Erst rechnen, dann fragen — LLM nur für den Grund</h2>
+      <h2>Erst rechnen, dann fragen: LLM nur für den Grund</h2>
       <div class="two cl">
         <div class="codewrap">
           <div class="codebar"><span class="path">suggestion/…/SmartSuggestionServiceImpl.java</span><span class="ln">Z. 90–113</span></div>
@@ -603,15 +603,15 @@ List&lt;Candidate&gt; candidates = recipes.stream()
     .sorted(comparingDouble(c -&gt; c.coverage).reversed())
     .limit(CANDIDATE_LIMIT).toList();              <span class="cm">// max 10</span>
 
-<span class="cm">// 2) LLM begründet nur — fällt es aus, bleibt die Reihenfolge</span>
+<span class="cm">// 2) LLM begründet nur; fällt es aus, bleibt die Reihenfolge</span>
 OllamaOutcome outcome = askOllama(candidates, pantryIds);
 <span class="kw">return new</span> SuggestionResponse(outcome.aiAvailable(), list);</code></pre>
         </div>
         <div>
           <ul class="clean">
-            <li><b>Heuristik trägt die Demo</b> — Ranking ist reproduzierbar, auch ohne KI.</li>
-            <li><b>Drei Ausfälle abgefangen</b> — leere Antwort, unparsbares JSON, Exception → <code>aiAvailable=false</code>.</li>
-            <li class="amberdot"><b>Frontend zeigt den Modus</b> — echte Begründung vs. „aus Vorratsabdeckung berechnet".</li>
+            <li><b>Heuristik trägt die Demo:</b> Ranking ist reproduzierbar, auch ohne KI.</li>
+            <li><b>Drei Ausfälle abgefangen:</b> leere Antwort, unparsbares JSON, Exception → <code>aiAvailable=false</code>.</li>
+            <li class="amberdot"><b>Frontend zeigt den Modus:</b> echte Begründung vs. „aus Vorratsabdeckung berechnet".</li>
           </ul>
         </div>
       </div>
@@ -622,11 +622,11 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds);
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Station 4 · CDI-Feinheit</div>
-      <h2>Ein Interface, zwei Provider — Auswahl per Config</h2>
+      <h2>Ein Interface, zwei Provider: Auswahl per Config</h2>
       <div class="two cr">
         <div>
-          <p class="lead">Dieselbe Pipeline läuft lokal auf self-hosted <strong>Ollama</strong> und in der Cloud-Demo auf gehostetem <strong>Groq</strong>. Kein Code-Zweig im Service — CDI liefert die passende Implementierung.</p>
-          <div class="card" style="margin-top:14px"><div class="k">Warum es zählt</div><p>Render hat kein RAM für ein lokales LLM. Eine Env-Variable — <code>AI_PROVIDER=groq</code> — genügt.</p></div>
+          <p class="lead">Dieselbe Pipeline läuft lokal auf self-hosted <strong>Ollama</strong> und in der Cloud-Demo auf gehostetem <strong>Groq</strong>. Kein Code-Zweig im Service, CDI liefert die passende Implementierung.</p>
+          <div class="card" style="margin-top:14px"><div class="k">Warum es zählt</div><p>Render hat kein RAM für ein lokales LLM. Eine Env-Variable <code>AI_PROVIDER=groq</code> genügt.</p></div>
         </div>
         <div class="codewrap">
           <div class="codebar"><span class="path">suggestion/client/LlmClientProducer.java</span><span class="ln">Z. 20–33</span></div>
@@ -693,9 +693,9 @@ List&lt;JsonNode&gt; entries;
         </div>
         <div>
           <ul class="clean">
-            <li><b>Nur ein Interface</b> — Quarkus generiert den HTTP-Client zur Build-Zeit aus den Annotationen.</li>
+            <li><b>Nur ein Interface:</b> Quarkus generiert den HTTP-Client zur Build-Zeit aus den Annotationen.</li>
             <li><b>Base-URL aus der Config</b> via <code>configKey</code>, nicht im Code hartverdrahtet.</li>
-            <li class="amberdot"><code>@QueryParam</code> bindet direkt auf die Methodenparameter — kein manuelles URL-Bauen.</li>
+            <li class="amberdot"><code>@QueryParam</code> bindet direkt auf die Methodenparameter, kein manuelles URL-Bauen.</li>
           </ul>
         </div>
       </div>
@@ -726,7 +726,7 @@ List&lt;JsonNode&gt; entries;
           <ul class="clean">
             <li><b>Atomar auf DB-Ebene</b> statt check-then-act in zwei Schritten.</li>
             <li>Schützt gegen die <b>TOCTOU-Race</b> bei Doppelklick oder zwei Tabs.</li>
-            <li class="amberdot">Der Rückgabewert trennt „neu angelegt" von „gab es schon" — ohne zweite Query.</li>
+            <li class="amberdot">Der Rückgabewert trennt „neu angelegt" von „gab es schon", ohne zweite Query.</li>
           </ul>
         </div>
       </div>
@@ -741,9 +741,9 @@ List&lt;JsonNode&gt; entries;
       <div class="two cr">
         <div>
           <ul class="clean">
-            <li><b>Kein Google-SDK, kein OIDC-Server-Flow</b> — nur der JDK-<code>HttpClient</code> gegen Googles <code>tokeninfo</code>.</li>
+            <li><b>Kein Google-SDK, kein OIDC-Server-Flow:</b> nur der JDK-<code>HttpClient</code> gegen Googles <code>tokeninfo</code>.</li>
             <li><b>Audience-Check</b> <code>clientId == aud</code> verhindert Token-Substitution.</li>
-            <li class="amberdot">Mündet in denselben stateless-JWT-Flow — Ergebnis ist ein EatEasy-JWT.</li>
+            <li class="amberdot">Mündet in denselben stateless-JWT-Flow. Ergebnis ist ein EatEasy-JWT.</li>
           </ul>
         </div>
         <div class="codewrap">
@@ -771,10 +771,10 @@ String aud = root.path(<span class="st">"aud"</span>).asText(<span class="st">""
       <div class="eyebrow">Reflexion</div>
       <h2>Herausforderungen &amp; Learnings</h2>
       <div class="grid cols-2">
-        <div class="card"><div class="k">Aggregation</div><h3>Einheiten sind tückisch</h3><p>TBSP, ML, Gramm, Stück — nur mit kanonischer Normalisierung und <code>BigDecimal</code> stimmt die Einkaufsliste wirklich.</p></div>
+        <div class="card"><div class="k">Aggregation</div><h3>Einheiten sind tückisch</h3><p>TBSP, ML, Gramm, Stück: nur mit kanonischer Normalisierung und <code>BigDecimal</code> stimmt die Einkaufsliste wirklich.</p></div>
         <div class="card"><div class="k">KI verlässlich machen</div><h3>LLMs halluzinieren</h3><p>Kleine Modelle liefern nicht immer valides JSON. Robustes Parsing + Coverage-Fallback statt Blind-Vertrauen.</p></div>
         <div class="card"><div class="k">Komponenten-Disziplin</div><h3>Grenzen halten kostet Bewusstsein</h3><p>Der einfache Weg wäre der direkte Repository-Zugriff. Service-Interfaces + Batch-Methoden halten den Schnitt sauber.</p></div>
-        <div class="card"><div class="k">Betrieb im Free-Tier</div><h3>Demo ≠ Prod</h3><p>Kaltstart, kein OCR-RAM, gemockte Mails — Feature-Flags trennen Demo-Realität von voller lokaler Funktion.</p></div>
+        <div class="card"><div class="k">Betrieb im Free-Tier</div><h3>Demo ≠ Prod</h3><p>Kaltstart, kein OCR-RAM, gemockte Mails: Feature-Flags trennen Demo-Realität von voller lokaler Funktion.</p></div>
       </div>
     </div>
   </section>
@@ -783,7 +783,7 @@ String aud = root.path(<span class="st">"aud"</span>).asText(<span class="st">""
   <section class="slide">
     <div class="slide-inner">
       <div class="eyebrow">Fazit &amp; Ausblick</div>
-      <h2>Was steht — und was käme als Nächstes</h2>
+      <h2>Was steht, und was käme als Nächstes</h2>
       <div class="two">
         <div>
           <h3 style="color:var(--accent); margin-bottom:12px; font-size:20px">Erreicht</h3>
@@ -796,7 +796,7 @@ String aud = root.path(<span class="st">"aud"</span>).asText(<span class="st">""
         <div>
           <h3 style="color:var(--amber); margin-bottom:12px; font-size:20px">Ausblick</h3>
           <ul class="clean">
-            <li class="amberdot">Google-OAuth ist gebaut, aber feature-geflaggt — produktiv scharfschalten.</li>
+            <li class="amberdot">Google-OAuth ist gebaut, aber feature-geflaggt: produktiv scharfschalten.</li>
             <li class="amberdot">Kategorien-Sortierung der Liste weiter verfeinern (Supermarkt-Gang).</li>
             <li class="amberdot">Beleg-Scanner in einer Umgebung mit OCR-Ressourcen live nehmen.</li>
           </ul>
@@ -810,7 +810,7 @@ String aud = root.path(<span class="st">"aud"</span>).asText(<span class="st">""
     <div class="slide-inner">
       <div class="title-mark"><span class="leaf"></span> EatEasy&nbsp;EE</div>
       <h2 style="font-size:60px">Vielen Dank.</h2>
-      <p class="lead">Fragen? Gern jetzt — oder direkt live ausprobieren.</p>
+      <p class="lead">Fragen? Gern jetzt, oder direkt live ausprobieren.</p>
       <div class="title-meta">
         <div><b>Live-Demo</b><br>eateasy-web.onrender.com</div>
         <div><b>API-Doku</b><br>/q/swagger-ui</div>
