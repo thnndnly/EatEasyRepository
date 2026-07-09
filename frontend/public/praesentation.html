@@ -304,7 +304,7 @@
           <ul class="clean">
             <li><b>Fachliche Module statt technischer Layer</b> — geschnitten nach Domäne, nicht nach „alle Controller / alle Services".</li>
             <li><b>Ein Deploy, klare Grenzen</b> — die Trennschärfe von Services, ohne Netzwerk-, Latenz- und Betriebs-Overhead.</li>
-            <li><b>Mit der Lehrperson abgestimmt</b> — dokumentiert in <code>docs/architektur.md</code>.</li>
+            <li class="amberdot"><b>Herauslösbar geschnitten</b> — die Komponentengrenzen bleiben ein späterer Service-Split-Pfad.</li>
           </ul>
         </div>
         <div>
@@ -538,27 +538,6 @@
     </div>
   </section>
 
-  <!-- 18 · DEMO SAFETY -->
-  <section class="slide">
-    <div class="slide-inner">
-      <div class="two">
-        <div>
-          <div class="eyebrow">Demo-Absicherung</div>
-          <h2>Für den Fall der Fälle vorbereitet</h2>
-          <ul class="clean">
-            <li><b>Backend aufgeweckt</b> — Free-Tier schläft nach 15 Min; wir wärmen es vor Beginn auf (~1 Min Kaltstart).</li>
-            <li><b>Fallback-Screenshots</b> bereit, falls das Netz streikt.</li>
-            <li class="amberdot"><b>Bewusst deaktiviert auf der Demo</b>: Beleg-Scanner (kein OCR-RAM im Free-Tier) &amp; Mail-Versand (gemockt) — Einladung zeigt stattdessen den Beitritts-Link direkt.</li>
-          </ul>
-        </div>
-        <div>
-          <div class="card"><div class="k">Live-Ziel</div><p style="font-size:16px"><a href="https://eateasy-web.onrender.com">eateasy-web.onrender.com</a></p></div>
-          <div class="card" style="margin-top:12px"><div class="k">Unter der Haube</div><p>Static Site proxyt <code>/api/*</code> → Quarkus-Backend (Docker) → Postgres 16. KI über Groq statt Ollama.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- 19 · ACT 3 DIVIDER -->
   <section class="slide divider">
     <div class="slide-inner">
@@ -580,6 +559,7 @@
         <div class="card"><div class="k">Station 3</div><h3>SmartSuggestionServiceImpl</h3><p>Deterministische Heuristik + LLM nur für die Begründung, mit sauberem Fallback.</p></div>
         <div class="card"><div class="k">Station 4</div><h3>LlmClientProducer</h3><p>CDI wählt den LLM-Provider zur Laufzeit — Ollama oder Groq.</p></div>
       </div>
+      <p class="note">Danach vier Technik-Highlights: LLM-Robustheit · deklarativer REST-Client · Race-Schutz · Google-Token-Verifikation.</p>
     </div>
   </section>
 
@@ -666,6 +646,125 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds);
     </div>
   </section>
 
+  <!-- A · LLM JSON PARSING -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Technik-Highlight · KI-Robustheit</div>
+      <h2>Drei Antwortformen von einem Modell ohne Regeln</h2>
+      <div class="codewrap">
+        <div class="codebar"><span class="path">suggestion/…/SmartSuggestionServiceImpl.java · parseOllamaResponse()</span><span class="ln">Z. 218–256</span></div>
+<pre><code>JsonNode root = objectMapper.readTree(body);
+List&lt;JsonNode&gt; entries;
+<span class="kw">if</span> (root.isArray()) {                        <span class="cm">// 1) spec-konform</span>
+    entries = toList((ArrayNode) root);
+} <span class="kw">else if</span> (root.isObject() &amp;&amp; root.has(<span class="st">"recipeId"</span>)) {
+    entries = List.of(root);                 <span class="cm">// 2) nur ein Objekt</span>
+} <span class="kw">else</span> {
+    JsonNode arr = findFirstArray(root);     <span class="cm">// 3) irgendwo im Wrapper</span>
+    entries = arr != <span class="kw">null</span> ? toList((ArrayNode) arr) : List.of();
+}
+<span class="kw">for</span> (JsonNode n : entries) {
+    <span class="kw">try</span> { result.put(UUID.fromString(id(n)), reason(n)); }
+    <span class="kw">catch</span> (IllegalArgumentException ignore) { <span class="cm">/* halluzinierte ID */</span> }
+}</code></pre>
+      </div>
+      <p class="note">Defensiv gegen ein nicht-deterministisches LLM: Array, Einzelobjekt <em>oder</em> Wrapper werden akzeptiert, eine rekursive Suche findet das erste Array im Baum, halluzinierte UUIDs werden still verworfen. Scheitert alles, greift der Coverage-Fallback (<code>aiAvailable=false</code>).</p>
+    </div>
+  </section>
+
+  <!-- B · REST CLIENT -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Technik-Highlight · Quarkus</div>
+      <h2>Ein REST-Client ohne eine Zeile Implementierung</h2>
+      <div class="two cl">
+        <div class="codewrap">
+          <div class="codebar"><span class="path">integration/client/TheMealDbClient.java</span><span class="ln">Z. 20–32</span></div>
+<pre><code><span class="kw">@RegisterRestClient</span>(configKey = <span class="st">"themealdb"</span>)
+<span class="kw">@Path</span>(<span class="st">"/api/json/v1/1"</span>)
+<span class="kw">public interface</span> TheMealDbClient {
+
+    <span class="kw">@GET @Path</span>(<span class="st">"/search.php"</span>)
+    TheMealDbResponse search(<span class="kw">@QueryParam</span>(<span class="st">"s"</span>) String q);
+
+    <span class="kw">@GET @Path</span>(<span class="st">"/lookup.php"</span>)
+    TheMealDbResponse lookup(<span class="kw">@QueryParam</span>(<span class="st">"i"</span>) String id);
+}</code></pre>
+        </div>
+        <div>
+          <ul class="clean">
+            <li><b>Nur ein Interface</b> — Quarkus generiert den HTTP-Client zur Build-Zeit aus den Annotationen.</li>
+            <li><b>Base-URL aus der Config</b> via <code>configKey</code>, nicht im Code hartverdrahtet.</li>
+            <li class="amberdot"><code>@QueryParam</code> bindet direkt auf die Methodenparameter — kein manuelles URL-Bauen.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C · ON CONFLICT -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Technik-Highlight · Nebenläufigkeit</div>
+      <h2>Doppelklick-sicher: <span class="accent">ON CONFLICT DO NOTHING</span></h2>
+      <div class="two cl">
+        <div class="codewrap">
+          <div class="codebar"><span class="path">recipe/repository/RecipeFavoriteRepository.java</span><span class="ln">Z. 28–37</span></div>
+<pre><code><span class="kw">public boolean</span> insertIfAbsent(UUID userId, UUID recipeId) {
+    <span class="kw">int</span> inserted = getEntityManager().createNativeQuery(
+        <span class="st">"insert into user_favorite_recipe "</span>
+      + <span class="st">"(id, user_id, recipe_id, created_at) "</span>
+      + <span class="st">"values (?1, ?2, ?3, current_timestamp) "</span>
+      + <span class="st">"on conflict (user_id, recipe_id) do nothing"</span>)
+        .setParameter(1, UUID.randomUUID())
+        .setParameter(2, userId).setParameter(3, recipeId)
+        .executeUpdate();
+    <span class="kw">return</span> inserted &gt; 0;   <span class="cm">// true = neu, false = gab es schon</span>
+}</code></pre>
+        </div>
+        <div>
+          <ul class="clean">
+            <li><b>Atomar auf DB-Ebene</b> statt check-then-act in zwei Schritten.</li>
+            <li>Schützt gegen die <b>TOCTOU-Race</b> bei Doppelklick oder zwei Tabs.</li>
+            <li class="amberdot">Der Rückgabewert trennt „neu angelegt" von „gab es schon" — ohne zweite Query.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- D · GOOGLE TOKEN -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Technik-Highlight · Sicherheit</div>
+      <h2>Google-Login: Token prüfen, nicht dem Client glauben</h2>
+      <div class="two cr">
+        <div>
+          <ul class="clean">
+            <li><b>Kein Google-SDK, kein OIDC-Server-Flow</b> — nur der JDK-<code>HttpClient</code> gegen Googles <code>tokeninfo</code>.</li>
+            <li><b>Audience-Check</b> <code>clientId == aud</code> verhindert Token-Substitution.</li>
+            <li class="amberdot">Mündet in denselben stateless-JWT-Flow — Ergebnis ist ein EatEasy-JWT.</li>
+          </ul>
+        </div>
+        <div class="codewrap">
+          <div class="codebar"><span class="path">auth/google/GoogleTokenVerifierImpl.java</span><span class="ln">Z. 61–95</span></div>
+<pre><code>var res = httpClient.send(request,
+    HttpResponse.BodyHandlers.ofString());
+<span class="kw">if</span> (res.statusCode() != 200)
+    <span class="kw">throw new</span> InvalidCredentialsException();
+JsonNode root = objectMapper.readTree(res.body());
+String aud = root.path(<span class="st">"aud"</span>).asText(<span class="st">""</span>);
+<span class="cm">// Schutz gegen Token-Substitution:</span>
+<span class="kw">if</span> (!clientId.equals(aud))
+    <span class="kw">throw new</span> InvalidCredentialsException();
+<span class="kw">return new</span> GoogleIdTokenPayload(
+    text(root, <span class="st">"email"</span>), text(root, <span class="st">"sub"</span>),
+    text(root, <span class="st">"name"</span>));</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 24 · CHALLENGES -->
   <section class="slide">
     <div class="slide-inner">
@@ -726,7 +825,7 @@ OllamaOutcome outcome = askOllama(candidates, pantryIds);
 <div id="footer-brand"><span class="leaf"></span> EatEasy EE</div>
 <div id="chrome">
   <button class="navbtn" id="prev" aria-label="Zurück">‹</button>
-  <span id="counter">1 / 26</span>
+  <span id="counter">1 / 29</span>
   <button class="navbtn" id="next" aria-label="Weiter">›</button>
 </div>
 
