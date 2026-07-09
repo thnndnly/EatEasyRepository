@@ -208,6 +208,32 @@ class RecipeResourceTest {
     }
 
     @Test
+    @DisplayName("DELETE /recipes/{id} ist Soft-Delete: danach 404 und weg aus der Liste")
+    void deleteSoftDeletesRecipe() {
+        String token = registerUser("alice@example.com", "Alice");
+        String recipeId = createRecipe(token, "Wird geloescht");
+
+        given()
+            .header("Authorization", "Bearer " + token)
+            .when().delete("/api/v1/recipes/" + recipeId)
+            .then().statusCode(204);
+
+        // Direkter Abruf eines soft-geloeschten Rezepts liefert 404.
+        given()
+            .header("Authorization", "Bearer " + token)
+            .when().get("/api/v1/recipes/" + recipeId)
+            .then().statusCode(404);
+
+        // Und es taucht nicht mehr in der Liste auf.
+        given()
+            .header("Authorization", "Bearer " + token)
+            .when().get("/api/v1/recipes")
+            .then()
+                .statusCode(200)
+                .body("findAll { it.id == '" + recipeId + "' }", hasSize(0));
+    }
+
+    @Test
     @DisplayName("PATCH /recipes/{id} als Owner aendert das Rezept")
     void patchAsOwner() {
         String token = registerUser("alice@example.com", "Alice");

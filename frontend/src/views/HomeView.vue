@@ -30,6 +30,8 @@ async function refresh(): Promise<void> {
   status.value = 'loading'
   detail.value = 'Pruefe Backend ...'
   try {
+    // Bewusste Ausnahme von "API nur ueber Stores": der Health-Check ist ein
+    // reiner Infrastruktur-Ping (kein Domaenen-State), der nirgends geteilt wird.
     const health = await fetchHealth()
     status.value = health.status === 'ok' ? 'ok' : 'error'
     detail.value = `Backend status: ${health.status}`

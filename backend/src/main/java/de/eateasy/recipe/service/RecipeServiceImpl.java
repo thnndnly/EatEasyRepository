@@ -83,7 +83,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     @Transactional
     public RecipeDto get(UUID userId, UUID recipeId) {
-        Recipe recipe = loadRecipe(recipeId);
+        Recipe recipe = loadActiveRecipe(recipeId);
         assertCanRead(userId, recipe);
         boolean favorite = favoriteRepository.findByUserAndRecipe(userId, recipeId).isPresent();
         return toDto(recipe, loadIngredientNames(List.of(recipe)), favorite);
@@ -119,7 +119,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     @Transactional
     public RecipeDto update(UUID userId, UUID recipeId, RecipeUpdateRequest request) {
-        Recipe recipe = loadRecipe(recipeId);
+        Recipe recipe = loadActiveRecipe(recipeId);
         assertOwner(userId, recipe);
 
         if (request.householdId() != null && !householdService.isMember(userId, request.householdId())) {
@@ -143,15 +143,17 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     @Transactional
     public void delete(UUID userId, UUID recipeId) {
-        Recipe recipe = loadRecipe(recipeId);
+        Recipe recipe = loadActiveRecipe(recipeId);
         assertOwner(userId, recipe);
-        recipeRepository.delete(recipe);
+        // Soft-Delete: als geloescht markieren statt entfernen, damit bestehende
+        // Wochenplan-/Einkaufslisten-/Favoriten-Referenzen erhalten bleiben.
+        recipe.markDeleted();
     }
 
     @Override
     @Transactional
     public void setFavorite(UUID userId, UUID recipeId, boolean favorite) {
-        Recipe recipe = loadRecipe(recipeId);
+        Recipe recipe = loadActiveRecipe(recipeId);
         assertCanRead(userId, recipe);
 
         if (favorite) {
@@ -174,6 +176,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
     public Map<UUID, RecipeMiniDto> getMinis(Collection<UUID> recipeIds) {
         if (recipeIds == null || recipeIds.isEmpty()) {
             return Map.of();
@@ -184,6 +187,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional
     public Map<UUID, List<RecipeIngredientView>> getIngredientsByRecipeIds(Collection<UUID> recipeIds) {
         if (recipeIds == null || recipeIds.isEmpty()) {
             return Map.of();
@@ -204,6 +208,22 @@ public class RecipeServiceImpl implements RecipeService {
     private Recipe loadRecipe(UUID recipeId) {
         return recipeRepository.findByIdOptional(recipeId)
             .orElseThrow(() -> new NotFoundException("Rezept nicht gefunden: " + recipeId));
+    }
+
+    /**
+     * Wie {@link #loadRecipe}, behandelt soft-geloeschte Rezepte aber als nicht
+     * vorhanden (404) — fuer Lese-/Schreibpfade, die nur aktive Rezepte sehen
+     * duerfen. Die Referenz-Aufloesung ({@code getMinis}/
+     * {@code getIngredientsByRecipeIds}) nutzt bewusst {@code findByIds} ohne
+     * diesen Filter, damit bestehende Wochenplan-/Einkaufslisten-Eintraege
+     * geloeschte Rezepte weiterhin darstellen koennen.
+     */
+    private Recipe loadActiveRecipe(UUID recipeId) {
+        Recipe recipe = loadRecipe(recipeId);
+        if (recipe.isDeleted()) {
+            throw new NotFoundException("Rezept nicht gefunden: " + recipeId);
+        }
+        return recipe;
     }
 
     private void assertCanRead(UUID userId, Recipe recipe) {

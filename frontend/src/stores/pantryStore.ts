@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as pantryService from '@/services/pantryService'
+import * as barcodeService from '@/services/barcodeService'
 import { useRequireToken } from '@/composables/useRequireToken'
 import { daysUntil } from '@/utils/mhd'
 import type {
@@ -8,6 +9,7 @@ import type {
   PantryItemDto,
   UpdatePantryItemRequest,
 } from '@/types/pantry'
+import type { BarcodePantryRequest, BarcodeProductDto } from '@/types/barcode'
 
 const EXPIRING_SOON_DAYS = 7
 
@@ -82,6 +84,41 @@ export const usePantryStore = defineStore('pantry', () => {
     }
   }
 
+  /** Barcode-Lookup (OpenFoodFacts) — Server-State-Zugriff laeuft ueber den Store,
+   *  nicht direkt aus der Komponente. */
+  async function lookupByBarcode(barcode: string): Promise<BarcodeProductDto> {
+    error.value = null
+    try {
+      return await barcodeService.lookupBarcode(requireToken(), barcode)
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Produkt konnte nicht geladen werden'
+      throw err
+    }
+  }
+
+  /** Legt einen Vorrats-Eintrag per Barcode an und pflegt die Liste wie addItem. */
+  async function addByBarcode(request: BarcodePantryRequest): Promise<PantryItemDto> {
+    if (!householdId.value) {
+      throw new Error('Kein Haushalt ausgewaehlt')
+    }
+    error.value = null
+    try {
+      const created = await barcodeService.addPantryItemByBarcode(
+        requireToken(),
+        householdId.value,
+        request,
+      )
+      const exists = items.value.some((i) => i.id === created.id)
+      items.value = exists
+        ? items.value.map((i) => (i.id === created.id ? created : i))
+        : [...items.value, created]
+      return created
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Hinzufuegen fehlgeschlagen'
+      throw err
+    }
+  }
+
   function reset(): void {
     items.value = []
     householdId.value = null
@@ -107,6 +144,8 @@ export const usePantryStore = defineStore('pantry', () => {
     addItem,
     updateItem,
     removeItem,
+    lookupByBarcode,
+    addByBarcode,
     reset,
   }
 })

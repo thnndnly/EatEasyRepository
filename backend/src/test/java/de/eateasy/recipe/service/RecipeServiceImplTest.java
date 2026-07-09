@@ -7,6 +7,7 @@ import de.eateasy.auth.service.AuthService;
 import de.eateasy.common.diet.DietTag;
 import de.eateasy.common.exception.BadRequestException;
 import de.eateasy.common.exception.ForbiddenException;
+import de.eateasy.common.exception.NotFoundException;
 import de.eateasy.common.units.Unit;
 import de.eateasy.household.dto.HouseholdCreateRequest;
 import de.eateasy.household.dto.InvitationCreateRequest;
@@ -242,7 +243,15 @@ class RecipeServiceImplTest {
             .isInstanceOf(ForbiddenException.class);
 
         recipeService.delete(alice, created.id());
-        assertThat(recipeRepository.findByIdOptional(created.id())).isEmpty();
+        // Soft-Delete: nicht mehr abrufbar und aus der Liste verschwunden ...
+        assertThatThrownBy(() -> recipeService.get(alice, created.id()))
+            .isInstanceOf(NotFoundException.class);
+        assertThat(recipeService.list(alice, new RecipeFilter(null, null, null, false)))
+            .noneMatch(r -> r.id().equals(created.id()));
+        // ... die Zeile bleibt aber bestehen und ist fuer Referenzen (Wochenplan/
+        // Einkaufsliste) via getMinis weiterhin aufloesbar.
+        assertThat(recipeRepository.findByIdOptional(created.id())).isPresent();
+        assertThat(recipeService.getMinis(List.of(created.id()))).containsKey(created.id());
     }
 
     @Test

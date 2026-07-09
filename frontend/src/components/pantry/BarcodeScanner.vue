@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser'
-import * as barcodeService from '@/services/barcodeService'
 import { useAuthStore } from '@/stores/authStore'
 import { usePantryStore } from '@/stores/pantryStore'
 import BaseModal from '@/components/common/BaseModal.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import type { BarcodeProductDto } from '@/types/barcode'
-import type { Unit } from '@/types/units'
+import { UNITS, UNIT_ABBREV, type Unit } from '@/types/units'
 import type { PantryItemDto } from '@/types/pantry'
 
 const emit = defineEmits<{
@@ -81,7 +80,7 @@ async function onDetected(barcode: string): Promise<void> {
   loading.value = true
   error.value = null
   try {
-    product.value = await barcodeService.lookupBarcode(authStore.token, barcode)
+    product.value = await pantryStore.lookupByBarcode(barcode)
     unit.value = product.value.suggestedUnit
     stage.value = 'confirm'
   } catch (err: unknown) {
@@ -108,18 +107,13 @@ async function onConfirm(): Promise<void> {
   loading.value = true
   error.value = null
   try {
-    const item = await barcodeService.addPantryItemByBarcode(
-      authStore.token,
-      props.householdId,
-      {
-        barcode: product.value.barcode,
-        amount: amount.value,
-        unit: unit.value,
-        bestBefore: bestBefore.value || null,
-      },
-    )
-    // Pantry-Store aktualisieren, damit die Liste den neuen Eintrag sofort zeigt.
-    await pantryStore.load(props.householdId)
+    // Server-State-Zugriff laeuft ueber den Store; der pflegt die Liste selbst.
+    const item = await pantryStore.addByBarcode({
+      barcode: product.value.barcode,
+      amount: amount.value,
+      unit: unit.value,
+      bestBefore: bestBefore.value || null,
+    })
     emit('added', item)
   } catch (err: unknown) {
     error.value =
@@ -238,11 +232,7 @@ onBeforeUnmount(() => {
                 v-model="unit"
                 class="ee-input mt-1 w-full"
               >
-                <option value="GRAM">g</option>
-                <option value="ML">ml</option>
-                <option value="PIECE">Stueck</option>
-                <option value="TBSP">EL</option>
-                <option value="TSP">TL</option>
+                <option v-for="u in UNITS" :key="u" :value="u">{{ UNIT_ABBREV[u] }}</option>
               </select>
             </div>
           </div>

@@ -55,6 +55,7 @@ export const useShoppingListStore = defineStore('shoppingList', () => {
     if (!list.value) {
       return
     }
+    error.value = null
     try {
       const updated = await shoppingListService.toggleItemChecked(
         requireToken(),
@@ -66,6 +67,8 @@ export const useShoppingListStore = defineStore('shoppingList', () => {
         items: list.value.items.map((i) => (i.id === itemId ? updated : i)),
       }
     } catch (err: unknown) {
+      // Bewusst kein rethrow: Fire-and-forget-Toggle; die View prueft nach dem
+      // await `store.error` (statt zu catchen), um den Erfolgs-Toast zu steuern.
       error.value = err instanceof Error ? err.message : 'Aktualisieren fehlgeschlagen'
     }
   }
