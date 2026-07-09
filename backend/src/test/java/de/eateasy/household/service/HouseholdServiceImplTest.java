@@ -256,6 +256,24 @@ class HouseholdServiceImplTest {
 
     @Test
     @TestTransaction
+    @DisplayName("listMembers enthaelt direkt nach create() genau den Owner (Regression #9)")
+    void listMembersContainsOwnerRightAfterCreate() {
+        UUID ownerId = registerUser("owner@example.com", "Owner");
+        UUID householdId = householdService.create(ownerId,
+            new HouseholdCreateRequest("Solo-Haushalt", null)).id();
+
+        // Frisch angelegter Haushalt ohne Einladungen: die Mitgliederliste muss
+        // genau einen Eintrag haben — den Owner selbst.
+        List<MemberDto> members = householdService.listMembers(ownerId, householdId);
+
+        assertThat(members).hasSize(1);
+        assertThat(members.get(0).userId()).isEqualTo(ownerId);
+        assertThat(members.get(0).email()).isEqualTo("owner@example.com");
+        assertThat(members.get(0).role()).isEqualTo(MembershipRole.OWNER);
+    }
+
+    @Test
+    @TestTransaction
     @DisplayName("removeMember loescht Membership; Owner kann sich nicht selbst entfernen")
     void removeMemberRules() {
         UUID ownerId = registerUser("owner@example.com", "Owner");
