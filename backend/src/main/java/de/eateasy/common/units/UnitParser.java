@@ -47,7 +47,7 @@ public final class UnitParser {
                 new UnitParseResult(Unit.TBSP, 1.0);
             case "tsp", "teaspoon", "teaspoons", "tl" ->
                 new UnitParseResult(Unit.TSP, 1.0);
-            case "piece", "pieces", "pcs", "stück", "stück", "st" ->
+            case "piece", "pieces", "pcs", "stueck", "stück", "st" ->
                 new UnitParseResult(Unit.PIECE, 1.0);
             default ->
                 new UnitParseResult(defaultUnit, 1.0);
