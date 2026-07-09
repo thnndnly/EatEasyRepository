@@ -116,6 +116,9 @@ export const useHouseholdStore = defineStore('household', () => {
     return created
   }
 
+  // `memberId` ist die userId des zu entfernenden Mitglieds — im Datenmodell
+  // gibt es keine eigene Membership-ID nach aussen, ein Mitglied wird ueber
+  // (householdId, userId) identifiziert (siehe MemberDto.userId).
   async function removeMember(householdId: string, memberId: string): Promise<void> {
     await householdService.removeMember(requireToken(), householdId, memberId)
     const next = (membersById.value[householdId] ?? []).filter((m) => m.userId !== memberId)

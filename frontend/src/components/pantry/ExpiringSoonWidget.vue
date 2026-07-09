@@ -10,8 +10,16 @@ const MAX_VISIBLE = 5
 const router = useRouter()
 const pantryStore = usePantryStore()
 
-const visible = computed(() => pantryStore.expiringSoon.slice(0, MAX_VISIBLE))
-const hiddenCount = computed(() => pantryStore.expiringSoon.length - visible.value.length)
+// expiringSoon enthaelt per pantryStore-Filter nur Items mit gesetztem
+// bestBefore — daher ist die Non-null-Assertion sicher. Ampel-Status einmal
+// pro Zeile berechnen statt drei Mal im Template.
+const visibleRows = computed(() =>
+  pantryStore.expiringSoon.slice(0, MAX_VISIBLE).map((item) => ({
+    item,
+    status: mhdStatusFor(item.bestBefore!),
+  })),
+)
+const hiddenCount = computed(() => pantryStore.expiringSoon.length - visibleRows.value.length)
 </script>
 
 <template>
@@ -57,10 +65,10 @@ const hiddenCount = computed(() => pantryStore.expiringSoon.length - visible.val
 
     <ul v-else class="mt-4 divide-y divide-cream-100 overflow-hidden rounded-2xl border border-cream-200">
       <li
-        v-for="item in visible"
+        v-for="{ item, status } in visibleRows"
         :key="item.id"
         class="flex items-center gap-3 px-4 py-2.5"
-        :class="mhdStatusFor(item.bestBefore!).rowClass"
+        :class="status.rowClass"
       >
         <span class="flex-1 text-sm font-medium text-ink-900">
           {{ item.ingredientName }}
@@ -68,8 +76,8 @@ const hiddenCount = computed(() => pantryStore.expiringSoon.length - visible.val
         <span class="text-xs tabular-nums text-ink-500">
           {{ item.amount }} {{ UNIT_ABBREV[item.unit] }}
         </span>
-        <span :class="mhdStatusFor(item.bestBefore!).chipClass">
-          {{ mhdStatusFor(item.bestBefore!).label }}
+        <span :class="status.chipClass">
+          {{ status.label }}
         </span>
       </li>
     </ul>

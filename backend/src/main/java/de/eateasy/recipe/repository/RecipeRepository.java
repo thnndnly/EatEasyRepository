@@ -56,9 +56,9 @@ public class RecipeRepository implements PanacheRepositoryBase<Recipe, UUID> {
         }
 
         // Diät-Tags AND-Match: jeder gesuchte Tag muss im Array enthalten sein.
-        // Postgres Array-Operator @> erfordert nativeQuery — wir machen das simpel
-        // mit subquery-loop ueber UNNEST. Alternativ: post-filter im Service.
-        // Wir machen post-filter, das ist einfacher und in einem Studienprojekt OK.
+        // Wir filtern die Tags nach dem Query in Java (post-filter, siehe unten)
+        // statt per Postgres-Array-Operator — einfacher und fuer die Datenmengen
+        // in diesem Studienprojekt voellig ausreichend.
 
         List<Recipe> raw = find(hql.toString(), Sort.by("title"), params).list();
 

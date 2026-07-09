@@ -1,5 +1,9 @@
 const MS_PER_DAY = 1000 * 60 * 60 * 24
 
+/** Schwellen (Kalendertage) fuer den MHD-Ampelstatus. */
+const URGENT_DAYS = 3
+const SOON_DAYS = 7
+
 /** Kalendertage bis zum ISO-Datum (negativ = in der Vergangenheit). */
 export function daysUntil(isoDate: string): number {
   const today = new Date()
@@ -38,7 +42,7 @@ export function mhdStatusFor(bestBefore: string): MhdStatus {
       chipClass: 'ee-chip-rose',
     }
   }
-  if (days <= 3) {
+  if (days <= URGENT_DAYS) {
     return {
       level: 'urgent',
       label: days === 0 ? 'heute' : days === 1 ? 'morgen' : `in ${days} Tagen`,
@@ -46,7 +50,7 @@ export function mhdStatusFor(bestBefore: string): MhdStatus {
       chipClass: 'ee-chip-rose',
     }
   }
-  if (days <= 7) {
+  if (days <= SOON_DAYS) {
     return {
       level: 'soon',
       label: `in ${days} Tagen`,
