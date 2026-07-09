@@ -183,6 +183,22 @@ class HouseholdResourceTest {
     }
 
     @Test
+    @DisplayName("GET /members enthaelt direkt nach POST /households genau den Owner (Regression #9)")
+    void membersContainsOwnerRightAfterCreate() {
+        String ownerToken = registerUser("owner@example.com", "Owner");
+        String householdId = createHousehold(ownerToken, "Solo-Haushalt");
+
+        given()
+            .header("Authorization", "Bearer " + ownerToken)
+            .when().get("/api/v1/households/" + householdId + "/members")
+            .then()
+                .statusCode(200)
+                .body("$", hasSize(1))
+                .body("[0].email", equalTo("owner@example.com"))
+                .body("[0].role", equalTo("OWNER"));
+    }
+
+    @Test
     @DisplayName("acceptInvitation mit fremder Email liefert 403")
     void acceptWrongEmail() {
         String ownerToken = registerUser("owner@example.com", "Owner");
