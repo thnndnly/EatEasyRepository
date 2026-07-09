@@ -12,6 +12,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Start', link: '/' },
+      { text: 'Projektdoku', link: '/dokumentation' },
       { text: 'Setup', link: '/setup' },
       { text: 'Onboarding', link: '/lokale-entwicklung' },
       { text: 'Kollaboration', link: '/kollaboration' },
@@ -21,9 +22,15 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: 'Loslegen',
+        text: 'Überblick',
         items: [
           { text: 'Startseite', link: '/' },
+          { text: 'Projektdokumentation (Gesamtüberblick)', link: '/dokumentation' },
+        ],
+      },
+      {
+        text: 'Loslegen',
+        items: [
           { text: 'Onboarding · Lokale Entwicklung', link: '/lokale-entwicklung' },
           { text: 'Setup & Commands', link: '/setup' },
           { text: 'Kollaboration · Git-Workflow', link: '/kollaboration' },

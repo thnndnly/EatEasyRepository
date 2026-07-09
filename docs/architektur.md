@@ -13,10 +13,17 @@ EatEasy ist ein **modularer Monolith** mit klarer Trennung zwischen fachlichen K
 | `mealplan` | Wochenplan, Einträge pro Slot |
 | `pantry` | Vorrat eines Haushalts, MHD-Tracking |
 | `shoppinglist` | Auto-generierte Einkaufslisten aus Mealplan – Pantry |
-| `suggestion` | Smart-Suggestions per Ollama-LLM |
-| `integration` | Adapter für TheMealDB und OpenFoodFacts |
+| `suggestion` | Smart-Suggestions per LLM (Ollama, alternativ Groq) |
+| `integration` | Adapter für TheMealDB (Rezept-Import) und OpenFoodFacts (Barcode) |
+| `receipt` | Beleg-Scanner: Tesseract-OCR + LLM-Strukturierung (feature-geflaggt) |
 | `notification` | Versand transaktionaler E-Mails |
-| `common` | Shared Utilities, Exceptions, Security-Helper |
+| `common` | Querschnitt: Shared Utilities, Exceptions, Security-Helper, Einheiten, Diät-Tags |
+
+> Nicht jede Komponente hat alle Schichten: `suggestion`, `integration`,
+> `receipt` und `notification` kapseln externe Systeme (LLM, Web-APIs, OCR, SMTP)
+> und bestehen nur aus `service/` (+ `client/`) — sie haben **keine eigene
+> JPA-Entität/Repository**. `common` ist keine fachliche Komponente, sondern
+> gebündelte Querschnittslogik (Exceptions, `security/`, `units/`, `diet/`, Health).
 
 ## Schichten innerhalb einer Komponente
 

@@ -40,6 +40,7 @@ EatEasy ist ein Studienprojekt der Gruppe 5 (Dimitrios Tsakos, Kardeena Kameran)
 
 ## Diese Doku abdeckt
 
+- **[Projektdokumentation (Gesamtüberblick)](/dokumentation)** — Einführung, Zielsetzung, Komponentenarchitektur, Technologiestack, Setup, Funktionsumfang, Projektstruktur und bekannte Einschränkungen auf einer Seite
 - **[Onboarding · Lokale Entwicklung](/lokale-entwicklung)** — Schritt-für-Schritt vom frischen Rechner zur laufenden Dev-Umgebung (Windows & macOS/Linux)
 - **[Kollaboration · Git-Workflow](/kollaboration)** — Branches, Commits, Pull Requests, CI, Review-Etikette
 - **[Setup & Commands](/setup)** — Voraussetzungen, Bootstrap, Standard-Workflows (Kurzreferenz)

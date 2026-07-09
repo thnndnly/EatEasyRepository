@@ -26,9 +26,10 @@ Im Modul „Web Frameworks" sollten mehrere der vorgegebenen Technologien im Pro
 | **Checkstyle** | Backend-Quality | Java-Linter, lenient konfiguriert (UnusedImports, LineLength etc.) |
 | **PostgreSQL 16** | DB | Relationale Datenbank |
 | **Flyway** | DB-Migrations | Versionierte Schema-Änderungen |
-| **Ollama** | LLM | Lokales LLM für Smart-Suggestions |
+| **Ollama** (alt. **Groq**) | LLM | Lokales LLM für Smart-Suggestions; per `AI_PROVIDER` auf die gehostete Groq-API umstellbar |
+| **Tesseract** (OCR) | Beleg-Scanner | HTTP-Wrapper-Container, extrahiert Text aus Kassenbon-Fotos (feature-geflaggt) |
 | **TheMealDB / OpenFoodFacts** | Externe APIs | Rezept-Import, Barcode-Lookup |
-| **Docker Compose** | Infrastruktur | Postgres, Ollama, Maildev für Dev |
+| **Docker Compose** | Infrastruktur | Postgres, Ollama, Maildev, Tesseract für Dev |
 | **VitePress** | Doku | Diese Seite |
 
 ## Bewusst nicht aufgenommen

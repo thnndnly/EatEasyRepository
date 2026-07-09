@@ -112,9 +112,9 @@ npm run test:e2e               # Playwright Smoke (mocked Backend)
 ```
 
 Aktueller Test-Stand:
-- Backend: 223 Tests in 32 Klassen (JUnit 5 + REST Assured + Testcontainers)
-- Frontend Unit: 120 Tests in 17 Dateien (Vitest + Vue Test Utils), 80%+ Coverage auf Stores + Services
-- Frontend E2E: 3 Smoke-Tests (Login + Redirect)
+- Backend: 322 Tests in 34 Klassen (JUnit 5 + REST Assured + Testcontainers)
+- Frontend Unit: 111 Tests in 17 Dateien (Vitest + Vue Test Utils), 80%+ Coverage auf Stores + Services
+- Frontend E2E: 3 Smoke-Tests in 1 Datei (Login + Redirect)
 
 **End-to-End-Smoke-Test** (Backend + Maildev + Ollama muessen laufen):
 
