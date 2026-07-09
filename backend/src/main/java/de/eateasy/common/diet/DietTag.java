@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Whitelist gueltiger Diaet-Tags fuer Rezepte und Haushalts-Vorfilter.
+ * Whitelist gültiger Diät-Tags für Rezepte und Haushalts-Vorfilter.
  * Speicherung als Lower-Case-String, damit Postgres-Array-Spalten und Frontend
  * mit einem einzigen Vokabular arbeiten.
  */
@@ -30,8 +30,8 @@ public final class DietTag {
     }
 
     /**
-     * Validiert eine Liste von Diaet-Tags gegen die Whitelist und gibt eine
-     * deduplizierte String-Reprasentation zurueck. Wirft
+     * Validiert eine Liste von Diät-Tags gegen die Whitelist und gibt eine
+     * deduplizierte String-Reprasentation zurück. Wirft
      * {@link BadRequestException} bei unbekanntem Tag.
      */
     public static String[] validate(List<String> tags) {
@@ -41,7 +41,7 @@ public final class DietTag {
         return tags.stream()
             .map(t -> {
                 if (!isValid(t)) {
-                    throw new BadRequestException("Unbekannter Diaet-Tag: " + t);
+                    throw new BadRequestException("Unbekannter Diät-Tag: " + t);
                 }
                 return t;
             })

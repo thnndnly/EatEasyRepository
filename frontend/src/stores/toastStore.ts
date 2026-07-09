@@ -14,8 +14,8 @@ const DEFAULT_DURATION_MS = 4000
 /**
  * Globaler Toast-Stack. Komponenten rufen `success("...")` oder `error("...")`,
  * der Container in App.vue rendert und entfernt nach {@link DEFAULT_DURATION_MS}
- * automatisch. Fuer User-Eingabefehler (Form-Validierung) bleiben Inline-
- * Meldungen besser geeignet — Toasts sind fuer Aktionen-Bestaetigungen.
+ * automatisch. Für User-Eingabefehler (Form-Validierung) bleiben Inline-
+ * Meldungen besser geeignet — Toasts sind für Aktionen-Bestätigungen.
  */
 export const useToastStore = defineStore('toast', () => {
   const toasts = ref<Toast[]>([])

@@ -39,7 +39,7 @@ describe('ReceiptScanModal', () => {
     setActivePinia(createPinia())
   })
 
-  it('Namensaenderung an gematchter Zutat entfernt die ingredientId (Chip wird "neu")', async () => {
+  it('Namensänderung an gematchter Zutat entfernt die ingredientId (Chip wird "neu")', async () => {
     const { wrapper, receiptStore, pantryStore } = mountModal()
     await showPreview(receiptStore)
     const addItem = vi
@@ -50,7 +50,7 @@ describe('ReceiptScanModal', () => {
     await wrapper.find('input[type="text"]').setValue('Hafermilch')
     expect(wrapper.html()).not.toContain('bekannt')
 
-    // Nur die erste Zeile uebernehmen.
+    // Nur die erste Zeile übernehmen.
     const checkboxes = wrapper.findAll('input[type="checkbox"]')
     await checkboxes[1]!.setValue(false)
     await wrapper.find('button.ee-btn-primary').trigger('click')
@@ -61,7 +61,7 @@ describe('ReceiptScanModal', () => {
     )
   })
 
-  it('Rueckaenderung auf den Original-Namen stellt den Match wieder her', async () => {
+  it('Rückänderung auf den Original-Namen stellt den Match wieder her', async () => {
     const { wrapper, receiptStore } = mountModal()
     await showPreview(receiptStore)
 
@@ -73,7 +73,7 @@ describe('ReceiptScanModal', () => {
     expect(wrapper.html()).toContain('bekannt')
   })
 
-  it('Teilfehler: Fehler erscheint im Modal, uebernommene Posten verschwinden, kein added-Emit', async () => {
+  it('Teilfehler: Fehler erscheint im Modal, übernommene Posten verschwinden, kein added-Emit', async () => {
     const { wrapper, receiptStore, pantryStore } = mountModal()
     await showPreview(receiptStore)
     vi.spyOn(pantryStore, 'addItem')
@@ -91,7 +91,7 @@ describe('ReceiptScanModal', () => {
     expect(wrapper.html()).toContain('fehlgeschlagen')
   })
 
-  it('Erfolg: alle Posten uebernommen, added-Emit mit Anzahl', async () => {
+  it('Erfolg: alle Posten übernommen, added-Emit mit Anzahl', async () => {
     const { wrapper, receiptStore, pantryStore } = mountModal()
     await showPreview(receiptStore)
     const addItem = vi

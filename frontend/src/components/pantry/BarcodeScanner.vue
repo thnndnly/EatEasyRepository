@@ -58,12 +58,12 @@ async function startScanner(): Promise<void> {
       },
     )
   } catch (err: unknown) {
-    // Kamera nicht verfuegbar (kein Geraet / kein Permission)
+    // Kamera nicht verfügbar (kein Gerät / kein Permission)
     stage.value = 'manual'
     error.value =
       err instanceof Error
-        ? `Kamera nicht verfuegbar: ${err.message}`
-        : 'Kamera nicht verfuegbar'
+        ? `Kamera nicht verfügbar: ${err.message}`
+        : 'Kamera nicht verfügbar'
   }
 }
 
@@ -107,7 +107,7 @@ async function onConfirm(): Promise<void> {
   loading.value = true
   error.value = null
   try {
-    // Server-State-Zugriff laeuft ueber den Store; der pflegt die Liste selbst.
+    // Server-State-Zugriff läuft über den Store; der pflegt die Liste selbst.
     const item = await pantryStore.addByBarcode({
       barcode: product.value.barcode,
       amount: amount.value,
@@ -117,7 +117,7 @@ async function onConfirm(): Promise<void> {
     emit('added', item)
   } catch (err: unknown) {
     error.value =
-      err instanceof Error ? err.message : 'Hinzufuegen fehlgeschlagen'
+      err instanceof Error ? err.message : 'Hinzufügen fehlgeschlagen'
   } finally {
     loading.value = false
   }
@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
             :disabled="loading"
             class="ee-btn-primary ee-btn-lg w-full"
           >
-            {{ loading ? 'Speichere ...' : 'In Vorrat uebernehmen' }}
+            {{ loading ? 'Speichere ...' : 'In Vorrat übernehmen' }}
           </button>
         </form>
       </template>

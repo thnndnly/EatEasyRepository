@@ -2,7 +2,7 @@ import type { DietTag } from './dietTags'
 import type { Unit } from './units'
 
 /**
- * Schlanker Rezept-DTO fuer Listen- und Vorschau-Kontexte (Wochenplan,
+ * Schlanker Rezept-DTO für Listen- und Vorschau-Kontexte (Wochenplan,
  * Suggestion-Karten). Hier zentral definiert, damit Mealplan und Suggestion
  * dieselbe Struktur nutzen.
  */

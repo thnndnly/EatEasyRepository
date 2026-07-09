@@ -19,7 +19,7 @@ describe('householdStore', () => {
     useAuthStore().$patch({ token: TEST_TOKEN, user: TEST_USER })
   })
 
-  it('load fetched die Haushalte und waehlt den ersten als Fallback', async () => {
+  it('load fetched die Haushalte und wählt den ersten als Fallback', async () => {
     server.use(
       http.get('/api/v1/households', () => HttpResponse.json([TEST_HOUSEHOLD])),
     )
@@ -32,7 +32,7 @@ describe('householdStore', () => {
     expect(store.selected?.id).toBe(TEST_HOUSEHOLD.id)
   })
 
-  it('load uebernimmt persistierte Auswahl aus localStorage', async () => {
+  it('load übernimmt persistierte Auswahl aus localStorage', async () => {
     const second = { ...TEST_HOUSEHOLD, id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', name: 'Zweiter' }
     localStorage.setItem('eateasy.household.selected', second.id)
     server.use(
@@ -47,7 +47,7 @@ describe('householdStore', () => {
     expect(store.selectedId).toBe(second.id)
   })
 
-  it('load verwirft ungueltige persistierte Auswahl', async () => {
+  it('load verwirft ungültige persistierte Auswahl', async () => {
     localStorage.setItem('eateasy.household.selected', 'nicht-existent')
     server.use(
       http.get('/api/v1/households', () => HttpResponse.json([TEST_HOUSEHOLD])),
@@ -89,7 +89,7 @@ describe('householdStore', () => {
     expect(localStorage.getItem('eateasy.household.selected')).toBeNull()
   })
 
-  it('create fuegt den neuen Haushalt hinzu und selektiert ihn', async () => {
+  it('create fügt den neuen Haushalt hinzu und selektiert ihn', async () => {
     server.use(
       http.post('/api/v1/households', () =>
         HttpResponse.json(TEST_HOUSEHOLD, { status: 201 }),
@@ -103,7 +103,7 @@ describe('householdStore', () => {
     expect(store.selectedId).toBe(TEST_HOUSEHOLD.id)
   })
 
-  it('update sendet autoRestockEnabled und uebernimmt das Ergebnis', async () => {
+  it('update sendet autoRestockEnabled und übernimmt das Ergebnis', async () => {
     const disabled = { ...TEST_HOUSEHOLD, autoRestockEnabled: false }
     let receivedBody: unknown = null
     server.use(

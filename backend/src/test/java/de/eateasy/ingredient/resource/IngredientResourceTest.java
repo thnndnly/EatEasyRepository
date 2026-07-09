@@ -88,7 +88,7 @@ class IngredientResourceTest {
     }
 
     @Test
-    @DisplayName("PATCH mit ungueltiger Kategorie liefert 4xx")
+    @DisplayName("PATCH mit ungültiger Kategorie liefert 4xx")
     void updateInvalidCategoryRejected() {
         String token = registerUser("alice@example.com");
         String id = given()

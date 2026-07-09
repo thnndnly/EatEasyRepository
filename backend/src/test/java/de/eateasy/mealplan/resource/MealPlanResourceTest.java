@@ -90,7 +90,7 @@ class MealPlanResourceTest {
     }
 
     @Test
-    @DisplayName("GET /households/{id}/mealplans fuer fremden Haushalt liefert 403")
+    @DisplayName("GET /households/{id}/mealplans für fremden Haushalt liefert 403")
     void getMealPlanForeignHousehold() {
         String aliceToken = registerUser("alice@example.com");
         String bobToken = registerUser("bob@example.com");
@@ -129,7 +129,7 @@ class MealPlanResourceTest {
     }
 
     @Test
-    @DisplayName("PUT /mealplans/{id}/entries ueberschreibt vorhandenen Slot")
+    @DisplayName("PUT /mealplans/{id}/entries überschreibt vorhandenen Slot")
     void putOverwritesEntry() {
         String token = registerUser("alice@example.com");
         String householdId = createHousehold(token, "Test");
@@ -152,7 +152,7 @@ class MealPlanResourceTest {
     }
 
     @Test
-    @DisplayName("DELETE /mealplans/{id}/entries/{day}/{mealType} loescht den Slot")
+    @DisplayName("DELETE /mealplans/{id}/entries/{day}/{mealType} löscht den Slot")
     void deleteEntry() {
         String token = registerUser("alice@example.com");
         String householdId = createHousehold(token, "Test");
@@ -175,7 +175,7 @@ class MealPlanResourceTest {
     }
 
     @Test
-    @DisplayName("PUT /mealplans/{id}/entries fuer fremden Plan liefert 403")
+    @DisplayName("PUT /mealplans/{id}/entries für fremden Plan liefert 403")
     void putEntryForbiddenForOutsider() {
         String aliceToken = registerUser("alice@example.com");
         String bobToken = registerUser("bob@example.com");

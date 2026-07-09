@@ -55,7 +55,7 @@ async function onSave(): Promise<void> {
 <template>
   <BaseModal :open="open" @close="emit('close')">
     <template #header>
-      <h2 class="text-base font-semibold text-ink-900">In Wochenplan uebernehmen</h2>
+      <h2 class="text-base font-semibold text-ink-900">In Wochenplan übernehmen</h2>
       <p class="text-xs text-ink-500">{{ recipeTitle }}</p>
     </template>
 

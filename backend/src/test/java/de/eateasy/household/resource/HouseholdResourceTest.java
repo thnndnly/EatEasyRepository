@@ -72,7 +72,7 @@ class HouseholdResourceTest {
                 .body("name", equalTo("Familie"))
                 .body("role", equalTo("OWNER"))
                 .body("defaultDietTags", hasItem("vegetarian"))
-                // Auto-Nachbuchen ist bei neuen Haushalten standardmaessig an.
+                // Auto-Nachbuchen ist bei neuen Haushalten standardmäßig an.
                 .body("autoRestockEnabled", equalTo(true));
     }
 
@@ -101,7 +101,7 @@ class HouseholdResourceTest {
     }
 
     @Test
-    @DisplayName("POST /households mit unbekanntem Diaet-Tag liefert 400")
+    @DisplayName("POST /households mit unbekanntem Diät-Tag liefert 400")
     void createHouseholdRejectsUnknownDietTag() {
         String token = registerUser("alice@example.com", "Alice");
 
@@ -132,7 +132,7 @@ class HouseholdResourceTest {
     }
 
     @Test
-    @DisplayName("GET /households/{id} liefert 403 fuer Nicht-Mitglieder")
+    @DisplayName("GET /households/{id} liefert 403 für Nicht-Mitglieder")
     void getForbiddenForOutsider() {
         String aliceToken = registerUser("alice@example.com", "Alice");
         String bobToken = registerUser("bob@example.com", "Bob");
@@ -164,7 +164,7 @@ class HouseholdResourceTest {
     }
 
     @Test
-    @DisplayName("Invitation-Flow: Einladen, Annehmen, Mitgliederliste enthaelt beide")
+    @DisplayName("Invitation-Flow: Einladen, Annehmen, Mitgliederliste enthält beide")
     void invitationFlow() {
         String ownerToken = registerUser("owner@example.com", "Owner");
         String guestToken = registerUser("guest@example.com", "Guest");
@@ -183,7 +183,7 @@ class HouseholdResourceTest {
     }
 
     @Test
-    @DisplayName("GET /members enthaelt direkt nach POST /households genau den Owner (Regression #9)")
+    @DisplayName("GET /members enthält direkt nach POST /households genau den Owner (Regression #9)")
     void membersContainsOwnerRightAfterCreate() {
         String ownerToken = registerUser("owner@example.com", "Owner");
         String householdId = createHousehold(ownerToken, "Solo-Haushalt");

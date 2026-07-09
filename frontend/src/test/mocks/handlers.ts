@@ -3,7 +3,7 @@ import type { AuthResponse } from '@/types/auth'
 import { TEST_TOKEN, TEST_USER } from '@/test/fixtures'
 
 /**
- * MSW-Handler fuer Vitest. Spiegelt das Backend-API auf deterministische
+ * MSW-Handler für Vitest. Spiegelt das Backend-API auf deterministische
  * Stubs, damit Stores und Services ohne laufenden Quarkus getestet werden.
  */
 export const handlers = [
@@ -23,7 +23,7 @@ export const handlers = [
   http.post('/api/v1/auth/login', async ({ request }) => {
     const body = (await request.json()) as { email?: string }
     if (body.email === 'fail@eateasy.local') {
-      return HttpResponse.json({ error: 'Ungueltige Anmeldedaten' }, { status: 401 })
+      return HttpResponse.json({ error: 'Ungültige Anmeldedaten' }, { status: 401 })
     }
     return HttpResponse.json({
       token: TEST_TOKEN,

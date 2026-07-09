@@ -110,7 +110,7 @@ class MealPlanServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("getOrCreate ist idempotent fuer dieselbe Woche")
+    @DisplayName("getOrCreate ist idempotent für dieselbe Woche")
     void getOrCreateIdempotent() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
@@ -126,7 +126,7 @@ class MealPlanServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("getOrCreate fuer fremden Haushalt wirft Forbidden")
+    @DisplayName("getOrCreate für fremden Haushalt wirft Forbidden")
     void getOrCreateForbiddenForOutsider() {
         UUID alice = registerUser("alice@example.com");
         UUID bob = registerUser("bob@example.com");
@@ -161,7 +161,7 @@ class MealPlanServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("setEntry ueberschreibt vorhandenen Slot (Unique-Constraint)")
+    @DisplayName("setEntry überschreibt vorhandenen Slot (Unique-Constraint)")
     void setEntryOverwrites() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,
@@ -186,7 +186,7 @@ class MealPlanServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("setEntry fuer fremden Haushalt wirft Forbidden")
+    @DisplayName("setEntry für fremden Haushalt wirft Forbidden")
     void setEntryForbiddenForOutsider() {
         UUID alice = registerUser("alice@example.com");
         UUID bob = registerUser("bob@example.com");
@@ -203,7 +203,7 @@ class MealPlanServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("setEntry mit fremdem Rezept wirft Forbidden ueber RecipeService.get")
+    @DisplayName("setEntry mit fremdem Rezept wirft Forbidden über RecipeService.get")
     void setEntryForbiddenForeignRecipe() {
         UUID alice = registerUser("alice@example.com");
         UUID bob = registerUser("bob@example.com");
@@ -222,7 +222,7 @@ class MealPlanServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("removeEntry loescht den Slot")
+    @DisplayName("removeEntry löscht den Slot")
     void removeEntry() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = householdService.create(userId,

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Query-Parameter fuer GET /recipes. Wird von der Resource zusammengebaut und
+ * Query-Parameter für GET /recipes. Wird von der Resource zusammengebaut und
  * an den Service weitergereicht. Alle Felder sind optional.
  */
 public record RecipeFilter(

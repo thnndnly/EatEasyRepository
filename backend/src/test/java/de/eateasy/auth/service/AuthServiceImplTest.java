@@ -101,7 +101,7 @@ class AuthServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("loginWithGoogle legt fuer neue Email einen passwortlosen Google-User an")
+    @DisplayName("loginWithGoogle legt für neue Email einen passwortlosen Google-User an")
     void googleLoginCreatesNewUser() {
         when(googleTokenVerifier.verify(anyString())).thenReturn(
             new GoogleIdTokenPayload("bob@example.com", true, "google-sub-1", "Bob G"));
@@ -118,7 +118,7 @@ class AuthServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("loginWithGoogle verknuepft bestehenden Passwort-Account per Email (kein Duplikat)")
+    @DisplayName("loginWithGoogle verknüpft bestehenden Passwort-Account per Email (kein Duplikat)")
     void googleLoginLinksExistingAccount() {
         authService.register(new RegisterRequest("alice@example.com", "secret12", "Alice"));
         when(googleTokenVerifier.verify(anyString())).thenReturn(
@@ -159,7 +159,7 @@ class AuthServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("findByEmail liefert Optional.empty fuer unbekannte Email")
+    @DisplayName("findByEmail liefert Optional.empty für unbekannte Email")
     void findByEmailReturnsEmptyForUnknown() {
         Optional<UserDto> result = authService.findByEmail("ghost@example.com");
 
@@ -168,7 +168,7 @@ class AuthServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("findByEmail liefert Optional.empty fuer null/leeren Input")
+    @DisplayName("findByEmail liefert Optional.empty für null/leeren Input")
     void findByEmailReturnsEmptyForBlankInput() {
         assertThat(authService.findByEmail(null)).isEmpty();
         assertThat(authService.findByEmail("")).isEmpty();

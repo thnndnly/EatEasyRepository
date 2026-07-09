@@ -28,7 +28,7 @@ public class RecipeIngredient {
 
     /**
      * Cross-Component-FK auf {@code ingredient.id}. Bewusst KEIN ManyToOne —
-     * der RecipeService loest die Zutat ueber {@code IngredientService} auf,
+     * der RecipeService löst die Zutat über {@code IngredientService} auf,
      * statt das Ingredient-Entity direkt zu kennen.
      */
     @Column(name = "ingredient_id", nullable = false)

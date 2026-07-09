@@ -54,7 +54,7 @@ class IngredientServiceImplTest {
         IngredientDto second = ingredientService.findOrCreate("TOMATE", Unit.GRAM);
 
         assertThat(second.id()).isEqualTo(first.id());
-        // Existierende Einheit wird beibehalten — der zweite Aufruf hat sie nicht ueberschrieben.
+        // Existierende Einheit wird beibehalten — der zweite Aufruf hat sie nicht überschrieben.
         assertThat(second.defaultUnit()).isEqualTo(Unit.PIECE);
     }
 

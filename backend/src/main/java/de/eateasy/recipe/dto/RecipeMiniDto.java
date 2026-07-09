@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Kompakte Sicht auf ein Rezept fuer eingebettete Anzeige in Wochenplan-Slots,
+ * Kompakte Sicht auf ein Rezept für eingebettete Anzeige in Wochenplan-Slots,
  * Smart-Suggestions usw. Bewusst ohne Zutaten / Instructions, um die Payload
  * klein zu halten und N+1-Lookups zu vermeiden.
  */

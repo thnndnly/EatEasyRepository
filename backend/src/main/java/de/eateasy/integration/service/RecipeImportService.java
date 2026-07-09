@@ -14,7 +14,7 @@ public interface RecipeImportService {
 
     /**
      * Holt ein externes Rezept anhand seiner ID, mappt es auf unsere Struktur
-     * und legt es als ganz normales {@code Recipe} fuer den User an.
+     * und legt es als ganz normales {@code Recipe} für den User an.
      */
     RecipeDto importRecipe(UUID userId, RecipeImportRequest request);
 }

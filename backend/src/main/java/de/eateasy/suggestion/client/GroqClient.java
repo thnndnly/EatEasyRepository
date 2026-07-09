@@ -17,13 +17,13 @@ import java.util.Optional;
 
 /**
  * {@link OllamaClient}-Implementierung gegen Groqs OpenAI-kompatible
- * Chat-Completions-API ({@code POST /openai/v1/chat/completions}). Ermoeglicht
- * KI-Vorschlaege dort, wo kein self-hosted Ollama laeuft (z. B. Render-Demo).
+ * Chat-Completions-API ({@code POST /openai/v1/chat/completions}). Ermöglicht
+ * KI-Vorschläge dort, wo kein self-hosted Ollama läuft (z. B. Render-Demo).
  *
  * <p>Aktiv nur, wenn {@code ai.provider=groq} — die Auswahl trifft der
  * {@link LlmClientProducer}. Der Prompt (inkl. der Anweisung, mit JSON zu
  * antworten) wird als einzelne User-Message geschickt; {@code response_format:
- * json_object} erzwingt gueltiges JSON — analog zu Ollamas {@code format=json}.</p>
+ * json_object} erzwingt gültiges JSON — analog zu Ollamas {@code format=json}.</p>
  */
 @Typed(GroqClient.class)
 @ApplicationScoped
@@ -81,7 +81,7 @@ public class GroqClient implements OllamaClient {
             String content = parseContent(objectMapper, response.body());
             return new OllamaGenerateResponse(model, content, true);
         } catch (Exception ex) {
-            // Wie OllamaHttpClient: hochwerfen — der SmartSuggestionService faengt
+            // Wie OllamaHttpClient: hochwerfen — der SmartSuggestionService fängt
             // ab und signalisiert aiAvailable=false.
             LOG.errorf(ex, "Groq-Aufruf fehlgeschlagen");
             throw new RuntimeException("Groq-Call fehlgeschlagen: " + ex.getMessage(), ex);

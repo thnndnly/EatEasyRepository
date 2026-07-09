@@ -67,7 +67,7 @@ const totals = computed(() => {
 
 async function onRegenerate(): Promise<void> {
   const ok = await confirmDialog(
-    'Liste komplett neu berechnen? Abgehakte Eintraege landen im Vorrat und fallen aus der Liste.',
+    'Liste komplett neu berechnen? Abgehakte Einträge landen im Vorrat und fallen aus der Liste.',
   )
   if (!ok) {
     return
@@ -80,7 +80,7 @@ async function onToggle(id: string, checked: boolean): Promise<void> {
   const item = shoppingListStore.list?.items.find((i) => i.id === id)
   await shoppingListStore.toggle(id, checked)
   if (checked && item) {
-    toastStore.success(`"${item.ingredientName}" in den Vorrat uebernommen`)
+    toastStore.success(`"${item.ingredientName}" in den Vorrat übernommen`)
   }
 }
 
@@ -98,7 +98,7 @@ async function onChangeCategory(
 ): Promise<void> {
   await shoppingListStore.changeCategory(ingredientId, category)
   if (!shoppingListStore.error) {
-    toastStore.info(`Kategorie geaendert: ${CATEGORY_LABELS[category]}`)
+    toastStore.info(`Kategorie geändert: ${CATEGORY_LABELS[category]}`)
   }
 }
 </script>
@@ -109,7 +109,7 @@ async function onChangeCategory(
       <div>
         <h1 class="text-2xl font-extrabold tracking-tight">🛒 Einkaufsliste</h1>
         <p class="mt-1 text-sm text-ink-500">
-          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
+          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewählt' }}
           <span v-if="mealPlanStore.plan"> · Woche {{ mealPlanStore.weekRangeLabel }}</span>
         </p>
         <p class="mt-1 hidden text-xs text-ink-500 print:block">
@@ -125,15 +125,15 @@ async function onChangeCategory(
           Heute
         </button>
         <button type="button" class="ee-btn-secondary" @click="changeWeek(7)">
-          Naechste ›
+          Nächste ›
         </button>
       </div>
     </div>
 
     <EmptyState v-if="!householdStore.selected">
-      Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
+      Lege zuerst einen Haushalt an oder wähle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
-        Haushalte oeffnen
+        Haushalte öffnen
       </button>
     </EmptyState>
 
@@ -199,7 +199,7 @@ async function onChangeCategory(
       </div>
 
       <EmptyState v-else>
-        Liste ist leer — entweder gibt es keine Wochenplan-Eintraege oder der Vorrat deckt
+        Liste ist leer — entweder gibt es keine Wochenplan-Einträge oder der Vorrat deckt
         bereits alles ab.
       </EmptyState>
     </template>

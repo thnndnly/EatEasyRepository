@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Feature-Flag an: {@code POST /auth/google} verifiziert das (gemockte)
- * Google-Token und liefert ein EatEasy-JWT. Der echte Google-Aufruf ist ueber
+ * Google-Token und liefert ein EatEasy-JWT. Der echte Google-Aufruf ist über
  * den gemockten {@link GoogleTokenVerifier} ausgeschaltet.
  */
 @QuarkusTest

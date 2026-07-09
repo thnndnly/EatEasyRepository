@@ -5,7 +5,7 @@ import BaseModal from './BaseModal.vue'
 /**
  * Component-Spec als Vorlage. Demonstriert:
  *  - prop-getriebenes v-if Rendering
- *  - DOM-Events ueber Vue Test Utils
+ *  - DOM-Events über Vue Test Utils
  *  - Esc-Key via dispatchEvent (echtes KeyboardEvent, nicht trigger)
  *  - Body-Scroll-Lock-Side-Effect via useScrollLock
  *  - Emit-Verifikation
@@ -38,7 +38,7 @@ describe('BaseModal', () => {
     expect(wrapper.html()).toContain('Mein Inhalt')
   })
 
-  it('emit close, wenn Esc gedrueckt wird', async () => {
+  it('emit close, wenn Esc gedrückt wird', async () => {
     const wrapper = mount(BaseModal, { props: { open: true } })
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
@@ -64,7 +64,7 @@ describe('BaseModal', () => {
     expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
-  it('emit close ueber den X-Button im Header', async () => {
+  it('emit close über den X-Button im Header', async () => {
     const wrapper = mount(BaseModal, { props: { open: true } })
 
     await wrapper.find('button[aria-label="Schliessen"]').trigger('click')

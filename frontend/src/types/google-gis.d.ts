@@ -1,4 +1,4 @@
-// Minimale Typen fuer die extern geladene Google Identity Services (GIS)
+// Minimale Typen für die extern geladene Google Identity Services (GIS)
 // Bibliothek (accounts.google.com/gsi/client). Nur die genutzten Aufrufe.
 export {}
 

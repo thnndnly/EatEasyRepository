@@ -46,7 +46,7 @@ async function onToggleFavorite(id: string): Promise<void> {
     toastStore.success(
       recipe.favorite
         ? `"${recipe.title}" aus Favoriten entfernt`
-        : `"${recipe.title}" zu Favoriten hinzugefuegt`,
+        : `"${recipe.title}" zu Favoriten hinzugefügt`,
     )
   }
   // Bei aktivem Favoriten-Filter fliegt ein entfernter Favorit aus der Liste.
@@ -116,7 +116,7 @@ const recipes = computed(() => recipeStore.recipes)
         </div>
 
         <div class="space-y-2">
-          <span class="block text-sm font-medium">Diaet-Tags</span>
+          <span class="block text-sm font-medium">Diät-Tags</span>
           <DietTagSelector v-model="tags" />
         </div>
 

@@ -73,7 +73,7 @@ onMounted(() => {
       </template>
 
       <p v-else-if="status === 'submitting'" class="text-sm text-ink-500">
-        Loese Einladung ein ...
+        Löse Einladung ein ...
       </p>
 
       <template v-else-if="status === 'done' && joined">

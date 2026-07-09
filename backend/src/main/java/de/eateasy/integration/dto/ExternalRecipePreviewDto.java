@@ -3,7 +3,7 @@ package de.eateasy.integration.dto;
 /**
  * Such-Treffer aus einer externen Quelle. Wird im Frontend in der
  * Import-Vorschau angezeigt; vom User mit "Importieren" zur vollen Anlage
- * via {@code POST /recipes/import} bestaetigt.
+ * via {@code POST /recipes/import} bestätigt.
  */
 public record ExternalRecipePreviewDto(
     String source,

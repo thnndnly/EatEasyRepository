@@ -103,7 +103,7 @@ class PantryResourceTest {
     }
 
     @Test
-    @DisplayName("GET fuer fremden Haushalt liefert 403")
+    @DisplayName("GET für fremden Haushalt liefert 403")
     void listForbiddenForOutsider() {
         String aliceToken = registerUser("alice@example.com");
         String bobToken = registerUser("bob@example.com");
@@ -117,7 +117,7 @@ class PantryResourceTest {
     }
 
     @Test
-    @DisplayName("PATCH /pantry/{id} aendert Menge")
+    @DisplayName("PATCH /pantry/{id} ändert Menge")
     void patchItem() {
         String token = registerUser("alice@example.com");
         String householdId = createHousehold(token, "Test");
@@ -154,7 +154,7 @@ class PantryResourceTest {
     }
 
     @Test
-    @DisplayName("PATCH /pantry/{id} fuer fremden Eintrag liefert 403")
+    @DisplayName("PATCH /pantry/{id} für fremden Eintrag liefert 403")
     void patchForbiddenForOutsider() {
         String aliceToken = registerUser("alice@example.com");
         String bobToken = registerUser("bob@example.com");

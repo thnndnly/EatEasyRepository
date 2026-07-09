@@ -3,9 +3,9 @@ package de.eateasy.suggestion.client;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Payload fuer {@code POST /api/generate}. {@code stream=false} aktiviert den
+ * Payload für {@code POST /api/generate}. {@code stream=false} aktiviert den
  * Response-Modus mit einer einzigen Antwort statt Token-Streams; {@code
- * format="json"} zwingt Ollama auf gueltiges JSON im {@code response}-Feld.
+ * format="json"} zwingt Ollama auf gültiges JSON im {@code response}-Feld.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record OllamaGenerateRequest(

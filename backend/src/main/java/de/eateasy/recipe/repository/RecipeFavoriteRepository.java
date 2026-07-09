@@ -18,10 +18,10 @@ public class RecipeFavoriteRepository implements PanacheRepositoryBase<RecipeFav
 
     /**
      * Legt einen Favoriten idempotent an. {@code INSERT ... ON CONFLICT DO NOTHING}
-     * ist auf DB-Ebene atomar und schuetzt gegen die TOCTOU-Race zwischen
+     * ist auf DB-Ebene atomar und schützt gegen die TOCTOU-Race zwischen
      * {@link #findByUserAndRecipe} und {@code persist}: zwei parallele
-     * PUT .../favorite (Doppelklick, zwei Tabs) koennen nicht beide inserten und
-     * loesen keinen Unique-Constraint-Fehler (UNIQUE(user_id, recipe_id)) aus.
+     * PUT .../favorite (Doppelklick, zwei Tabs) können nicht beide inserten und
+     * lösen keinen Unique-Constraint-Fehler (UNIQUE(user_id, recipe_id)) aus.
      *
      * @return {@code true}, wenn eine neue Zeile angelegt wurde; {@code false}, wenn der Favorit bereits bestand.
      */
@@ -36,7 +36,7 @@ public class RecipeFavoriteRepository implements PanacheRepositoryBase<RecipeFav
         return inserted > 0;
     }
 
-    /** Alle favorisierten Rezept-IDs eines Users — eine Query fuer die Listen-Anreicherung. */
+    /** Alle favorisierten Rezept-IDs eines Users — eine Query für die Listen-Anreicherung. */
     public Set<UUID> findRecipeIdsByUser(UUID userId) {
         return new HashSet<>(getEntityManager()
             .createQuery("select f.recipeId from RecipeFavorite f where f.userId = :userId", UUID.class)

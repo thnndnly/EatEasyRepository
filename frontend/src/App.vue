@@ -31,8 +31,8 @@ const navLinks = [
 ] as const
 
 // `authStore.restoreSession()` wird zentral im Router-Guard
-// (router/index.ts:beforeEach) ausgefuehrt — ein zusaetzlicher Aufruf im
-// onBeforeMount der App-Komponente wuerde dieselbe Initialisierung
+// (router/index.ts:beforeEach) ausgeführt — ein zusätzlicher Aufruf im
+// onBeforeMount der App-Komponente würde dieselbe Initialisierung
 // doppelt ansteuern.
 // Bei bereits eingeloggtem User triggert der Watcher unten den Lade-Pfad
 // (siehe `useAuthStore` returns isAuthenticated=true sofort nach Guard).
@@ -41,7 +41,7 @@ if (authStore.isAuthenticated) {
 }
 
 // Synchronisiert den Haushalts-Store mit dem Auth-Status: Login → laden,
-// Logout → Cache leeren, damit der naechste User keinen veralteten Switcher
+// Logout → Cache leeren, damit der nächste User keinen veralteten Switcher
 // sieht.
 watch(
   () => authStore.isAuthenticated,
@@ -59,9 +59,9 @@ watch(
 )
 
 async function onLogout(): Promise<void> {
-  // Stores werden zentral vom Watcher (oben) zurueckgesetzt, sobald
+  // Stores werden zentral vom Watcher (oben) zurückgesetzt, sobald
   // authStore.isAuthenticated auf false wechselt — eine doppelte
-  // Cleanup-Kette hier wuerde dieselben Aktionen redundant ausloesen.
+  // Cleanup-Kette hier würde dieselben Aktionen redundant auslösen.
   authStore.logout()
   await router.replace('/login')
 }
@@ -127,7 +127,7 @@ async function onLogout(): Promise<void> {
         rel="noopener noreferrer"
         class="font-semibold underline hover:text-ink-900"
       >
-        Maildev-Postfach oeffnen (localhost:1080)
+        Maildev-Postfach öffnen (localhost:1080)
       </a>
       &middot; Einladungsmails landen dort, nicht im echten Postfach.
     </footer>

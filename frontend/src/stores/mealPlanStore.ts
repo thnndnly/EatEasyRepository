@@ -12,7 +12,7 @@ import type {
 
 /**
  * Liefert das ISO-Datum (YYYY-MM-DD) des Montags der Woche, in der das
- * uebergebene Datum liegt. Sonntag → vorhergehender Montag, Mittwoch →
+ * übergebene Datum liegt. Sonntag → vorhergehender Montag, Mittwoch →
  * Montag derselben Woche.
  */
 export function mondayOf(date: Date): string {
@@ -95,9 +95,9 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
 
   /**
    * Setzt einen Eintrag im aktuellen Wochenplan eines Haushalts —
-   * laedt den Plan automatisch nach, falls noch nicht geladen oder ein
-   * anderer Haushalt aktiv ist. Praktisch fuer das HomeView-Dialog
-   * "in Wochenplan uebernehmen", das nicht zwingend vom Mealplan-View
+   * lädt den Plan automatisch nach, falls noch nicht geladen oder ein
+   * anderer Haushalt aktiv ist. Praktisch für das HomeView-Dialog
+   * "in Wochenplan übernehmen", das nicht zwingend vom Mealplan-View
    * kommt.
    */
   async function setEntryForHousehold(
@@ -142,7 +142,7 @@ export const useMealPlanStore = defineStore('mealPlan', () => {
         ),
       }
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+      error.value = err instanceof Error ? err.message : 'Löschen fehlgeschlagen'
       throw err
     }
   }

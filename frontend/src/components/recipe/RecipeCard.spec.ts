@@ -4,10 +4,10 @@ import RecipeCard from './RecipeCard.vue'
 import type { RecipeDto } from '@/types/recipe'
 
 /**
- * Component-Spec fuer RecipeCard. Deckt die Kern-Interaktion des Herz-Buttons ab:
+ * Component-Spec für RecipeCard. Deckt die Kern-Interaktion des Herz-Buttons ab:
  *  - Klick emittiert `toggleFavorite` mit der korrekten Rezept-ID
  *  - `@click.stop` verhindert, dass der Karten-Klick (Navigation) mitfeuert
- *  - Button ist waehrend eines laufenden Toggle-Requests deaktiviert (Doppelklick-Schutz)
+ *  - Button ist während eines laufenden Toggle-Requests deaktiviert (Doppelklick-Schutz)
  */
 function makeRecipe(overrides: Partial<RecipeDto> = {}): RecipeDto {
   return {
@@ -67,7 +67,7 @@ describe('RecipeCard', () => {
     await button.trigger('click')
     expect(button.attributes('disabled')).toBeDefined()
 
-    // Zweiter Klick waehrend "in flight" darf keinen weiteren Emit ausloesen.
+    // Zweiter Klick während "in flight" darf keinen weiteren Emit auslösen.
     await button.trigger('click')
     expect(wrapper.emitted('toggleFavorite')).toHaveLength(1)
   })

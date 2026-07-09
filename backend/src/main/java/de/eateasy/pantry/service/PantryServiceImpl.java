@@ -68,8 +68,8 @@ public class PantryServiceImpl implements PantryService {
         if (existing.isPresent()) {
             item = existing.get();
             item.setAmount(item.getAmount().add(request.amount()));
-            // MHD wird nur ueberschrieben, wenn neuer Eintrag eines hat und der
-            // bestehende keinen — sonst behaelt der bestehende sein MHD.
+            // MHD wird nur überschrieben, wenn neuer Eintrag eines hat und der
+            // bestehende keinen — sonst behält der bestehende sein MHD.
             if (item.getBestBefore() == null && request.bestBefore() != null) {
                 item.setBestBefore(request.bestBefore());
             }
@@ -123,7 +123,7 @@ public class PantryServiceImpl implements PantryService {
      * Liefert den aggregierten Vorrat eines Haushalts. Bewusst OHNE eigenen
      * Auth-Check und ohne {@code userId} — der Aufrufer (z. B.
      * {@code ShoppingListService}/{@code SmartSuggestionService}) hat den
-     * Haushalts-Zugriff bereits geprueft, analog zu
+     * Haushalts-Zugriff bereits geprüft, analog zu
      * {@code HouseholdService.isAutoRestockEnabled}.
      */
     @Override

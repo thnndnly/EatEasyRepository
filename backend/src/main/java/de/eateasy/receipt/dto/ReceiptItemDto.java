@@ -8,7 +8,7 @@ import java.util.UUID;
 /**
  * Ein aus dem Beleg erkannter Posten (Vorschau, noch nicht persistiert).
  * {@code ingredientId} ist gesetzt, wenn eine bestehende Zutat mit gleichem
- * Namen gefunden wurde — sonst legt die Bestaetigung eine neue an.
+ * Namen gefunden wurde — sonst legt die Bestätigung eine neue an.
  */
 public record ReceiptItemDto(
     String name,

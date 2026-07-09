@@ -2,7 +2,7 @@ package de.eateasy.recipe.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-/** Body fuer PUT /recipes/{id}/favorite. */
+/** Body für PUT /recipes/{id}/favorite. */
 public record FavoriteRequest(
     @NotNull Boolean favorite
 ) {

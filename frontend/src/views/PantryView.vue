@@ -47,7 +47,7 @@ async function onAdd(payload: {
   bestBefore: string | null
 }): Promise<void> {
   // Fehler werden im Store ge-cached und via pantryStore.error im Template
-  // angezeigt — wir muessen sie hier nur abfangen, damit die Promise nicht
+  // angezeigt — wir müssen sie hier nur abfangen, damit die Promise nicht
   // floated.
   try {
     await pantryStore.addItem({
@@ -87,12 +87,12 @@ async function onRemove(id: string): Promise<void> {
 
 function onBarcodeAdded(item: { ingredientName: string }): void {
   scannerOpen.value = false
-  toastStore.success(`"${item.ingredientName}" in den Vorrat uebernommen`)
+  toastStore.success(`"${item.ingredientName}" in den Vorrat übernommen`)
 }
 
 function onReceiptAdded(count: number): void {
   receiptOpen.value = false
-  toastStore.success(`${count} Posten in den Vorrat uebernommen`)
+  toastStore.success(`${count} Posten in den Vorrat übernommen`)
 }
 </script>
 
@@ -102,7 +102,7 @@ function onReceiptAdded(count: number): void {
       <div>
         <h1 class="text-2xl font-extrabold tracking-tight">🧺 Vorrat</h1>
         <p class="mt-1 text-sm text-ink-500">
-          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewaehlt' }}
+          {{ householdStore.selected ? householdStore.selected.name : 'Keinen Haushalt ausgewählt' }}
         </p>
       </div>
       <div v-if="householdStore.selected" class="flex flex-wrap gap-2">
@@ -132,9 +132,9 @@ function onReceiptAdded(count: number): void {
     />
 
     <EmptyState v-if="!householdStore.selected">
-      Lege zuerst einen Haushalt an oder waehle in der Topbar einen aus.
+      Lege zuerst einen Haushalt an oder wähle in der Topbar einen aus.
       <button type="button" class="ee-link ml-2" @click="router.push({ name: 'households' })">
-        Haushalte oeffnen
+        Haushalte öffnen
       </button>
     </EmptyState>
 
@@ -151,7 +151,7 @@ function onReceiptAdded(count: number): void {
       <div v-if="pantryStore.loading" class="text-ink-500">Lade Vorrat ...</div>
 
       <EmptyState v-else-if="pantryStore.items.length === 0">
-        Vorrat ist leer. Fuege oben einen Eintrag hinzu oder scanne einen Barcode.
+        Vorrat ist leer. Füge oben einen Eintrag hinzu oder scanne einen Barcode.
       </EmptyState>
 
       <div v-else class="overflow-hidden rounded-2xl border border-cream-200 bg-white">

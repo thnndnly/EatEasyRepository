@@ -5,8 +5,8 @@ import { useRequireToken } from '@/composables/useRequireToken'
 import type { SuggestRequest, SuggestionDto } from '@/types/suggestion'
 
 /**
- * Cached Vorschlaege pro Haushalt — Stretch-Feature, daher recht schlank
- * gehalten. Pinia hier nur, damit Views konsistent ueber Store gehen
+ * Cached Vorschläge pro Haushalt — Stretch-Feature, daher recht schlank
+ * gehalten. Pinia hier nur, damit Views konsistent über Store gehen
  * (keine direkten Service-Aufrufe aus Components).
  */
 export const useSuggestionStore = defineStore('suggestion', () => {
@@ -33,7 +33,7 @@ export const useSuggestionStore = defineStore('suggestion', () => {
       aiAvailable.value = result.aiAvailable
       return result.suggestions
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Vorschlaege konnten nicht geladen werden'
+      error.value = err instanceof Error ? err.message : 'Vorschläge konnten nicht geladen werden'
       suggestions.value = []
       throw err
     } finally {

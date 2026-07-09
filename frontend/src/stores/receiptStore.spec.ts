@@ -39,7 +39,7 @@ describe('receiptStore', () => {
     expect(store.scanning).toBe(false)
   })
 
-  it('scan setzt bei Fehler error und laesst result leer', async () => {
+  it('scan setzt bei Fehler error und lässt result leer', async () => {
     server.use(
       http.post(SCAN_URL, () =>
         HttpResponse.json({ error: 'OCR-Dienst nicht erreichbar' }, { status: 503 }),

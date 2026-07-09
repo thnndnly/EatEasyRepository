@@ -98,7 +98,7 @@ class SmartSuggestionServiceImplTest {
     }
 
     @Test
-    @DisplayName("Liefert Vorschlaege mit Begruendung aus Ollama-Antwort")
+    @DisplayName("Liefert Vorschläge mit Begründung aus Ollama-Antwort")
     void happyPath() {
         UUID userId = registerUser("alice@example.com");
         UUID householdId = createHousehold(userId, "WG").id();
@@ -133,7 +133,7 @@ class SmartSuggestionServiceImplTest {
 
         // Kein Array — direkt das einzelne Objekt. Beobachtet bei llama3.2.
         String ollamaJson = "{\"recipeId\":\"" + recipe.id() + "\","
-            + "\"reason\":\"Tomate verfuegbar\"}";
+            + "\"reason\":\"Tomate verfügbar\"}";
         when(ollamaClient.generate(ArgumentMatchers.any(OllamaGenerateRequest.class)))
             .thenReturn(new OllamaGenerateResponse("llama3", ollamaJson, true));
 
@@ -142,7 +142,7 @@ class SmartSuggestionServiceImplTest {
 
         assertThat(response.aiAvailable()).isTrue();
         assertThat(suggestions).hasSize(1);
-        assertThat(suggestions.get(0).reason()).isEqualTo("Tomate verfuegbar");
+        assertThat(suggestions.get(0).reason()).isEqualTo("Tomate verfügbar");
     }
 
     @Test
@@ -199,7 +199,7 @@ class SmartSuggestionServiceImplTest {
         createRecipe(userId, householdId, "Komplex",
             List.of("Tomate", "Reis", "Fisch", "Curry"));
 
-        // Ollama wird nicht aufgerufen, weil keine Kandidaten → kein Mock-Setup noetig.
+        // Ollama wird nicht aufgerufen, weil keine Kandidaten → kein Mock-Setup nötig.
 
         SuggestionResponse response = suggestionService.suggest(userId, householdId, 3);
         List<SuggestionDto> suggestions = response.suggestions();

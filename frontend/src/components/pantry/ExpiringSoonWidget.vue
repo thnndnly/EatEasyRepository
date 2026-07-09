@@ -10,7 +10,7 @@ const MAX_VISIBLE = 5
 const router = useRouter()
 const pantryStore = usePantryStore()
 
-// expiringSoon enthaelt per pantryStore-Filter nur Items mit gesetztem
+// expiringSoon enthält per pantryStore-Filter nur Items mit gesetztem
 // bestBefore — daher ist die Non-null-Assertion sicher. Ampel-Status einmal
 // pro Zeile berechnen statt drei Mal im Template.
 const visibleRows = computed(() =>
@@ -27,10 +27,10 @@ const hiddenCount = computed(() => pantryStore.expiringSoon.length - visibleRows
     <div class="flex items-start justify-between gap-4">
       <div>
         <h2 class="flex items-center gap-2 text-lg font-bold text-ink-900">
-          <span>⏳</span> Demnaechst ablaufend
+          <span>⏳</span> Demnächst ablaufend
         </h2>
         <p class="mt-1 text-sm text-ink-500">
-          Vorrat mit MHD in den naechsten 7 Tagen — am besten zuerst verkochen.
+          Vorrat mit MHD in den nächsten 7 Tagen — am besten zuerst verkochen.
         </p>
       </div>
       <button
@@ -53,14 +53,14 @@ const hiddenCount = computed(() => pantryStore.expiringSoon.length - visibleRows
       v-else-if="pantryStore.error"
       class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
     >
-      Vorrat konnte nicht geladen werden — bitte spaeter erneut versuchen.
+      Vorrat konnte nicht geladen werden — bitte später erneut versuchen.
     </p>
 
     <p
       v-else-if="pantryStore.expiringSoon.length === 0"
       class="mt-4 rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-4 py-3 text-sm text-ink-500"
     >
-      Nichts laeuft demnaechst ab. 🎉
+      Nichts läuft demnächst ab. 🎉
     </p>
 
     <ul v-else class="mt-4 divide-y divide-cream-100 overflow-hidden rounded-2xl border border-cream-200">

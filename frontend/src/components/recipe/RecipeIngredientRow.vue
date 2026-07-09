@@ -5,8 +5,8 @@ import { UNITS, UNIT_ABBREV, type Unit } from '@/types/units'
 
 export interface RecipeIngredientFormRow {
   /**
-   * Stabile UI-Id pro Zeile — wird ausschliesslich fuer `v-for :key` benutzt,
-   * damit Vue beim Einfuegen/Loeschen oder Reordern nicht versehentlich
+   * Stabile UI-Id pro Zeile — wird ausschliesslich für `v-for :key` benutzt,
+   * damit Vue beim Einfügen/Löschen oder Reordern nicht versehentlich
    * Inputs zwischen Zeilen recycled. Keine Server-Bedeutung.
    */
   id: string

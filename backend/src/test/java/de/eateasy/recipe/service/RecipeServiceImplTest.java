@@ -170,7 +170,7 @@ class RecipeServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("list filtert nach Diaet-Tags (AND-Match)")
+    @DisplayName("list filtert nach Diät-Tags (AND-Match)")
     void listFilterByDietTags() {
         UUID alice = registerUser("alice@example.com", "Alice");
 
@@ -201,17 +201,17 @@ class RecipeServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("update als Owner aendert Zutaten")
+    @DisplayName("update als Owner ändert Zutaten")
     void updateAsOwner() {
         UUID alice = registerUser("alice@example.com", "Alice");
         RecipeDto created = recipeService.create(alice, recipe("Original", null));
 
         RecipeDto updated = recipeService.update(alice, created.id(), new RecipeUpdateRequest(
-            "Geaendert", "Neue Beschreibung", "Neue Steps",
+            "Geändert", "Neue Beschreibung", "Neue Steps",
             6, 45, List.of(DietTag.GLUTEN_FREE), null,
             List.of(new RecipeIngredientRequest(null, "Mehl", new BigDecimal("250"), Unit.GRAM, null))));
 
-        assertThat(updated.title()).isEqualTo("Geaendert");
+        assertThat(updated.title()).isEqualTo("Geändert");
         assertThat(updated.servings()).isEqualTo(6);
         assertThat(updated.ingredients()).hasSize(1);
         assertThat(updated.ingredients().get(0).ingredientName()).isEqualTo("Mehl");
@@ -233,7 +233,7 @@ class RecipeServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("delete als Owner loescht; als Nicht-Owner Forbidden")
+    @DisplayName("delete als Owner löscht; als Nicht-Owner Forbidden")
     void deleteRules() {
         UUID alice = registerUser("alice@example.com", "Alice");
         UUID bob = registerUser("bob@example.com", "Bob");
@@ -248,8 +248,8 @@ class RecipeServiceImplTest {
             .isInstanceOf(NotFoundException.class);
         assertThat(recipeService.list(alice, new RecipeFilter(null, null, null, false)))
             .noneMatch(r -> r.id().equals(created.id()));
-        // ... die Zeile bleibt aber bestehen und ist fuer Referenzen (Wochenplan/
-        // Einkaufsliste) via getMinis weiterhin aufloesbar.
+        // ... die Zeile bleibt aber bestehen und ist für Referenzen (Wochenplan/
+        // Einkaufsliste) via getMinis weiterhin auflösbar.
         assertThat(recipeRepository.findByIdOptional(created.id())).isPresent();
         assertThat(recipeService.getMinis(List.of(created.id()))).containsKey(created.id());
     }
@@ -286,7 +286,7 @@ class RecipeServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("setFavorite ist idempotent und laesst sich zuruecknehmen")
+    @DisplayName("setFavorite ist idempotent und lässt sich zurücknehmen")
     void setFavoriteIdempotentAndRemovable() {
         UUID alice = registerUser("alice@example.com", "Alice");
         RecipeDto created = recipeService.create(alice, recipe("Rezept", null));

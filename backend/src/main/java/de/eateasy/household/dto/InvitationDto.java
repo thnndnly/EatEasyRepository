@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Wird nach dem Erstellen einer Einladung zurueckgegeben. Solange E-Mail-
+ * Wird nach dem Erstellen einer Einladung zurückgegeben. Solange E-Mail-
  * Versand nur simuliert ist (Phase 2), zeigt das Frontend den Token-Link
  * direkt an. In Phase 10 wird {@code token} server-seitig nicht mehr
  * exponiert.

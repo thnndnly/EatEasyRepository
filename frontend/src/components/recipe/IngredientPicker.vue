@@ -4,7 +4,7 @@ import { useIngredientStore } from '@/stores/ingredientStore'
 import type { IngredientDto } from '@/types/ingredient'
 
 interface Props {
-  /** Aktuelle Auswahl (id + name) — id ist null fuer eine geplante Neu-Anlage. */
+  /** Aktuelle Auswahl (id + name) — id ist null für eine geplante Neu-Anlage. */
   modelValue: { id: string | null; name: string }
   placeholder?: string
 }
@@ -20,7 +20,7 @@ const ingredientStore = useIngredientStore()
 
 const inputValue = ref(props.modelValue.name)
 // Lokale Kopie der Treffer — eigenes Snapshot pro Picker, damit zwei
-// Picker auf derselben Seite sich nicht gegenseitig die Liste ueberschreiben.
+// Picker auf derselben Seite sich nicht gegenseitig die Liste überschreiben.
 const results = ref<IngredientDto[]>([])
 const open = ref(false)
 const loading = ref(false)
@@ -67,7 +67,7 @@ function onFocus(): void {
 }
 
 function onBlur(): void {
-  // Verzoegert, damit Klicks auf Treffer noch durchkommen.
+  // Verzögert, damit Klicks auf Treffer noch durchkommen.
   setTimeout(() => {
     open.value = false
   }, 150)

@@ -12,15 +12,15 @@ import java.util.regex.Pattern;
 
 /**
  * Pure Funktion: OpenFoodFacts-Antwort → {@link BarcodeProductDto}. Keine
- * CDI-Abhaengigkeiten, damit der Mapping-Code als reiner Unit-Test ohne
- * Quarkus-Boot pruefbar bleibt.
+ * CDI-Abhängigkeiten, damit der Mapping-Code als reiner Unit-Test ohne
+ * Quarkus-Boot prüfbar bleibt.
  *
  * <p>Returnt {@code null}, wenn das Produkt nicht gefunden wurde — der
  * aufrufende Service entscheidet, ob daraus eine 404 wird.</p>
  */
 public final class OpenFoodFactsMapper {
 
-    /** Liest die fuehrende Zahl + Einheit aus {@code "400 g"}, {@code "1.5 l"} etc. */
+    /** Liest die führende Zahl + Einheit aus {@code "400 g"}, {@code "1.5 l"} etc. */
     private static final Pattern QUANTITY = Pattern.compile(
         "\\d+(?:[\\.,]\\d+)?\\s*(?<unit>[a-zA-Z]+)");
 
@@ -58,11 +58,11 @@ public final class OpenFoodFactsMapper {
         if (!m.find()) {
             return Unit.PIECE;
         }
-        // OpenFoodFacts speichert nur die Verpackungsgroesse als Anzeige —
-        // wir interessieren uns hier nur fuer die kanonische Einheit, nicht
-        // fuer den Multiplier. {@code cl} ist im Parser nicht abgebildet
-        // und faellt damit auf den Default zurueck, was historischem
-        // Verhalten widerspraeche; deshalb hier explizit als Sonderfall.
+        // OpenFoodFacts speichert nur die Verpackungsgröße als Anzeige —
+        // wir interessieren uns hier nur für die kanonische Einheit, nicht
+        // für den Multiplier. {@code cl} ist im Parser nicht abgebildet
+        // und fällt damit auf den Default zurück, was historischem
+        // Verhalten widerspräche; deshalb hier explizit als Sonderfall.
         String token = m.group("unit").trim().toLowerCase(java.util.Locale.ROOT);
         if ("cl".equals(token)) {
             return Unit.ML;

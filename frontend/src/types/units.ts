@@ -5,9 +5,9 @@ export type Unit = (typeof UNITS)[number]
 export const UNIT_LABELS: Record<Unit, string> = {
   GRAM: 'Gramm',
   ML: 'Milliliter',
-  PIECE: 'Stueck',
-  TBSP: 'Essloeffel',
-  TSP: 'Teeloeffel',
+  PIECE: 'Stück',
+  TBSP: 'Esslöffel',
+  TSP: 'Teelöffel',
 }
 
 export const UNIT_ABBREV: Record<Unit, string> = {

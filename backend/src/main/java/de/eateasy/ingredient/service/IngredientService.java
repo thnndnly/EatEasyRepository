@@ -13,12 +13,12 @@ public interface IngredientService {
 
     /**
      * Idempotente Anlage: existiert eine Zutat mit demselben Namen
-     * (case-insensitive), wird die bestehende zurueckgegeben — sonst neu
-     * angelegt. Wird von Recipe-Service waehrend Anlage/Edit aufgerufen.
+     * (case-insensitive), wird die bestehende zurückgegeben — sonst neu
+     * angelegt. Wird von Recipe-Service während Anlage/Edit aufgerufen.
      */
     IngredientDto findOrCreate(String name, Unit defaultUnit);
 
-    /** Suchergebnis fuer Autocomplete-Picker im Frontend. */
+    /** Suchergebnis für Autocomplete-Picker im Frontend. */
     List<IngredientDto> search(String query, int limit);
 
     IngredientDto getById(UUID id);
@@ -31,13 +31,13 @@ public interface IngredientService {
 
     /**
      * Setzt die Supermarkt-Kategorie einer Zutat (Phase 16). Zutaten sind ein
-     * global geteilter Pool — die Kategorie gilt damit fuer alle Haushalte.
+     * global geteilter Pool — die Kategorie gilt damit für alle Haushalte.
      */
     IngredientDto updateCategory(UUID id, IngredientCategory category);
 
     /**
-     * Loest eine Zutat anhand von (optionaler) ID oder Name auf. Ist {@code id}
-     * gesetzt, wird die Existenz validiert und die ID zurueckgegeben — sonst
+     * Löst eine Zutat anhand von (optionaler) ID oder Name auf. Ist {@code id}
+     * gesetzt, wird die Existenz validiert und die ID zurückgegeben — sonst
      * wird per {@link #findOrCreate(String, Unit)} angelegt. Vereinheitlicht
      * das Pattern, das sonst in {@code RecipeServiceImpl} und
      * {@code PantryServiceImpl} dupliziert ist.

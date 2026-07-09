@@ -14,7 +14,7 @@ describe('ingredientStore', () => {
     useAuthStore().$patch({ token: TEST_TOKEN })
   })
 
-  it('search uebernimmt die Server-Antwort in results', async () => {
+  it('search übernimmt die Server-Antwort in results', async () => {
     server.use(
       http.get('/api/v1/ingredients', () => HttpResponse.json([TEST_INGREDIENT])),
     )
@@ -27,7 +27,7 @@ describe('ingredientStore', () => {
     expect(store.error).toBeNull()
   })
 
-  it('search setzt loading waehrend des Calls und cleared danach', async () => {
+  it('search setzt loading während des Calls und cleared danach', async () => {
     server.use(
       http.get('/api/v1/ingredients', () => HttpResponse.json([])),
     )

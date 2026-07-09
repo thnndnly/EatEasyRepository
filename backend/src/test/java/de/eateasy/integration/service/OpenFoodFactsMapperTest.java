@@ -26,7 +26,7 @@ class OpenFoodFactsMapperTest {
     }
 
     @Test
-    @DisplayName("Faellt auf product_name zurueck, wenn product_name_de fehlt")
+    @DisplayName("Fällt auf product_name zurück, wenn product_name_de fehlt")
     void fallsBackToDefaultName() {
         OpenFoodFactsResponse r = response(1, new Product("Olive Oil", null, "500 ml"));
 
@@ -92,7 +92,7 @@ class OpenFoodFactsMapperTest {
         void unknownUnit() {
             assertThat(OpenFoodFactsMapper.deriveUnit(null)).isEqualTo(Unit.PIECE);
             assertThat(OpenFoodFactsMapper.deriveUnit("")).isEqualTo(Unit.PIECE);
-            assertThat(OpenFoodFactsMapper.deriveUnit("2 Stueck")).isEqualTo(Unit.PIECE);
+            assertThat(OpenFoodFactsMapper.deriveUnit("2 Stück")).isEqualTo(Unit.PIECE);
         }
     }
 

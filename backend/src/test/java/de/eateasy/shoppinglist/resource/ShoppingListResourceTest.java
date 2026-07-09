@@ -132,7 +132,7 @@ class ShoppingListResourceTest {
     }
 
     @Test
-    @DisplayName("POST /shoppinglist/regenerate: gechecktes Item liegt jetzt im Vorrat → faellt aus Liste raus")
+    @DisplayName("POST /shoppinglist/regenerate: gechecktes Item liegt jetzt im Vorrat → fällt aus Liste raus")
     void regenerateAfterCheckedDropsItem() {
         // Mit Auto-Nachbuchen (Phase 10/Post-MVP): toggleChecked(true) bucht
         // den Posten in den Vorrat. Beim Regenerate zieht subtractPantry den
@@ -164,7 +164,7 @@ class ShoppingListResourceTest {
     }
 
     @Test
-    @DisplayName("GET /shoppinglist fuer fremden Plan liefert 403")
+    @DisplayName("GET /shoppinglist für fremden Plan liefert 403")
     void getForbiddenForOutsider() {
         String aliceToken = registerUser("alice@example.com");
         String bobToken = registerUser("bob@example.com");

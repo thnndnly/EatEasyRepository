@@ -9,14 +9,14 @@ import java.time.DayOfWeek;
 import java.util.UUID;
 
 /**
- * PUT-Body fuer einen Wochenplan-Slot. Idempotent: existierender Eintrag
- * wird ueberschrieben (Unique-Constraint auf plan x day x mealType).
+ * PUT-Body für einen Wochenplan-Slot. Idempotent: existierender Eintrag
+ * wird überschrieben (Unique-Constraint auf plan x day x mealType).
  */
 public record SetEntryRequest(
     @NotNull DayOfWeek dayOfWeek,
     @NotNull MealType mealType,
     @NotNull UUID recipeId,
     @Min(value = 1, message = "Portionen muss mindestens 1 sein")
-    @Max(value = 50, message = "Portionen darf hoechstens 50 sein") int servings
+    @Max(value = 50, message = "Portionen darf höchstens 50 sein") int servings
 ) {
 }

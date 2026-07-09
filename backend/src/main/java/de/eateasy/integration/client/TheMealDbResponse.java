@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * TheMealDB liefert immer ein Wrapper-Objekt {@code {"meals": [...]}} oder
  * {@code {"meals": null}} bei keinem Treffer. Wir mappen nur die Felder, die
- * wir tatsaechlich auswerten — alle anderen ignorieren wir explizit.
+ * wir tatsächlich auswerten — alle anderen ignorieren wir explizit.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record TheMealDbResponse(List<TheMealDbMeal> meals) {

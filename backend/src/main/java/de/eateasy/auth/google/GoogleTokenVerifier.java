@@ -8,10 +8,10 @@ package de.eateasy.auth.google;
 public interface GoogleTokenVerifier {
 
     /**
-     * Prueft Signatur, Gueltigkeit und Audience des Tokens.
+     * Prüft Signatur, Gültigkeit und Audience des Tokens.
      *
      * @throws de.eateasy.common.exception.InvalidCredentialsException wenn das
-     *     Token fehlt, ungueltig ist oder nicht fuer diese Anwendung ausgestellt
+     *     Token fehlt, ungültig ist oder nicht für diese Anwendung ausgestellt
      *     wurde.
      */
     GoogleIdTokenPayload verify(String idToken);

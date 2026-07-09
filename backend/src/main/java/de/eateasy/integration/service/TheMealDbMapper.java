@@ -19,12 +19,12 @@ import java.util.regex.Pattern;
 
 /**
  * Wandelt eine TheMealDB-Antwort in einen {@link RecipeCreateRequest} um. Pure
- * Funktion (keine CDI-Abhaengigkeiten), damit der Mapping-Code als reiner
- * Unit-Test ohne Quarkus-Boot pruefbar bleibt.
+ * Funktion (keine CDI-Abhängigkeiten), damit der Mapping-Code als reiner
+ * Unit-Test ohne Quarkus-Boot prüfbar bleibt.
  *
  * <p>TheMealDB liefert keine Portionsangabe und keine Zubereitungszeit —
  * Default {@link #DEFAULT_SERVINGS}. Mengen werden grob aus {@code strMeasure}
- * geparst (z. B. "200g", "1 cup", "1/2 tsp"). Was sich nicht parsen laesst,
+ * geparst (z. B. "200g", "1 cup", "1/2 tsp"). Was sich nicht parsen lässt,
  * landet als 1 PIECE mit der Original-Einheit als note.</p>
  */
 public final class TheMealDbMapper {
@@ -45,7 +45,7 @@ public final class TheMealDbMapper {
         return new RecipeCreateRequest(
             safeTrim(meal.strMeal(), "Importiertes Rezept"),
             buildDescription(meal),
-            safeTrim(meal.strInstructions(), "Keine Anleitung verfuegbar."),
+            safeTrim(meal.strInstructions(), "Keine Anleitung verfügbar."),
             DEFAULT_SERVINGS,
             null,
             deriveDietTags(meal.strCategory()),
@@ -103,7 +103,7 @@ public final class TheMealDbMapper {
         }
         if (out.isEmpty()) {
             // RecipeService verlangt mindestens eine Zutat — wir geben einen
-            // Platzhalter aus, damit der Import nicht hart fehlschlaegt.
+            // Platzhalter aus, damit der Import nicht hart fehlschlägt.
             out.add(new RecipeIngredientRequest(
                 null, "Siehe Anleitung", BigDecimal.ONE, Unit.PIECE, null));
         }

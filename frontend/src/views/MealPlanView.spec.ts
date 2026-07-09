@@ -4,7 +4,7 @@ import type { DayOfWeek, MealPlanEntryDto, MealType } from '@/types/mealplan'
 import { TEST_RECIPE_MINI } from '@/test/fixtures'
 
 /**
- * Gemockte Store-/Router-Abhaengigkeiten. Ueber vi.hoisted gebaut, damit die
+ * Gemockte Store-/Router-Abhängigkeiten. Über vi.hoisted gebaut, damit die
  * vi.mock-Factories (die vor den Imports laufen) auf dieselben Spy-Instanzen
  * zugreifen wie der Test-Body.
  */
@@ -80,8 +80,8 @@ function entryFor(day: DayOfWeek, mealType: MealType): MealPlanEntryDto | null {
 
 async function mountView() {
   const wrapper = mount(MealPlanView, {
-    // RecipePickerModal haengt am (hier nicht gemockten) recipeStore und ist
-    // fuer den Stepper-Guard irrelevant — deshalb ausstubben.
+    // RecipePickerModal hängt am (hier nicht gemockten) recipeStore und ist
+    // für den Stepper-Guard irrelevant — deshalb ausstubben.
     global: { stubs: { RecipePickerModal: true } },
   })
   await flushPromises() // onMounted → ensureLoaded abwarten
@@ -113,8 +113,8 @@ describe('MealPlanView onChangeServings — Cross-Slot-Guard', () => {
     )
   })
 
-  it('blockt einen zweiten Klick auf denselben Slot waehrend der Request laeuft', async () => {
-    // Request bleibt in-flight (Promise loest nie auf) → savingSlot bleibt gesetzt.
+  it('blockt einen zweiten Klick auf denselben Slot während der Request läuft', async () => {
+    // Request bleibt in-flight (Promise löst nie auf) → savingSlot bleibt gesetzt.
     mocks.setEntry.mockReturnValue(new Promise<MealPlanEntryDto>(() => {}))
     const wrapper = await mountView()
     const grid = wrapper.findComponent(MealPlanGrid)
@@ -124,7 +124,7 @@ describe('MealPlanView onChangeServings — Cross-Slot-Guard', () => {
     grid.vm.$emit('changeServings', 'MONDAY', 'DINNER', 6)
     await flushPromises()
 
-    // Zweiter Klick auf Slot A wird verschluckt — nur der erste Aufruf zaehlt.
+    // Zweiter Klick auf Slot A wird verschluckt — nur der erste Aufruf zählt.
     expect(mocks.setEntry).toHaveBeenCalledTimes(1)
     expect(mocks.setEntry).toHaveBeenNthCalledWith(
       1,
@@ -133,7 +133,7 @@ describe('MealPlanView onChangeServings — Cross-Slot-Guard', () => {
   })
 
   it('erlaubt parallele Edits UNTERSCHIEDLICHER Slots (Klick auf B bleibt wirksam)', async () => {
-    // Slot A laeuft noch, wenn B geklickt wird.
+    // Slot A läuft noch, wenn B geklickt wird.
     mocks.setEntry.mockReturnValue(new Promise<MealPlanEntryDto>(() => {}))
     const wrapper = await mountView()
     const grid = wrapper.findComponent(MealPlanGrid)
@@ -165,7 +165,7 @@ describe('MealPlanView onChangeServings — Cross-Slot-Guard', () => {
     grid.vm.$emit('changeServings', 'MONDAY', 'DINNER', 5)
     await flushPromises()
 
-    // Request abschliessen → finally setzt savingSlot zurueck.
+    // Request abschliessen → finally setzt savingSlot zurück.
     mocks.setEntry.mockResolvedValue({ ...SLOT_A, servings: 6 })
     resolveFirst({ ...SLOT_A, servings: 5 })
     await flushPromises()
@@ -180,7 +180,7 @@ describe('MealPlanView onChangeServings — Cross-Slot-Guard', () => {
     )
   })
 
-  it('ignoriert changeServings fuer einen leeren Slot ohne Rezept', async () => {
+  it('ignoriert changeServings für einen leeren Slot ohne Rezept', async () => {
     const wrapper = await mountView()
 
     wrapper.findComponent(MealPlanGrid).vm.$emit('changeServings', 'FRIDAY', 'LUNCH', 3)

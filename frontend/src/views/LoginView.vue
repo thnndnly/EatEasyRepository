@@ -33,7 +33,7 @@ async function onSubmit(): Promise<void> {
   <section class="mx-auto max-w-md space-y-6 py-6">
     <div class="text-center">
       <AppLogo :size="56" class="mx-auto" />
-      <h1 class="mt-4 text-2xl font-extrabold tracking-tight">Willkommen zurueck</h1>
+      <h1 class="mt-4 text-2xl font-extrabold tracking-tight">Willkommen zurück</h1>
       <p class="mt-1 text-sm text-ink-500">Logge dich in dein EatEasy-Konto ein.</p>
     </div>
 

@@ -12,7 +12,7 @@ const authStore = useAuthStore()
 const buttonEl = ref<HTMLDivElement | null>(null)
 const error = ref<string | null>(null)
 
-/** Laedt das GIS-Skript einmalig (idempotent) nach. */
+/** Lädt das GIS-Skript einmalig (idempotent) nach. */
 function loadGisScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (window.google?.accounts?.id) {
@@ -69,7 +69,7 @@ onMounted(async () => {
       width: 320,
     })
   } catch {
-    error.value = 'Google-Login ist gerade nicht verfuegbar.'
+    error.value = 'Google-Login ist gerade nicht verfügbar.'
   }
 })
 </script>

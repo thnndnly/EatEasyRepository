@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(email)
             .orElseThrow(InvalidCredentialsException::new);
 
-        // Reine Google-User haben kein Passwort → Passwort-Login schlaegt fehl.
+        // Reine Google-User haben kein Passwort → Passwort-Login schlägt fehl.
         if (user.getPasswordHash() == null
             || !BCrypt.checkpw(request.password(), user.getPasswordHash())) {
             throw new InvalidCredentialsException();
@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse loginWithGoogle(String idToken) {
         GoogleIdTokenPayload payload = googleTokenVerifier.verify(idToken);
         if (payload.email() == null || !payload.emailVerified()) {
-            // Ohne verifizierte Email koennen wir nicht per Email verknuepfen.
+            // Ohne verifizierte Email können wir nicht per Email verknüpfen.
             throw new InvalidCredentialsException();
         }
         String email = normalizeEmail(payload.email());
@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
             user = User.forGoogle(email, displayName, payload.sub());
             userRepository.persist(user);
         } else if (user.getGoogleSub() == null) {
-            // Bestehenden (z. B. Passwort-)Account mit Google verknuepfen.
+            // Bestehenden (z. B. Passwort-)Account mit Google verknüpfen.
             user.setGoogleSub(payload.sub());
         }
 

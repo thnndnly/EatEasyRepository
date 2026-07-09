@@ -39,7 +39,7 @@ function newRowId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID()
   }
-  // Fallback fuer aeltere Umgebungen (Vitest-jsdom hat randomUUID seit Node 19).
+  // Fallback für ältere Umgebungen (Vitest-jsdom hat randomUUID seit Node 19).
   return `row-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
@@ -178,7 +178,7 @@ watch(editId, loadForEdit)
       class="text-sm font-medium text-peach-600 hover:underline"
       @click="router.back()"
     >
-      &larr; Zurueck
+      &larr; Zurück
     </button>
 
     <h1 class="text-2xl font-semibold">
@@ -242,7 +242,7 @@ watch(editId, loadForEdit)
       </div>
 
       <div class="space-y-2">
-        <span class="block text-sm font-medium text-ink-700">Diaet-Tags</span>
+        <span class="block text-sm font-medium text-ink-700">Diät-Tags</span>
         <DietTagSelector v-model="dietTags" />
       </div>
 
@@ -309,7 +309,7 @@ watch(editId, loadForEdit)
         :disabled="submitting"
         class="ee-btn-primary"
       >
-        {{ submitting ? 'Speichere ...' : isEdit ? 'Aenderungen speichern' : 'Rezept anlegen' }}
+        {{ submitting ? 'Speichere ...' : isEdit ? 'Änderungen speichern' : 'Rezept anlegen' }}
       </button>
     </form>
   </section>

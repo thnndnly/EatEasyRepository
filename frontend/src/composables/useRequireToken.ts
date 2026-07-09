@@ -1,9 +1,9 @@
 import { useAuthStore } from '@/stores/authStore'
 
 /**
- * Liefert eine Funktion, die das aktuelle Auth-Token zurueckgibt oder einen
+ * Liefert eine Funktion, die das aktuelle Auth-Token zurückgibt oder einen
  * Fehler wirft, wenn niemand eingeloggt ist. Wird in Pinia-Stores benutzt,
- * um die Token-Pruefung nicht in jedem Action-Method zu wiederholen.
+ * um die Token-Prüfung nicht in jedem Action-Method zu wiederholen.
  */
 export function useRequireToken(): () => string {
   const auth = useAuthStore()

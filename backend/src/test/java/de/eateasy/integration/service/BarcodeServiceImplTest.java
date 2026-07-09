@@ -113,12 +113,12 @@ class BarcodeServiceImplTest {
         UUID householdId = createHousehold(userId, "Alice WG").id();
         when(openFoodFactsClient.getProduct("555")).thenReturn(
             new OpenFoodFactsResponse("555", 1,
-                new Product("Olive Oil", "Olivenoel", "500 ml")));
+                new Product("Olive Oil", "Olivenöl", "500 ml")));
 
         PantryItemDto item = barcodeService.addToPantry(userId, householdId,
             new BarcodePantryRequest("555", new BigDecimal("500"), Unit.ML, null));
 
-        assertThat(item.ingredientName()).isEqualTo("Olivenoel");
+        assertThat(item.ingredientName()).isEqualTo("Olivenöl");
         assertThat(item.amount()).isEqualByComparingTo("500");
         assertThat(item.unit()).isEqualTo(Unit.ML);
         assertThat(ingredientRepository.findAll().list()).hasSize(1);

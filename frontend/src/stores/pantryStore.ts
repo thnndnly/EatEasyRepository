@@ -37,7 +37,7 @@ export const usePantryStore = defineStore('pantry', () => {
 
   async function addItem(request: AddPantryItemRequest): Promise<PantryItemDto> {
     if (!householdId.value) {
-      throw new Error('Kein Haushalt ausgewaehlt')
+      throw new Error('Kein Haushalt ausgewählt')
     }
     error.value = null
     try {
@@ -46,14 +46,14 @@ export const usePantryStore = defineStore('pantry', () => {
         householdId.value,
         request,
       )
-      // Server kann aggregieren → bei vorhandenem Item ersetzen, sonst anhaengen.
+      // Server kann aggregieren → bei vorhandenem Item ersetzen, sonst anhängen.
       const exists = items.value.some((i) => i.id === created.id)
       items.value = exists
         ? items.value.map((i) => (i.id === created.id ? created : i))
         : [...items.value, created]
       return created
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Hinzufuegen fehlgeschlagen'
+      error.value = err instanceof Error ? err.message : 'Hinzufügen fehlgeschlagen'
       throw err
     }
   }
@@ -79,12 +79,12 @@ export const usePantryStore = defineStore('pantry', () => {
       await pantryService.deletePantryItem(requireToken(), id)
       items.value = items.value.filter((i) => i.id !== id)
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Loeschen fehlgeschlagen'
+      error.value = err instanceof Error ? err.message : 'Löschen fehlgeschlagen'
       throw err
     }
   }
 
-  /** Barcode-Lookup (OpenFoodFacts) — Server-State-Zugriff laeuft ueber den Store,
+  /** Barcode-Lookup (OpenFoodFacts) — Server-State-Zugriff läuft über den Store,
    *  nicht direkt aus der Komponente. */
   async function lookupByBarcode(barcode: string): Promise<BarcodeProductDto> {
     error.value = null
@@ -99,7 +99,7 @@ export const usePantryStore = defineStore('pantry', () => {
   /** Legt einen Vorrats-Eintrag per Barcode an und pflegt die Liste wie addItem. */
   async function addByBarcode(request: BarcodePantryRequest): Promise<PantryItemDto> {
     if (!householdId.value) {
-      throw new Error('Kein Haushalt ausgewaehlt')
+      throw new Error('Kein Haushalt ausgewählt')
     }
     error.value = null
     try {
@@ -114,7 +114,7 @@ export const usePantryStore = defineStore('pantry', () => {
         : [...items.value, created]
       return created
     } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : 'Hinzufuegen fehlgeschlagen'
+      error.value = err instanceof Error ? err.message : 'Hinzufügen fehlgeschlagen'
       throw err
     }
   }
@@ -125,8 +125,8 @@ export const usePantryStore = defineStore('pantry', () => {
     error.value = null
   }
 
-  // Items mit MHD in den naechsten 7 Tagen (inkl. bereits abgelaufener),
-  // aufsteigend sortiert — Datengrundlage fuer das Dashboard-Widget.
+  // Items mit MHD in den nächsten 7 Tagen (inkl. bereits abgelaufener),
+  // aufsteigend sortiert — Datengrundlage für das Dashboard-Widget.
   const expiringSoon = computed<PantryItemDto[]>(() =>
     items.value
       .filter((i) => i.bestBefore !== null && daysUntil(i.bestBefore) <= EXPIRING_SOON_DAYS)

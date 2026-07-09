@@ -79,7 +79,7 @@ class HouseholdServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("create lehnt unbekannte Diaet-Tags ab")
+    @DisplayName("create lehnt unbekannte Diät-Tags ab")
     void createRejectsUnknownDietTag() {
         UUID ownerId = registerUser("owner@example.com", "Owner");
 
@@ -117,7 +117,7 @@ class HouseholdServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("update als Owner aendert Name und Tags")
+    @DisplayName("update als Owner ändert Name und Tags")
     void updateAsOwnerSucceeds() {
         UUID ownerId = registerUser("owner@example.com", "Owner");
         UUID householdId = householdService.create(ownerId,
@@ -128,7 +128,7 @@ class HouseholdServiceImplTest {
 
         assertThat(updated.name()).isEqualTo("Neu");
         assertThat(updated.defaultDietTags()).containsExactlyInAnyOrder(DietTag.VEGAN, DietTag.GLUTEN_FREE);
-        // Auto-Nachbuchen laesst sich per Update abschalten (Phase 14).
+        // Auto-Nachbuchen lässt sich per Update abschalten (Phase 14).
         assertThat(updated.autoRestockEnabled()).isFalse();
     }
 
@@ -151,7 +151,7 @@ class HouseholdServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("invite erzeugt Token mit 7 Tagen Gueltigkeit")
+    @DisplayName("invite erzeugt Token mit 7 Tagen Gültigkeit")
     void inviteCreatesToken() {
         UUID ownerId = registerUser("owner@example.com", "Owner");
         UUID householdId = householdService.create(ownerId,
@@ -220,7 +220,7 @@ class HouseholdServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("acceptInvitation lehnt zweite Einloesung ab")
+    @DisplayName("acceptInvitation lehnt zweite Einlösung ab")
     void acceptInvitationTwiceRejected() {
         UUID ownerId = registerUser("owner@example.com", "Owner");
         UUID guestId = registerUser("guest@example.com", "Guest");
@@ -256,7 +256,7 @@ class HouseholdServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("listMembers enthaelt direkt nach create() genau den Owner (Regression #9)")
+    @DisplayName("listMembers enthält direkt nach create() genau den Owner (Regression #9)")
     void listMembersContainsOwnerRightAfterCreate() {
         UUID ownerId = registerUser("owner@example.com", "Owner");
         UUID householdId = householdService.create(ownerId,
@@ -274,7 +274,7 @@ class HouseholdServiceImplTest {
 
     @Test
     @TestTransaction
-    @DisplayName("removeMember loescht Membership; Owner kann sich nicht selbst entfernen")
+    @DisplayName("removeMember löscht Membership; Owner kann sich nicht selbst entfernen")
     void removeMemberRules() {
         UUID ownerId = registerUser("owner@example.com", "Owner");
         UUID memberId = registerUser("member@example.com", "Member");

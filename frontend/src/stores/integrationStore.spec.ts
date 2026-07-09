@@ -13,7 +13,7 @@ describe('integrationStore', () => {
     useAuthStore().$patch({ token: TEST_TOKEN })
   })
 
-  it('searchExternal uebernimmt Treffer in results', async () => {
+  it('searchExternal übernimmt Treffer in results', async () => {
     server.use(
       http.get('/api/v1/integration/recipes/search', () =>
         HttpResponse.json([TEST_EXTERNAL_PREVIEW]),
@@ -27,7 +27,7 @@ describe('integrationStore', () => {
     expect(store.results).toEqual([TEST_EXTERNAL_PREVIEW])
   })
 
-  it('importExternal setzt importingId waehrend des Calls und cleared danach', async () => {
+  it('importExternal setzt importingId während des Calls und cleared danach', async () => {
     let observedImportingId: string | null = null
     server.use(
       http.post('/api/v1/recipes/import', () => {

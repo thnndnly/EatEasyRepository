@@ -18,11 +18,11 @@ const emit = defineEmits<{
   changeCategory: [ingredientId: string, category: IngredientCategory]
 }>()
 
-// Das native <select> ist ueber :value an item.category gebunden. Schlaegt der
-// PATCH fehl, bleibt item.category unveraendert und Vue wuerde das vom User
-// gewaehlte (nicht gespeicherte) Option-Element im DOM stehen lassen. Der Store
+// Das native <select> ist über :value an item.category gebunden. Schlägt der
+// PATCH fehl, bleibt item.category unverändert und Vue würde das vom User
+// gewählte (nicht gespeicherte) Option-Element im DOM stehen lassen. Der Store
 // referenziert das Item bei jedem Ausgang neu; wir bumpen daraufhin selectKey,
-// sodass das <select> neu gerendert wird und auf item.category zurueckspringt.
+// sodass das <select> neu gerendert wird und auf item.category zurückspringt.
 const selectKey = ref(0)
 watch(
   () => props.item,
@@ -58,7 +58,7 @@ function onCategoryChange(ingredientId: string, event: Event): void {
       :key="selectKey"
       :value="item.category"
       class="ee-category-select max-w-[9rem] cursor-pointer rounded-lg border border-cream-200 bg-white px-2 py-1 text-xs text-ink-500 print:hidden"
-      title="Kategorie der Zutat aendern"
+      title="Kategorie der Zutat ändern"
       @change="onCategoryChange(item.ingredientId, $event)"
     >
       <option v-for="cat in INGREDIENT_CATEGORIES" :key="cat" :value="cat">

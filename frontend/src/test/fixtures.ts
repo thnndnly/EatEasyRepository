@@ -9,12 +9,12 @@ import type { SuggestionDto } from '@/types/suggestion'
 import type { ExternalRecipePreviewDto } from '@/types/externalRecipe'
 
 /**
- * Gemeinsame Test-Fixtures fuer MSW (Vitest) und Playwright. Bewusst hier
+ * Gemeinsame Test-Fixtures für MSW (Vitest) und Playwright. Bewusst hier
  * statt in mocks/ abgelegt, damit beide Test-Layer ohne Umweg importieren
- * koennen (Playwright via relativem Pfad, Vitest via @-Alias).
+ * können (Playwright via relativem Pfad, Vitest via @-Alias).
  *
  * Konvention: TEST_* sind Default-Fixtures. Tests, die abweichende Daten
- * brauchen, spreaden ueber das passende Default-Objekt (`{ ...TEST_RECIPE,
+ * brauchen, spreaden über das passende Default-Objekt (`{ ...TEST_RECIPE,
  * title: '...' }`).
  */
 export const TEST_USER: UserDto = {
@@ -74,7 +74,7 @@ export const TEST_RECIPE: RecipeDto = {
   householdId: TEST_HOUSEHOLD.id,
   title: TEST_RECIPE_MINI.title,
   description: 'Klassisch und einfach.',
-  instructions: 'Tomaten schneiden, kochen, puerieren.',
+  instructions: 'Tomaten schneiden, kochen, pürieren.',
   servings: TEST_RECIPE_MINI.servings,
   prepMinutes: TEST_RECIPE_MINI.prepMinutes,
   dietTags: [],
