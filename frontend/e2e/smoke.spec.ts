@@ -5,9 +5,9 @@ import { TEST_TOKEN, TEST_USER } from '../src/test/fixtures'
  * Smoke-Tests ohne Backend-Abhaengigkeit. Decken die ersten Schritte des
  * Login-Flows ab und stellen sicher, dass das Frontend bootet.
  *
- * beforeEach setzt Default-Mocks fuer alle erwarteten Endpunkte und einen
+ * beforeEach setzt Default-Mocks für alle erwarteten Endpunkte und einen
  * Catch-All, der unerwartete /api/*-Calls als Test-Fehler markiert — sonst
- * wuerden neue ungemockte Calls stumm durchrutschen (Vite-Proxy → kein
+ * würden neue ungemockte Calls stumm durchrutschen (Vite-Proxy → kein
  * Backend → leise 500).
  */
 const jsonResponse = (status: number, body: unknown) => ({
@@ -20,8 +20,8 @@ test.describe('Login-View Smoke', () => {
   test.beforeEach(async ({ page }) => {
     // Playwright probiert Route-Handler in umgekehrter Reihenfolge der
     // Registrierung. Catch-All zuerst registrieren, damit nachfolgende
-    // spezifische Routen ihn ueberstimmen koennen. Ohne diesen Catch-All
-    // wuerden ungemockte /api/*-Calls leise durch den Vite-Proxy ans
+    // spezifische Routen ihn ueberstimmen können. Ohne diesen Catch-All
+    // würden ungemockte /api/*-Calls leise durch den Vite-Proxy ans
     // (im Test nicht laufende) Backend gehen.
     await page.route('**/api/v1/**', (route) => {
       throw new Error(`Unmocked API-Call: ${route.request().method()} ${route.request().url()}`)
@@ -30,14 +30,14 @@ test.describe('Login-View Smoke', () => {
       route.fulfill(jsonResponse(401, { error: 'Unauthorized' })),
     )
     await page.route('**/api/v1/auth/login', (route) =>
-      route.fulfill(jsonResponse(401, { error: 'Ungueltige Anmeldedaten' })),
+      route.fulfill(jsonResponse(401, { error: 'Ungültige Anmeldedaten' })),
     )
   })
 
   test('zeigt das Login-Formular', async ({ page }) => {
     await page.goto('/login')
 
-    await expect(page.getByRole('heading', { name: /Willkommen zurueck/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Willkommen zurück/ })).toBeVisible()
     await expect(page.locator('#login-email')).toBeVisible()
     await expect(page.locator('#login-password')).toBeVisible()
     await expect(page.getByRole('button', { name: /Einloggen/ })).toBeVisible()
@@ -49,7 +49,7 @@ test.describe('Login-View Smoke', () => {
     await page.locator('#login-password').fill('secretsecret')
     await page.getByRole('button', { name: /Einloggen/ }).click()
 
-    await expect(page.getByText('Ungueltige Anmeldedaten')).toBeVisible()
+    await expect(page.getByText('Ungültige Anmeldedaten')).toBeVisible()
   })
 
   test('login erfolgreich -> Weiterleitung zur Startseite', async ({ page }) => {
